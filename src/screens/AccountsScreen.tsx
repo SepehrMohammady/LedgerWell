@@ -14,9 +14,11 @@ import { Account } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
 import AddAccountModal from '../components/AddAccountModal';
+import { useTheme, Theme } from '../utils/theme';
 
 const AccountsScreen = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [filteredAccounts, setFilteredAccounts] = useState<Account[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -137,12 +139,15 @@ const AccountsScreen = () => {
     );
   };
 
+  const styles = createStyles(theme);
+
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
           placeholder={t('searchPlaceholder')}
+          placeholderTextColor={theme.colors.textSecondary}
           value={searchQuery}
           onChangeText={setSearchQuery}
         />
@@ -182,28 +187,30 @@ const AccountsScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: theme.colors.background,
   },
   searchContainer: {
     padding: 16,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
   },
   searchInput: {
     height: 40,
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: theme.colors.border,
     borderRadius: 8,
     paddingHorizontal: 12,
     fontSize: 16,
+    backgroundColor: theme.colors.background,
+    color: theme.colors.text,
   },
   listContainer: {
     padding: 16,
   },
   accountCard: {
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
@@ -225,11 +232,11 @@ const styles = StyleSheet.create({
   accountName: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.colors.text,
   },
   accountDescription: {
     fontSize: 14,
-    color: '#666',
+    color: theme.colors.textSecondary,
     marginTop: 4,
   },
   accountActions: {
@@ -240,10 +247,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
   },
   deleteButton: {
-    backgroundColor: '#F44336',
+    backgroundColor: theme.colors.error,
   },
   actionButtonText: {
     color: 'white',
@@ -263,7 +270,7 @@ const styles = StyleSheet.create({
   },
   balanceLabel: {
     fontSize: 12,
-    color: '#666',
+    color: theme.colors.textSecondary,
     marginBottom: 4,
   },
   balanceAmount: {
@@ -276,12 +283,12 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 16,
-    color: '#666',
+    color: theme.colors.textSecondary,
     textAlign: 'center',
     marginBottom: 16,
   },
   addButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
@@ -298,7 +305,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,

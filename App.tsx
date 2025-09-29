@@ -2,7 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import { I18nextProvider } from 'react-i18next';
+import { I18nextProvider, useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import i18n from './src/utils/i18n';
 import { ThemeProvider, useTheme } from './src/utils/theme';
@@ -17,11 +17,13 @@ const Tab = createBottomTabNavigator();
 
 const AppContent = () => {
   const { theme, isDark } = useTheme();
+  const { t } = useTranslation();
 
   return (
     <NavigationContainer>
       <StatusBar style={isDark ? "light" : "dark"} />
       <Tab.Navigator
+        key={i18n.language}
         screenOptions={{
           tabBarActiveTintColor: theme.colors.tabBarActiveTint,
           tabBarInactiveTintColor: theme.colors.tabBarInactiveTint,
@@ -39,7 +41,7 @@ const AppContent = () => {
           name="Home" 
           component={HomeScreen} 
           options={{
-            title: 'Dashboard',
+            title: t('dashboard'),
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="home-outline" size={size} color={color} />
             ),
@@ -49,7 +51,7 @@ const AppContent = () => {
           name="Accounts" 
           component={AccountsScreen} 
           options={{
-            title: 'Accounts',
+            title: t('accounts'),
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="people-outline" size={size} color={color} />
             ),
@@ -59,7 +61,7 @@ const AppContent = () => {
           name="Transactions" 
           component={TransactionsScreen} 
           options={{
-            title: 'Transactions',
+            title: t('transactions'),
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="list-outline" size={size} color={color} />
             ),
@@ -69,7 +71,7 @@ const AppContent = () => {
           name="Settings" 
           component={SettingsScreen} 
           options={{
-            title: 'Settings',
+            title: t('settings'),
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="settings-outline" size={size} color={color} />
             ),

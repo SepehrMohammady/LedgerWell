@@ -14,9 +14,11 @@ import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
 import AddAccountModal from '../components/AddAccountModal';
 import AddTransactionModal from '../components/AddTransactionModal';
+import { useTheme, Theme } from '../utils/theme';
 
 const HomeScreen = () => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [defaultCurrency, setDefaultCurrency] = useState<Currency | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -88,6 +90,8 @@ const HomeScreen = () => {
     if (balance < 0) return '#F44336'; // Red for negative
     return '#9E9E9E'; // Gray for zero
   };
+
+  const styles = createStyles(theme);
 
   return (
     <ScrollView
@@ -202,14 +206,14 @@ const HomeScreen = () => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: theme.colors.background,
   },
   header: {
     padding: 20,
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
   },
   welcomeText: {
     fontSize: 24,
@@ -219,7 +223,7 @@ const styles = StyleSheet.create({
   },
   summaryContainer: {
     padding: 16,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
     margin: 16,
     borderRadius: 12,
     elevation: 2,
@@ -234,11 +238,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: theme.colors.border,
   },
   summaryLabel: {
     fontSize: 16,
-    color: '#333',
+    color: theme.colors.text,
   },
   summaryAmount: {
     fontSize: 18,
@@ -250,22 +254,22 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.colors.text,
     marginBottom: 16,
   },
   emptyState: {
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
     padding: 32,
     borderRadius: 12,
     alignItems: 'center',
   },
   emptyStateText: {
     fontSize: 16,
-    color: '#666',
+    color: theme.colors.textSecondary,
     textAlign: 'center',
   },
   accountCard: {
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
     padding: 16,
     borderRadius: 12,
     marginBottom: 8,
@@ -284,11 +288,11 @@ const styles = StyleSheet.create({
   accountName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: theme.colors.text,
   },
   accountDescription: {
     fontSize: 14,
-    color: '#666',
+    color: theme.colors.textSecondary,
     marginTop: 4,
   },
   accountBalance: {
@@ -296,7 +300,7 @@ const styles = StyleSheet.create({
   },
   balanceLabel: {
     fontSize: 12,
-    color: '#666',
+    color: theme.colors.textSecondary,
   },
   balanceAmount: {
     fontSize: 16,
@@ -310,7 +314,7 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
