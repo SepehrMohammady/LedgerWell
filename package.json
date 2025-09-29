@@ -1,6 +1,6 @@
 {
   "name": "ledgerwell",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Personal debt and credit tracking app with multi-currency support",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -18,6 +18,7 @@
   "author": "SMohammady@outlook.com",
   "license": "MIT",
   "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-picker/picker": "2.11.1",
     "@react-navigation/bottom-tabs": "^7.4.7",

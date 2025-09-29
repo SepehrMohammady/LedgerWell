@@ -26,6 +26,7 @@
   "theme": "السمة",
   "defaultCurrency": "العملة الافتراضية",
   "autoUpdateRates": "تحديث أسعار الصرف تلقائياً",
+  "darkMode": "الوضع المظلم",
   "customCurrency": "عملة مخصصة",
   "currencyCode": "رمز العملة",
   "currencyName": "اسم العملة",

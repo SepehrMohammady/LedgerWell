@@ -12,12 +12,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Transaction } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
+import AddTransactionModal from '../components/AddTransactionModal';
 
 const TransactionsScreen = () => {
   const { t } = useTranslation();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [addTransactionModalVisible, setAddTransactionModalVisible] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -105,16 +107,28 @@ const TransactionsScreen = () => {
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateText}>{t('noTransactions')}</Text>
-            <TouchableOpacity style={styles.addButton}>
+            <TouchableOpacity 
+              style={styles.addButton}
+              onPress={() => setAddTransactionModalVisible(true)}
+            >
               <Text style={styles.addButtonText}>{t('addTransaction')}</Text>
             </TouchableOpacity>
           </View>
         }
       />
 
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity 
+        style={styles.fab}
+        onPress={() => setAddTransactionModalVisible(true)}
+      >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
+
+      <AddTransactionModal
+        visible={addTransactionModalVisible}
+        onClose={() => setAddTransactionModalVisible(false)}
+        onSave={() => loadTransactions()}
+      />
     </View>
   );
 };

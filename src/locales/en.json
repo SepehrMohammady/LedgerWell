@@ -26,6 +26,7 @@
   "theme": "Theme",
   "defaultCurrency": "Default Currency",
   "autoUpdateRates": "Auto Update Exchange Rates",
+  "darkMode": "Dark Mode",
   "customCurrency": "Custom Currency",
   "currencyCode": "Currency Code",
   "currencyName": "Currency Name",

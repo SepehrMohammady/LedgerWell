@@ -26,6 +26,7 @@
   "theme": "Thema",
   "defaultCurrency": "Standardwährung",
   "autoUpdateRates": "Wechselkurse Automatisch Aktualisieren",
+  "darkMode": "Dunkler Modus",
   "customCurrency": "Benutzerdefinierte Währung",
   "currencyCode": "Währungscode",
   "currencyName": "Währungsname",

@@ -13,11 +13,15 @@ import { Picker } from '@react-native-picker/picker';
 import { AppSettings, Currency } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService, { DEFAULT_CURRENCIES } from '../utils/currency';
+import CustomCurrencyModal from '../components/CustomCurrencyModal';
+import { useTheme, Theme } from '../utils/theme';
 
 const SettingsScreen = () => {
   const { t, i18n } = useTranslation();
+  const { theme, isDark, toggleTheme } = useTheme();
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
+  const [customCurrencyModalVisible, setCustomCurrencyModalVisible] = useState(false);
 
   useEffect(() => {
     loadSettings();
@@ -109,12 +113,15 @@ const SettingsScreen = () => {
   };
 
   if (!settings) {
+    const styles = createStyles(theme);
     return (
       <View style={styles.container}>
-        <Text>Loading...</Text>
+        <Text style={styles.sectionTitle}>Loading...</Text>
       </View>
     );
   }
+
+  const styles = createStyles(theme);
 
   return (
     <ScrollView style={styles.container}>
@@ -165,6 +172,16 @@ const SettingsScreen = () => {
       </View>
 
       <View style={styles.section}>
+        <View style={styles.settingRow}>
+          <Text style={styles.settingLabel}>{t('darkMode')}</Text>
+          <Switch
+            value={isDark}
+            onValueChange={toggleTheme}
+          />
+        </View>
+      </View>
+
+      <View style={styles.section}>
         <Text style={styles.sectionTitle}>Exchange Rates</Text>
         <TouchableOpacity style={styles.button} onPress={updateExchangeRates}>
           <Text style={styles.buttonText}>{t('updateRates')}</Text>
@@ -176,7 +193,10 @@ const SettingsScreen = () => {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Custom Currency</Text>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity 
+          style={styles.button}
+          onPress={() => setCustomCurrencyModalVisible(true)}
+        >
           <Text style={styles.buttonText}>{t('customCurrency')}</Text>
         </TouchableOpacity>
       </View>
@@ -187,17 +207,25 @@ const SettingsScreen = () => {
           <Text style={[styles.buttonText, styles.dangerButtonText]}>Reset All Data</Text>
         </TouchableOpacity>
       </View>
+
+      <CustomCurrencyModal
+        visible={customCurrencyModalVisible}
+        onClose={() => setCustomCurrencyModalVisible(false)}
+        onSave={() => {
+          loadCurrencies();
+        }}
+      />
     </ScrollView>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: theme.colors.background,
   },
   section: {
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
     margin: 16,
     borderRadius: 12,
     padding: 16,
@@ -210,17 +238,18 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.colors.text,
     marginBottom: 12,
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: theme.colors.border,
     borderRadius: 8,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: theme.colors.background,
   },
   picker: {
     height: 50,
+    color: theme.colors.text,
   },
   settingRow: {
     flexDirection: 'row',
@@ -229,10 +258,10 @@ const styles = StyleSheet.create({
   },
   settingLabel: {
     fontSize: 16,
-    color: '#333',
+    color: theme.colors.text,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
@@ -244,14 +273,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   dangerButton: {
-    backgroundColor: '#F44336',
+    backgroundColor: theme.colors.error,
   },
   dangerButtonText: {
     color: 'white',
   },
   lastUpdatedText: {
     fontSize: 12,
-    color: '#666',
+    color: theme.colors.textSecondary,
     textAlign: 'center',
   },
 });

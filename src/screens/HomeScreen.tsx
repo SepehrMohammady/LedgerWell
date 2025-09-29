@@ -12,12 +12,16 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Account, Currency } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
+import AddAccountModal from '../components/AddAccountModal';
+import AddTransactionModal from '../components/AddTransactionModal';
 
 const HomeScreen = () => {
   const { t } = useTranslation();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [defaultCurrency, setDefaultCurrency] = useState<Currency | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [addAccountModalVisible, setAddAccountModalVisible] = useState(false);
+  const [addTransactionModalVisible, setAddTransactionModalVisible] = useState(false);
   const [summary, setSummary] = useState({
     totalOwed: 0,
     totalOwedToMe: 0,
@@ -169,13 +173,31 @@ const HomeScreen = () => {
       </View>
 
       <View style={styles.quickActions}>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => setAddAccountModalVisible(true)}
+        >
           <Text style={styles.actionButtonText}>{t('addAccount')}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.actionButton}>
+        <TouchableOpacity 
+          style={styles.actionButton}
+          onPress={() => setAddTransactionModalVisible(true)}
+        >
           <Text style={styles.actionButtonText}>{t('addTransaction')}</Text>
         </TouchableOpacity>
       </View>
+
+      <AddAccountModal
+        visible={addAccountModalVisible}
+        onClose={() => setAddAccountModalVisible(false)}
+        onSave={() => loadData()}
+      />
+
+      <AddTransactionModal
+        visible={addTransactionModalVisible}
+        onClose={() => setAddTransactionModalVisible(false)}
+        onSave={() => loadData()}
+      />
     </ScrollView>
   );
 };

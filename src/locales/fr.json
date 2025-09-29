@@ -26,6 +26,7 @@
   "theme": "Thème",
   "defaultCurrency": "Devise par Défaut",
   "autoUpdateRates": "Mise à Jour Automatique des Taux de Change",
+  "darkMode": "Mode Sombre",
   "customCurrency": "Devise Personnalisée",
   "currencyCode": "Code de Devise",
   "currencyName": "Nom de la Devise",

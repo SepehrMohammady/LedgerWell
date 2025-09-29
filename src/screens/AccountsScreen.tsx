@@ -13,12 +13,14 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Account } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
+import AddAccountModal from '../components/AddAccountModal';
 
 const AccountsScreen = () => {
   const { t } = useTranslation();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [filteredAccounts, setFilteredAccounts] = useState<Account[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [addAccountModalVisible, setAddAccountModalVisible] = useState(false);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -154,16 +156,28 @@ const AccountsScreen = () => {
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateText}>{t('noAccounts')}</Text>
-            <TouchableOpacity style={styles.addButton}>
+            <TouchableOpacity 
+              style={styles.addButton}
+              onPress={() => setAddAccountModalVisible(true)}
+            >
               <Text style={styles.addButtonText}>{t('addAccount')}</Text>
             </TouchableOpacity>
           </View>
         }
       />
 
-      <TouchableOpacity style={styles.fab}>
+      <TouchableOpacity 
+        style={styles.fab}
+        onPress={() => setAddAccountModalVisible(true)}
+      >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
+
+      <AddAccountModal
+        visible={addAccountModalVisible}
+        onClose={() => setAddAccountModalVisible(false)}
+        onSave={() => loadAccounts()}
+      />
     </View>
   );
 };
