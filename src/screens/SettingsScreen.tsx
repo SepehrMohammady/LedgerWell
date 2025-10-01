@@ -58,38 +58,30 @@ const SettingsScreen = () => {
   };
 
   const changeLanguage = async (language: string) => {
-    const currentLanguage = i18n.language;
-    const wasRTL = ['ar', 'fa'].includes(currentLanguage);
-    const willBeRTL = ['ar', 'fa'].includes(language);
-    
-    // Change language first
-    await i18n.changeLanguage(language);
-    
-    // Apply RTL setting immediately
-    setRTL(language);
-    
-    if (settings) {
-      await updateSettings({ ...settings, language });
-    }
-    
-    // Force a small delay to ensure language change is applied
-    setTimeout(() => {
-      // If switching between RTL and LTR, inform user about restart requirement
-      if (wasRTL !== willBeRTL) {
-        Alert.alert(
-          t('languageChanged'),
-          t('restartRequired'),
-          [{ text: t('confirm') }]
-        );
-      } else {
-        // Show simple language changed notification for same direction changes
+    try {
+      // Update settings state immediately to reflect in UI
+      if (settings) {
+        const newSettings = { ...settings, language };
+        setSettings(newSettings);
+        await StorageService.saveSettings(newSettings);
+      }
+      
+      // Change language and apply RTL setting
+      await i18n.changeLanguage(language);
+      setRTL(language);
+      
+      // Show simple success notification
+      setTimeout(() => {
         Alert.alert(
           t('languageChanged'),
           '',
           [{ text: t('confirm') }]
         );
-      }
-    }, 100);
+      }, 100);
+    } catch (error) {
+      console.error('Failed to change language:', error);
+      Alert.alert('Error', t('settingsSaveFailed'));
+    }
   };
 
   const changeDefaultCurrency = (currencyId: string) => {
@@ -141,6 +133,55 @@ const SettingsScreen = () => {
     );
   };
 
+  const editCustomCurrency = (currency: Currency) => {
+    // TODO: Implement edit functionality - for now, show info
+    Alert.alert(
+      t('edit') + ' ' + currency.code,
+      `${t('currencyCode')}: ${currency.code}\n${t('currencyName')}: ${currency.name}\n${t('currencySymbol')}: ${currency.symbol}\n${t('exchangeRate')}: ${currency.rate.toFixed(4)}`,
+      [
+        { text: t('cancel') },
+        { 
+          text: t('delete'), 
+          style: 'destructive',
+          onPress: () => deleteCustomCurrency(currency.id)
+        }
+      ]
+    );
+  };
+
+  const deleteCustomCurrency = (currencyId: string) => {
+    Alert.alert(
+      t('delete'),
+      t('confirmDelete'),
+      [
+        { text: t('cancel'), style: 'cancel' },
+        {
+          text: t('delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const updatedCurrencies = currencies.filter(c => c.id !== currencyId);
+              await StorageService.saveCurrencies(updatedCurrencies);
+              setCurrencies(updatedCurrencies);
+              
+              // If the deleted currency was the default, reset to USD
+              if (settings?.defaultCurrency?.id === currencyId) {
+                const usdCurrency = updatedCurrencies.find(c => c.code === 'USD');
+                if (usdCurrency) {
+                  await updateSettings({ ...settings, defaultCurrency: usdCurrency });
+                }
+              }
+              
+              Alert.alert(t('success'), t('customCurrencyDeleted'));
+            } catch (error) {
+              Alert.alert('Error', t('customCurrencyFailed'));
+            }
+          },
+        },
+      ]
+    );
+  };
+
   if (!settings) {
     const styles = createStyles(theme);
     return (
@@ -158,6 +199,7 @@ const SettingsScreen = () => {
         <Text style={styles.sectionTitle}>{t('language')}</Text>
         <View style={styles.pickerContainer}>
           <Picker
+            key={`language-picker-${settings.language}`}
             selectedValue={settings.language}
             onValueChange={changeLanguage}
             style={styles.picker}
@@ -183,6 +225,7 @@ const SettingsScreen = () => {
         <Text style={styles.sectionTitle}>{t('defaultCurrency')}</Text>
         <View style={styles.pickerContainer}>
           <Picker
+            key={`currency-picker-${settings.defaultCurrency?.id || 'none'}`}
             selectedValue={settings.defaultCurrency?.id}
             onValueChange={changeDefaultCurrency}
             style={styles.picker}
@@ -234,9 +277,42 @@ const SettingsScreen = () => {
           style={styles.button}
           onPress={() => setCustomCurrencyModalVisible(true)}
         >
-          <Text style={styles.buttonText}>{t('customCurrency')}</Text>
+          <Text style={styles.buttonText}>{t('createCustomCurrencyButton')}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Custom Currency Management */}
+      {currencies.filter(c => c.isCustom).length > 0 && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('manageCustomCurrencies')}</Text>
+          {currencies.filter(c => c.isCustom).map((currency) => (
+            <View key={currency.id} style={styles.currencyItem}>
+              <View style={styles.currencyInfo}>
+                <Text style={styles.currencyTitle}>
+                  {currency.code} - {currency.name}
+                </Text>
+                <Text style={styles.currencySubtitle}>
+                  {currency.symbol} | {t('exchangeRate')}: {currency.rate.toFixed(4)}
+                </Text>
+              </View>
+              <View style={styles.currencyActions}>
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.editButton]}
+                  onPress={() => editCustomCurrency(currency)}
+                >
+                  <Text style={styles.actionButtonText}>{t('edit')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity 
+                  style={[styles.actionButton, styles.deleteButton]}
+                  onPress={() => deleteCustomCurrency(currency.id)}
+                >
+                  <Text style={styles.actionButtonText}>{t('delete')}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('dataManagement')}</Text>
@@ -283,14 +359,14 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     borderColor: theme.colors.border,
     borderRadius: 8,
     backgroundColor: theme.colors.background,
-    minWidth: '100%',
     overflow: 'hidden',
+    paddingHorizontal: 4,
   },
   picker: {
-    height: 50,
+    height: 56,
     color: theme.colors.text,
+    backgroundColor: 'transparent',
     width: '100%',
-    minWidth: 250,
   },
   settingRow: {
     flexDirection: 'row',
@@ -323,6 +399,50 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     fontSize: 12,
     color: theme.colors.textSecondary,
     textAlign: 'center',
+  },
+  currencyItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  currencyInfo: {
+    flex: 1,
+    marginRight: 12,
+  },
+  currencyTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.text,
+    marginBottom: 2,
+  },
+  currencySubtitle: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+  },
+  currencyActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  actionButton: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 6,
+    minWidth: 60,
+    alignItems: 'center',
+  },
+  actionButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: 'white',
+  },
+  editButton: {
+    backgroundColor: theme.colors.primary,
+  },
+  deleteButton: {
+    backgroundColor: '#F44336',
   },
 });
 

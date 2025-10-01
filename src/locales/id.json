@@ -73,5 +73,8 @@
   "success": "Berhasil",
   "reset": "Reset",
   "languageChanged": "Bahasa Diubah",
-  "restartRequired": "Silakan restart aplikasi untuk menerapkan perubahan tata letak untuk bahasa baru."
+  "restartRequired": "Silakan restart aplikasi untuk menerapkan perubahan tata letak untuk bahasa baru.",
+  "manageCustomCurrencies": "Kelola Mata Uang Kustom",
+  "createCustomCurrencyButton": "Buat Mata Uang Kustom",
+  "customCurrencyDeleted": "Mata uang kustom berhasil dihapus"
 }

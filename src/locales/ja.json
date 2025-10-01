@@ -73,5 +73,8 @@
   "success": "成功",
   "reset": "リセット",
   "languageChanged": "言語が変更されました",
-  "restartRequired": "新しい言語のレイアウト変更を適用するには、アプリを再起動してください。"
+  "restartRequired": "新しい言語のレイアウト変更を適用するには、アプリを再起動してください。",
+  "manageCustomCurrencies": "カスタム通貨を管理",
+  "createCustomCurrencyButton": "カスタム通貨を作成",
+  "customCurrencyDeleted": "カスタム通貨が正常に削除されました"
 }

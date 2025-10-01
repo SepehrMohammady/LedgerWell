@@ -73,5 +73,8 @@
   "success": "成功",
   "reset": "重置",
   "languageChanged": "语言已更改",
-  "restartRequired": "请重启应用以应用新语言的布局更改。"
+  "restartRequired": "请重启应用以应用新语言的布局更改。",
+  "manageCustomCurrencies": "管理自定义货币",
+  "createCustomCurrencyButton": "创建自定义货币",
+  "customCurrencyDeleted": "自定义货币删除成功"
 }

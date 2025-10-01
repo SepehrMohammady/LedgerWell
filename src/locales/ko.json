@@ -73,5 +73,8 @@
   "success": "성공",
   "reset": "재설정",
   "languageChanged": "언어가 변경되었습니다",
-  "restartRequired": "새 언어의 레이아웃 변경사항을 적용하려면 앱을 다시 시작해주세요."
+  "restartRequired": "새 언어의 레이아웃 변경사항을 적용하려면 앱을 다시 시작해주세요.",
+  "manageCustomCurrencies": "사용자 정의 통화 관리",
+  "createCustomCurrencyButton": "사용자 정의 통화 생성",
+  "customCurrencyDeleted": "사용자 정의 통화가 성공적으로 삭제되었습니다"
 }

@@ -73,5 +73,8 @@
   "success": "Successo",
   "reset": "Ripristina",
   "languageChanged": "Lingua Cambiata",
-  "restartRequired": "Si prega di riavviare l'app per applicare le modifiche di layout per la nuova lingua."
+  "restartRequired": "Si prega di riavviare l'app per applicare le modifiche di layout per la nuova lingua.",
+  "manageCustomCurrencies": "Gestisci Valute Personalizzate",
+  "createCustomCurrencyButton": "Crea Valuta Personalizzata",
+  "customCurrencyDeleted": "Valuta personalizzata eliminata con successo"
 }

@@ -68,5 +68,8 @@
   "success": "Erfolg",
   "reset": "Zurücksetzen",
   "languageChanged": "Sprache Geändert",
-  "restartRequired": "Bitte starten Sie die App neu, um die Layout-Änderungen für die neue Sprache anzuwenden."
+  "restartRequired": "Bitte starten Sie die App neu, um die Layout-Änderungen für die neue Sprache anzuwenden.",
+  "manageCustomCurrencies": "Benutzerdefinierte Währungen Verwalten",
+  "createCustomCurrencyButton": "Benutzerdefinierte Währung Erstellen",
+  "customCurrencyDeleted": "Benutzerdefinierte Währung erfolgreich gelöscht"
 }

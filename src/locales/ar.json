@@ -74,5 +74,8 @@
   "exampleTitle": "مثال:",
   "exampleText": "الرمز: BTC\nالاسم: Bitcoin\nالرمز: ₿\nالسعر: 0.000025 (إذا كان 1 دولار = 0.000025 بيتكوين)",
   "languageChanged": "تم تغيير اللغة",
-  "restartRequired": "يرجى إعادة تشغيل التطبيق لتطبيق تغييرات التخطيط للغة الجديدة."
+  "restartRequired": "يرجى إعادة تشغيل التطبيق لتطبيق تغييرات التخطيط للغة الجديدة.",
+  "manageCustomCurrencies": "إدارة العملات المخصصة",
+  "createCustomCurrencyButton": "إنشاء عملة مخصصة",
+  "customCurrencyDeleted": "تم حذف العملة المخصصة بنجاح"
 }

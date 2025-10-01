@@ -95,5 +95,8 @@
   "currencyCodePlaceholder": "ej., BTC, ETH",
   "currencyNamePlaceholder": "ej., Bitcoin, Ethereum",
   "languageChanged": "Idioma Cambiado",
-  "restartRequired": "Por favor reinicie la aplicación para aplicar los cambios de diseño del nuevo idioma."
+  "restartRequired": "Por favor reinicie la aplicación para aplicar los cambios de diseño del nuevo idioma.",
+  "manageCustomCurrencies": "Gestionar Monedas Personalizadas",
+  "createCustomCurrencyButton": "Crear Moneda Personalizada",
+  "customCurrencyDeleted": "Moneda personalizada eliminada exitosamente"
 }

@@ -26,4 +26,18 @@
 	README.md file created with comprehensive documentation. Project structure and setup instructions provided.
 
 ## Custom Instructions
-- Everytime that you updating the app, please update the version number based on standard rules of version updating system.
+
+### Version Management
+- When updating the app, use the centralized version update system: `npm run update-version <new-version>`
+- Follow semantic versioning rules: patch for fixes, minor for features, major for breaking changes
+- Never manually update version files individually - always use the centralized script
+
+### Git Commit Policy
+- **NEVER commit automatically** - Only commit when explicitly requested by the developer
+- Wait for explicit commit requests like "Commit these changes", "Please commit", "Ready to commit"
+- Always run version update script BEFORE committing if version changed
+- Use conventional commit format: `<type>: <description>`
+
+### Testing
+- Always test the app with `npm start` after making changes
+- Ensure QR code works for mobile testing before considering work complete

@@ -147,6 +147,31 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Add photo attachments for transactions
 - [ ] Create web dashboard companion
 
+## Development
+
+### Version Management
+
+This project uses a centralized version update system to keep all version numbers synchronized:
+
+```bash
+# Update version across all files
+npm run update-version 0.3.0
+```
+
+This updates:
+- `package.json`
+- `package-lock.json`
+- `app.json` (Expo config)
+- `android/app/build.gradle` (Android build)
+
+### Development Guidelines
+
+See [DEVELOPMENT.md](./DEVELOPMENT.md) for detailed development guidelines including:
+- Version management rules
+- Git commit policies
+- Testing procedures
+- File structure overview
+
 ## Support
 
 If you encounter any issues or have questions, please [open an issue](https://github.com/SepehrMohammady/LedgerWell/issues) on GitHub.

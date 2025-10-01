@@ -68,5 +68,8 @@
   "success": "Succès",
   "reset": "Réinitialiser",
   "languageChanged": "Langue Modifiée",
-  "restartRequired": "Veuillez redémarrer l'application pour appliquer les modifications de mise en page de la nouvelle langue."
+  "restartRequired": "Veuillez redémarrer l'application pour appliquer les modifications de mise en page de la nouvelle langue.",
+  "manageCustomCurrencies": "Gérer les Devises Personnalisées",
+  "createCustomCurrencyButton": "Créer une Devise Personnalisée",
+  "customCurrencyDeleted": "Devise personnalisée supprimée avec succès"
 }

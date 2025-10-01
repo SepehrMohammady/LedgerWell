@@ -98,5 +98,8 @@
   "personName": "Person/Company Name",
   "personNamePlaceholder": "Who owes or is owed money?",
   "transactionDescription": "Additional Notes",
-  "transactionDescriptionOptional": "Optional additional details"
+  "transactionDescriptionOptional": "Optional additional details",
+  "manageCustomCurrencies": "Manage Custom Currencies",
+  "createCustomCurrencyButton": "Create Custom Currency",
+  "customCurrencyDeleted": "Custom currency deleted successfully"
 }
