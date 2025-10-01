@@ -8,11 +8,13 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Picker } from '@react-native-picker/picker';
 import { Currency } from '../types';
 import StorageService from '../utils/storage';
+import { useTheme, Theme } from '../utils/theme';
 
 interface AddAccountModalProps {
   visible: boolean;
@@ -22,6 +24,7 @@ interface AddAccountModalProps {
 
 const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onSave }) => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null);
@@ -86,13 +89,15 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
     }
   };
 
+  const styles = createStyles(theme);
+
   return (
     <Modal
       visible={visible}
       animationType="slide"
       presentationStyle="pageSheet"
     >
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
             <Text style={styles.cancelButton}>{t('cancel')}</Text>
@@ -111,6 +116,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
               value={name}
               onChangeText={setName}
               placeholder="Enter account name"
+              placeholderTextColor={theme.colors.textSecondary}
               maxLength={50}
             />
           </View>
@@ -122,6 +128,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
               value={description}
               onChangeText={setDescription}
               placeholder="Optional description"
+              placeholderTextColor={theme.colors.textSecondary}
               multiline
               numberOfLines={3}
               maxLength={200}
@@ -150,36 +157,36 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
             </View>
           </View>
         </ScrollView>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: theme.colors.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: theme.colors.border,
   },
   cancelButton: {
-    color: '#FF3B30',
+    color: theme.colors.error,
     fontSize: 16,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.colors.text,
   },
   saveButton: {
-    color: '#007AFF',
+    color: theme.colors.primary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -193,16 +200,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#333',
+    color: theme.colors.text,
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: theme.colors.border,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
+    color: theme.colors.text,
   },
   textArea: {
     height: 80,
@@ -210,12 +218,13 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: theme.colors.border,
     borderRadius: 8,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
   },
   picker: {
     height: 50,
+    color: theme.colors.text,
   },
 });
 

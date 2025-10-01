@@ -8,7 +8,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Account, Currency } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
@@ -19,6 +19,7 @@ import { useTheme, Theme } from '../utils/theme';
 const HomeScreen = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const navigation = useNavigation();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [defaultCurrency, setDefaultCurrency] = useState<Currency | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -201,6 +202,10 @@ const HomeScreen = () => {
         visible={addTransactionModalVisible}
         onClose={() => setAddTransactionModalVisible(false)}
         onSave={() => loadData()}
+        onNavigateToAccounts={() => {
+          setAddTransactionModalVisible(false);
+          navigation.navigate('Accounts' as never);
+        }}
       />
     </ScrollView>
   );

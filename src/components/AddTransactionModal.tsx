@@ -8,20 +8,24 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Picker } from '@react-native-picker/picker';
 import { Account, Currency } from '../types';
 import StorageService from '../utils/storage';
+import { useTheme, Theme } from '../utils/theme';
 
 interface AddTransactionModalProps {
   visible: boolean;
   onClose: () => void;
   onSave: () => void;
+  onNavigateToAccounts?: () => void;
 }
 
-const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onClose, onSave }) => {
+const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onClose, onSave, onNavigateToAccounts }) => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [type, setType] = useState<'debt' | 'credit'>('debt');
   const [amount, setAmount] = useState('');
@@ -95,6 +99,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
     }
   };
 
+  const styles = createStyles(theme);
+
   if (accounts.length === 0 && visible) {
     return (
       <Modal
@@ -102,7 +108,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
         animationType="slide"
         presentationStyle="pageSheet"
       >
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}>
           <View style={styles.header}>
             <TouchableOpacity onPress={onClose}>
               <Text style={styles.cancelButton}>{t('cancel')}</Text>
@@ -114,11 +120,17 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
             <Text style={styles.emptyStateText}>
               You need to create an account first before adding transactions.
             </Text>
-            <TouchableOpacity style={styles.addAccountButton} onPress={onClose}>
+            <TouchableOpacity 
+              style={styles.addAccountButton} 
+              onPress={() => {
+                onClose();
+                onNavigateToAccounts?.();
+              }}
+            >
               <Text style={styles.addAccountButtonText}>Create Account First</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </SafeAreaView>
       </Modal>
     );
   }
@@ -129,7 +141,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
       animationType="slide"
       presentationStyle="pageSheet"
     >
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
             <Text style={styles.cancelButton}>{t('cancel')}</Text>
@@ -194,6 +206,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
               value={amount}
               onChangeText={setAmount}
               placeholder="0.00"
+              placeholderTextColor={theme.colors.textSecondary}
               keyboardType="decimal-pad"
             />
           </View>
@@ -205,42 +218,43 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
               value={description}
               onChangeText={setDescription}
               placeholder="What is this transaction for?"
+              placeholderTextColor={theme.colors.textSecondary}
               multiline
               numberOfLines={3}
               maxLength={200}
             />
           </View>
         </ScrollView>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: theme.colors.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: theme.colors.border,
   },
   cancelButton: {
-    color: '#FF3B30',
+    color: theme.colors.error,
     fontSize: 16,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.colors.text,
   },
   saveButton: {
-    color: '#007AFF',
+    color: theme.colors.primary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -254,16 +268,17 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#333',
+    color: theme.colors.text,
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: theme.colors.border,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
+    color: theme.colors.text,
   },
   textArea: {
     height: 80,
@@ -271,19 +286,20 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: theme.colors.border,
     borderRadius: 8,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
   },
   picker: {
     height: 50,
+    color: theme.colors.text,
   },
   typeContainer: {
     flexDirection: 'row',
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: theme.colors.border,
     borderRadius: 8,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
   },
   typeButton: {
     flex: 1,
@@ -292,11 +308,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   typeButtonActive: {
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
   },
   typeButtonText: {
     fontSize: 16,
-    color: '#333',
+    color: theme.colors.text,
   },
   typeButtonTextActive: {
     color: 'white',
@@ -310,12 +326,12 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 16,
-    color: '#666',
+    color: theme.colors.textSecondary,
     textAlign: 'center',
     marginBottom: 20,
   },
   addAccountButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: theme.colors.primary,
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,

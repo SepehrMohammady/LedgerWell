@@ -8,11 +8,13 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  SafeAreaView,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { Currency } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
+import { useTheme, Theme } from '../utils/theme';
 
 interface CustomCurrencyModalProps {
   visible: boolean;
@@ -22,6 +24,7 @@ interface CustomCurrencyModalProps {
 
 const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onClose, onSave }) => {
   const { t } = useTranslation();
+  const { theme } = useTheme();
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [symbol, setSymbol] = useState('');
@@ -91,13 +94,15 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
     }
   }, [visible]);
 
+  const styles = createStyles(theme);
+
   return (
     <Modal
       visible={visible}
       animationType="slide"
       presentationStyle="pageSheet"
     >
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
             <Text style={styles.cancelButton}>{t('cancel')}</Text>
@@ -122,6 +127,7 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
               value={code}
               onChangeText={setCode}
               placeholder="e.g., BTC, ETH"
+              placeholderTextColor={theme.colors.textSecondary}
               maxLength={3}
               autoCapitalize="characters"
             />
@@ -135,6 +141,7 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
               value={name}
               onChangeText={setName}
               placeholder="e.g., Bitcoin, Ethereum"
+              placeholderTextColor={theme.colors.textSecondary}
               maxLength={50}
             />
           </View>
@@ -146,6 +153,7 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
               value={symbol}
               onChangeText={setSymbol}
               placeholder="e.g., ₿, Ξ, ₹"
+              placeholderTextColor={theme.colors.textSecondary}
               maxLength={5}
             />
           </View>
@@ -157,6 +165,7 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
               value={rate}
               onChangeText={setRate}
               placeholder="e.g., 45000.00"
+              placeholderTextColor={theme.colors.textSecondary}
               keyboardType="decimal-pad"
             />
             <Text style={styles.helperText}>
@@ -174,36 +183,36 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
             </Text>
           </View>
         </ScrollView>
-      </View>
+      </SafeAreaView>
     </Modal>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (theme: Theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: theme.colors.background,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: theme.colors.border,
   },
   cancelButton: {
-    color: '#FF3B30',
+    color: theme.colors.error,
     fontSize: 16,
   },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.colors.text,
   },
   saveButton: {
-    color: '#007AFF',
+    color: theme.colors.primary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -212,14 +221,14 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   infoBox: {
-    backgroundColor: '#E3F2FD',
+    backgroundColor: theme.colors.primary + '20',
     padding: 16,
     borderRadius: 8,
     marginBottom: 20,
   },
   infoText: {
     fontSize: 14,
-    color: '#1976D2',
+    color: theme.colors.primary,
     lineHeight: 20,
   },
   inputGroup: {
@@ -228,24 +237,25 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#333',
+    color: theme.colors.text,
     marginBottom: 8,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ddd',
+    borderColor: theme.colors.border,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.surface,
+    color: theme.colors.text,
   },
   helperText: {
     fontSize: 12,
-    color: '#666',
+    color: theme.colors.textSecondary,
     marginTop: 4,
   },
   exampleBox: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: theme.colors.surface,
     padding: 16,
     borderRadius: 8,
     marginTop: 10,
@@ -253,12 +263,12 @@ const styles = StyleSheet.create({
   exampleTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#333',
+    color: theme.colors.text,
     marginBottom: 8,
   },
   exampleText: {
     fontSize: 12,
-    color: '#666',
+    color: theme.colors.textSecondary,
     lineHeight: 18,
   },
 });

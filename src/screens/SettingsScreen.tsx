@@ -15,6 +15,7 @@ import StorageService from '../utils/storage';
 import CurrencyService, { DEFAULT_CURRENCIES } from '../utils/currency';
 import CustomCurrencyModal from '../components/CustomCurrencyModal';
 import { useTheme, Theme } from '../utils/theme';
+import { setRTL } from '../utils/i18n';
 
 const SettingsScreen = () => {
   const { t, i18n } = useTranslation();
@@ -58,6 +59,7 @@ const SettingsScreen = () => {
 
   const changeLanguage = (language: string) => {
     i18n.changeLanguage(language);
+    setRTL(language);
     if (settings) {
       updateSettings({ ...settings, language });
     }

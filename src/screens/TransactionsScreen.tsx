@@ -8,7 +8,7 @@ import {
   TextInput,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Transaction } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
@@ -18,6 +18,7 @@ import { useTheme, Theme } from '../utils/theme';
 const TransactionsScreen = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const navigation = useNavigation();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -133,6 +134,10 @@ const TransactionsScreen = () => {
         visible={addTransactionModalVisible}
         onClose={() => setAddTransactionModalVisible(false)}
         onSave={() => loadTransactions()}
+        onNavigateToAccounts={() => {
+          setAddTransactionModalVisible(false);
+          navigation.navigate('Accounts' as never);
+        }}
       />
     </View>
   );
