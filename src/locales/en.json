@@ -80,6 +80,7 @@
   "create": "create",
   "pleaseSelectAccount": "Please select an account",
   "pleaseEnterDescription": "Please enter a description",
+  "pleaseEnterPersonName": "Please enter a person or company name",
   "pleaseEnterValidAmount": "Please enter a valid amount",
   "transactionUpdated": "Transaction updated successfully",
   "transactionAdded": "Transaction added successfully",
@@ -93,5 +94,9 @@
   "customCurrencyAdded": "Custom currency {code} added successfully",
   "customCurrencyFailed": "Failed to add custom currency",
   "currencyCodePlaceholder": "e.g., BTC, ETH",
-  "currencyNamePlaceholder": "e.g., Bitcoin, Ethereum"
+  "currencyNamePlaceholder": "e.g., Bitcoin, Ethereum",
+  "personName": "Person/Company Name",
+  "personNamePlaceholder": "Who owes or is owed money?",
+  "transactionDescription": "Additional Notes",
+  "transactionDescriptionOptional": "Optional additional details"
 }

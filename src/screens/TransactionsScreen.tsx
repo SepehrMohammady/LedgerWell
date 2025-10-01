@@ -55,7 +55,8 @@ const TransactionsScreen = () => {
       setFilteredTransactions(transactions);
     } else {
       const filtered = transactions.filter(transaction =>
-        transaction.description.toLowerCase().includes(searchQuery.toLowerCase())
+        transaction.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (transaction.description && transaction.description.toLowerCase().includes(searchQuery.toLowerCase()))
       );
       setFilteredTransactions(filtered);
     }
@@ -106,7 +107,10 @@ const TransactionsScreen = () => {
       <View style={styles.transactionCard}>
         <View style={styles.transactionHeader}>
           <View style={styles.transactionInfo}>
-            <Text style={styles.transactionDescription}>{item.description}</Text>
+            <Text style={styles.transactionName}>{item.name}</Text>
+            {item.description && (
+              <Text style={styles.transactionDescription}>{item.description}</Text>
+            )}
             <Text style={styles.transactionDate}>{formatDate(item.date)}</Text>
           </View>
           <View style={styles.transactionActions}>
@@ -240,10 +244,16 @@ const createStyles = (theme: Theme) => StyleSheet.create({
   transactionInfo: {
     flex: 1,
   },
-  transactionDescription: {
+  transactionName: {
     fontSize: 16,
     fontWeight: '600',
     color: theme.colors.text,
+  },
+  transactionDescription: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+    fontStyle: 'italic',
+    marginBottom: 2,
   },
   transactionDate: {
     fontSize: 14,

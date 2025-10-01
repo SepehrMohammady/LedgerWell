@@ -31,6 +31,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [type, setType] = useState<'debt' | 'credit'>('debt');
   const [amount, setAmount] = useState('');
+  const [personName, setPersonName] = useState('');
   const [description, setDescription] = useState('');
   const [accounts, setAccounts] = useState<Account[]>([]);
 
@@ -65,6 +66,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
     setSelectedAccount(null);
     setType('debt');
     setAmount('');
+    setPersonName('');
     setDescription('');
   };
 
@@ -74,7 +76,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
       setSelectedAccount(account || null);
       setType(editTransaction.type as 'debt' | 'credit');
       setAmount(editTransaction.amount.toString());
-      setDescription(editTransaction.description);
+      setPersonName(editTransaction.name);
+      setDescription(editTransaction.description || '');
     }
   };
 
@@ -84,8 +87,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
       return;
     }
 
-    if (!description.trim()) {
-      Alert.alert(t('error'), t('pleaseEnterDescription'));
+    if (!personName.trim()) {
+      Alert.alert(t('error'), t('pleaseEnterPersonName'));
       return;
     }
 
@@ -104,7 +107,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
           type,
           amount: numAmount,
           currency: selectedAccount.currency,
-          description: description.trim(),
+          name: personName.trim(),
+          description: description.trim() || undefined,
           updatedAt: new Date(),
         };
 
@@ -121,7 +125,8 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
           type,
           amount: numAmount,
           currency: selectedAccount.currency,
-          description: description.trim(),
+          name: personName.trim(),
+          description: description.trim() || undefined,
           date: new Date(),
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -252,16 +257,28 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>{t('description')} *</Text>
+            <Text style={styles.label}>{t('personName')} *</Text>
+            <TextInput
+              style={styles.input}
+              value={personName}
+              onChangeText={setPersonName}
+              placeholder={t('personNamePlaceholder')}
+              placeholderTextColor={theme.colors.textSecondary}
+              maxLength={100}
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t('transactionDescription')}</Text>
             <TextInput
               style={[styles.input, styles.textArea]}
               value={description}
               onChangeText={setDescription}
-              placeholder={t('transactionDescriptionPlaceholder')}
+              placeholder={t('transactionDescriptionOptional')}
               placeholderTextColor={theme.colors.textSecondary}
               multiline
-              numberOfLines={3}
-              maxLength={200}
+              numberOfLines={2}
+              maxLength={150}
             />
           </View>
         </ScrollView>

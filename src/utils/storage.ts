@@ -60,7 +60,29 @@ export class StorageService {
   static async getTransactions(): Promise<Transaction[]> {
     try {
       const data = await AsyncStorage.getItem(STORAGE_KEYS.TRANSACTIONS);
-      return data ? JSON.parse(data) : [];
+      const transactions = data ? JSON.parse(data) : [];
+      
+      // Migration: Convert old transactions with only description to new format
+      let needsSaving = false;
+      const migratedTransactions = transactions.map((transaction: any) => {
+        if (!transaction.name && transaction.description) {
+          needsSaving = true;
+          return {
+            ...transaction,
+            name: transaction.description,
+            description: undefined,
+          };
+        }
+        return transaction;
+      });
+      
+      // Save migrated data if needed
+      if (needsSaving) {
+        await AsyncStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(migratedTransactions));
+        console.log('Migrated transactions to new name/description format');
+      }
+      
+      return migratedTransactions;
     } catch (error) {
       console.error('Failed to get transactions:', error);
       return [];

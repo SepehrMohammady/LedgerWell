@@ -24,7 +24,8 @@ export interface Transaction {
   type: 'debt' | 'credit'; // debt = I owe money, credit = someone owes me
   amount: number;
   currency: Currency;
-  description: string;
+  name: string; // Person/Company name who owes or is owed
+  description?: string; // Additional details/notes (optional)
   date: Date;
   createdAt: Date;
   updatedAt: Date;
