@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import i18n from './src/utils/i18n';
 import { ThemeProvider, useTheme } from './src/utils/theme';
 
@@ -84,11 +85,13 @@ const AppContent = () => {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <I18nextProvider i18n={i18n}>
-        <AppContent />
-      </I18nextProvider>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <I18nextProvider i18n={i18n}>
+          <AppContent />
+        </I18nextProvider>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
 
