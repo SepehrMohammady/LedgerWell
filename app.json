@@ -4,8 +4,10 @@
     "slug": "ledgerwell",
     "version": "0.1.0",
     "orientation": "portrait",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#007AFF"
     },
@@ -13,10 +15,19 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "icon": "./assets/icon.png"
     },
     "android": {
-      "package": "com.sepehrmohammady.ledgerwell"
+      "package": "com.sepehrmohammady.ledgerwell",
+      "icon": "./assets/icon.png",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#007AFF"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
