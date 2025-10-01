@@ -141,6 +141,13 @@ const SettingsScreen = () => {
             <Picker.Item label="Deutsch" value="de" />
             <Picker.Item label="العربية" value="ar" />
             <Picker.Item label="فارسی" value="fa" />
+            <Picker.Item label="Italiano" value="it" />
+            <Picker.Item label="Português" value="pt" />
+            <Picker.Item label="Русский" value="ru" />
+            <Picker.Item label="中文" value="zh" />
+            <Picker.Item label="日本語" value="ja" />
+            <Picker.Item label="한국어" value="ko" />
+            <Picker.Item label="Bahasa Indonesia" value="id" />
           </Picker>
         </View>
       </View>

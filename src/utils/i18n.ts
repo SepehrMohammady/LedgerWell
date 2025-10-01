@@ -9,6 +9,13 @@ import fr from '../locales/fr.json';
 import de from '../locales/de.json';
 import ar from '../locales/ar.json';
 import fa from '../locales/fa.json';
+import it from '../locales/it.json';
+import pt from '../locales/pt.json';
+import ru from '../locales/ru.json';
+import zh from '../locales/zh.json';
+import ja from '../locales/ja.json';
+import ko from '../locales/ko.json';
+import id from '../locales/id.json';
 
 const resources = {
   en: { translation: en },
@@ -17,6 +24,13 @@ const resources = {
   de: { translation: de },
   ar: { translation: ar },
   fa: { translation: fa },
+  it: { translation: it },
+  pt: { translation: pt },
+  ru: { translation: ru },
+  zh: { translation: zh },
+  ja: { translation: ja },
+  ko: { translation: ko },
+  id: { translation: id },
 };
 
 // RTL languages
