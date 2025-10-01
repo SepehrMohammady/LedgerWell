@@ -71,5 +71,7 @@
   "allDataReset": "すべてのデータがリセットされました",
   "resetFailed": "データのリセットに失敗しました",
   "success": "成功",
-  "reset": "リセット"
+  "reset": "リセット",
+  "languageChanged": "言語が変更されました",
+  "restartRequired": "新しい言語のレイアウト変更を適用するには、アプリを再起動してください。"
 }

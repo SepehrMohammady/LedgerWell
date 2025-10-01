@@ -66,5 +66,7 @@
   "allDataReset": "Alle Daten wurden zurückgesetzt",
   "resetFailed": "Zurücksetzen der Daten fehlgeschlagen",
   "success": "Erfolg",
-  "reset": "Zurücksetzen"
+  "reset": "Zurücksetzen",
+  "languageChanged": "Sprache Geändert",
+  "restartRequired": "Bitte starten Sie die App neu, um die Layout-Änderungen für die neue Sprache anzuwenden."
 }

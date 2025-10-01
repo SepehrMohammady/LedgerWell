@@ -93,5 +93,7 @@
   "customCurrencyAdded": "Moneda personalizada {code} agregada exitosamente",
   "customCurrencyFailed": "Error al agregar moneda personalizada",
   "currencyCodePlaceholder": "ej., BTC, ETH",
-  "currencyNamePlaceholder": "ej., Bitcoin, Ethereum"
+  "currencyNamePlaceholder": "ej., Bitcoin, Ethereum",
+  "languageChanged": "Idioma Cambiado",
+  "restartRequired": "Por favor reinicie la aplicación para aplicar los cambios de diseño del nuevo idioma."
 }

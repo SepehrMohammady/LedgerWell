@@ -66,5 +66,7 @@
   "allDataReset": "Toutes les données ont été réinitialisées",
   "resetFailed": "Échec de la réinitialisation des données",
   "success": "Succès",
-  "reset": "Réinitialiser"
+  "reset": "Réinitialiser",
+  "languageChanged": "Langue Modifiée",
+  "restartRequired": "Veuillez redémarrer l'application pour appliquer les modifications de mise en page de la nouvelle langue."
 }

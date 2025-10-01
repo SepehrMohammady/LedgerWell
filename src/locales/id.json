@@ -71,5 +71,7 @@
   "allDataReset": "Semua data telah direset",
   "resetFailed": "Gagal mereset data",
   "success": "Berhasil",
-  "reset": "Reset"
+  "reset": "Reset",
+  "languageChanged": "Bahasa Diubah",
+  "restartRequired": "Silakan restart aplikasi untuk menerapkan perubahan tata letak untuk bahasa baru."
 }

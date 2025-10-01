@@ -71,5 +71,7 @@
   "allDataReset": "모든 데이터가 재설정되었습니다",
   "resetFailed": "데이터 재설정에 실패했습니다",
   "success": "성공",
-  "reset": "재설정"
+  "reset": "재설정",
+  "languageChanged": "언어가 변경되었습니다",
+  "restartRequired": "새 언어의 레이아웃 변경사항을 적용하려면 앱을 다시 시작해주세요."
 }

@@ -71,5 +71,7 @@
   "allDataReset": "Todos os dados foram redefinidos",
   "resetFailed": "Falha ao redefinir os dados",
   "success": "Sucesso",
-  "reset": "Redefinir"
+  "reset": "Redefinir",
+  "languageChanged": "Idioma Alterado",
+  "restartRequired": "Por favor, reinicie o aplicativo para aplicar as alterações de layout do novo idioma."
 }

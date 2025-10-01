@@ -71,5 +71,7 @@
   "allDataReset": "所有数据已重置",
   "resetFailed": "数据重置失败",
   "success": "成功",
-  "reset": "重置"
+  "reset": "重置",
+  "languageChanged": "语言已更改",
+  "restartRequired": "请重启应用以应用新语言的布局更改。"
 }

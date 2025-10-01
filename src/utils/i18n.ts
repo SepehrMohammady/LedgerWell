@@ -44,9 +44,14 @@ export const isRTL = (language: string): boolean => {
 // Function to set RTL layout
 export const setRTL = (language: string) => {
   const shouldBeRTL = isRTL(language);
+  
+  // Always update RTL settings, even if they seem the same
+  I18nManager.allowRTL(shouldBeRTL);
+  I18nManager.forceRTL(shouldBeRTL);
+  
+  // Force layout update by swapping the RTL state briefly
   if (I18nManager.isRTL !== shouldBeRTL) {
-    I18nManager.allowRTL(shouldBeRTL);
-    I18nManager.forceRTL(shouldBeRTL);
+    I18nManager.swapLeftAndRightInRTL(shouldBeRTL);
   }
 };
 

@@ -71,5 +71,7 @@
   "allDataReset": "Tutti i dati sono stati ripristinati",
   "resetFailed": "Ripristino dei dati fallito",
   "success": "Successo",
-  "reset": "Ripristina"
+  "reset": "Ripristina",
+  "languageChanged": "Lingua Cambiata",
+  "restartRequired": "Si prega di riavviare l'app per applicare le modifiche di layout per la nuova lingua."
 }

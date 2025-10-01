@@ -57,26 +57,39 @@ const SettingsScreen = () => {
     }
   };
 
-  const changeLanguage = (language: string) => {
+  const changeLanguage = async (language: string) => {
     const currentLanguage = i18n.language;
     const wasRTL = ['ar', 'fa'].includes(currentLanguage);
     const willBeRTL = ['ar', 'fa'].includes(language);
     
-    i18n.changeLanguage(language);
+    // Change language first
+    await i18n.changeLanguage(language);
+    
+    // Apply RTL setting immediately
     setRTL(language);
     
     if (settings) {
-      updateSettings({ ...settings, language });
+      await updateSettings({ ...settings, language });
     }
     
-    // If switching between RTL and LTR, inform user about restart requirement
-    if (wasRTL !== willBeRTL) {
-      Alert.alert(
-        t('languageChanged'),
-        t('restartRequired'),
-        [{ text: 'OK' }]
-      );
-    }
+    // Force a small delay to ensure language change is applied
+    setTimeout(() => {
+      // If switching between RTL and LTR, inform user about restart requirement
+      if (wasRTL !== willBeRTL) {
+        Alert.alert(
+          t('languageChanged'),
+          t('restartRequired'),
+          [{ text: t('confirm') }]
+        );
+      } else {
+        // Show simple language changed notification for same direction changes
+        Alert.alert(
+          t('languageChanged'),
+          '',
+          [{ text: t('confirm') }]
+        );
+      }
+    }, 100);
   };
 
   const changeDefaultCurrency = (currencyId: string) => {
@@ -270,10 +283,14 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     borderColor: theme.colors.border,
     borderRadius: 8,
     backgroundColor: theme.colors.background,
+    minWidth: '100%',
+    overflow: 'hidden',
   },
   picker: {
     height: 50,
     color: theme.colors.text,
+    width: '100%',
+    minWidth: 250,
   },
   settingRow: {
     flexDirection: 'row',
