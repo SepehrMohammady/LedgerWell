@@ -140,7 +140,7 @@ const HomeScreen = () => {
       </View>
 
       <View style={styles.recentAccountsContainer}>
-        <Text style={styles.sectionTitle}>Recent Accounts</Text>
+        <Text style={styles.sectionTitle}>{t('recentAccounts')}</Text>
         {accounts.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateText}>{t('noAccounts')}</Text>
@@ -151,11 +151,11 @@ const HomeScreen = () => {
               <View style={styles.accountInfo}>
                 <Text style={styles.accountName}>{account.name}</Text>
                 <Text style={styles.accountDescription}>
-                  {account.description || 'No description'}
+                  {account.description || t('noDescription')}
                 </Text>
               </View>
               <View style={styles.accountBalance}>
-                <Text style={styles.balanceLabel}>Net:</Text>
+                <Text style={styles.balanceLabel}>{t('net')}:</Text>
                 <Text
                   style={[
                     styles.balanceAmount,

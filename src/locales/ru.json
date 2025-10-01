@@ -50,5 +50,21 @@
   "totalBalance": "Общий баланс",
   "account": "Счет",
   "resetAllData": "Сбросить все данные",
-  "confirmReset": "Вы уверены? Это действие удалит все данные."
+  "confirmReset": "Вы уверены? Это действие удалит все данные.",
+  "recentAccounts": "Недавние счета",
+  "noDescription": "Нет описания",
+  "exchangeRates": "Обменные курсы",
+  "dataManagement": "Управление данными",
+  "createCustomCurrency": "Создать пользовательскую валюту",
+  "customCurrencyExample": "Например: Bitcoin (BTC)",
+  "updating": "Обновление...",
+  "fetchingRates": "Получение последних обменных курсов",
+  "ratesUpdated": "Обменные курсы успешно обновлены",
+  "updateFailed": "Не удалось обновить обменные курсы",
+  "settingsSaveFailed": "Не удалось сохранить настройки",
+  "resetConfirm": "Это навсегда удалит все счета, транзакции и настройки. Это действие нельзя отменить.",
+  "allDataReset": "Все данные были сброшены",
+  "resetFailed": "Не удалось сбросить данные",
+  "success": "Успех",
+  "reset": "Сбросить"
 }

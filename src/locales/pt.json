@@ -50,5 +50,21 @@
   "totalBalance": "Saldo total",
   "account": "Conta",
   "resetAllData": "Redefinir todos os dados",
-  "confirmReset": "Tem certeza? Esta ação excluirá todos os dados."
+  "confirmReset": "Tem certeza? Esta ação excluirá todos os dados.",
+  "recentAccounts": "Contas recentes",
+  "noDescription": "Nenhuma descrição",
+  "exchangeRates": "Taxas de câmbio",
+  "dataManagement": "Gerenciamento de dados",
+  "createCustomCurrency": "Criar moeda personalizada",
+  "customCurrencyExample": "Por exemplo: Bitcoin (BTC)",
+  "updating": "Atualizando...",
+  "fetchingRates": "Buscando as taxas de câmbio mais recentes",
+  "ratesUpdated": "Taxas de câmbio atualizadas com sucesso",
+  "updateFailed": "Falha ao atualizar as taxas de câmbio",
+  "settingsSaveFailed": "Falha ao salvar as configurações",
+  "resetConfirm": "Isso excluirá permanentemente todas as contas, transações e configurações. Esta ação não pode ser desfeita.",
+  "allDataReset": "Todos os dados foram redefinidos",
+  "resetFailed": "Falha ao redefinir os dados",
+  "success": "Sucesso",
+  "reset": "Redefinir"
 }

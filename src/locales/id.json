@@ -50,5 +50,21 @@
   "totalBalance": "Total Saldo",
   "account": "Akun",
   "resetAllData": "Reset Semua Data",
-  "confirmReset": "Apakah Anda yakin? Tindakan ini akan menghapus semua data."
+  "confirmReset": "Apakah Anda yakin? Tindakan ini akan menghapus semua data.",
+  "recentAccounts": "Akun Terbaru",
+  "noDescription": "Tidak ada deskripsi",
+  "exchangeRates": "Nilai Tukar",
+  "dataManagement": "Manajemen Data",
+  "createCustomCurrency": "Buat Mata Uang Kustom",
+  "customCurrencyExample": "Contoh: Bitcoin (BTC)",
+  "updating": "Memperbarui...",
+  "fetchingRates": "Mengambil nilai tukar terbaru",
+  "ratesUpdated": "Nilai tukar berhasil diperbarui",
+  "updateFailed": "Gagal memperbarui nilai tukar",
+  "settingsSaveFailed": "Gagal menyimpan pengaturan",
+  "resetConfirm": "Ini akan menghapus semua akun, transaksi, dan pengaturan secara permanen. Tindakan ini tidak dapat dibatalkan.",
+  "allDataReset": "Semua data telah direset",
+  "resetFailed": "Gagal mereset data",
+  "success": "Berhasil",
+  "reset": "Reset"
 }

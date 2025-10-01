@@ -10,9 +10,10 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Picker } from '@react-native-picker/picker';
-import { Currency } from '../types';
+import { Account, Currency } from '../types';
 import StorageService from '../utils/storage';
 import { useTheme, Theme } from '../utils/theme';
 
@@ -20,9 +21,10 @@ interface AddAccountModalProps {
   visible: boolean;
   onClose: () => void;
   onSave: () => void;
+  editAccount?: Account | null;
 }
 
-const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onSave }) => {
+const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onSave, editAccount }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [name, setName] = useState('');
@@ -55,37 +57,62 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
     setSelectedCurrency(null);
   };
 
+  // Populate fields when editing
+  React.useEffect(() => {
+    if (visible && editAccount) {
+      setName(editAccount.name);
+      setDescription(editAccount.description || '');
+      setSelectedCurrency(editAccount.currency);
+    } else if (visible && !editAccount) {
+      resetForm();
+    }
+  }, [visible, editAccount]);
+
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert('Error', 'Please enter an account name');
+      Alert.alert(t('error'), t('pleaseEnterAccountName'));
       return;
     }
 
     if (!selectedCurrency) {
-      Alert.alert('Error', 'Please select a currency');
+      Alert.alert(t('error'), t('pleaseSelectCurrency'));
       return;
     }
 
     try {
-      const newAccount = {
-        id: Date.now().toString(),
-        name: name.trim(),
-        description: description.trim(),
-        currency: selectedCurrency,
-        totalOwed: 0,
-        totalOwedToMe: 0,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      if (editAccount) {
+        // Update existing account
+        const updatedAccount = {
+          ...editAccount,
+          name: name.trim(),
+          description: description.trim(),
+          currency: selectedCurrency,
+          updatedAt: new Date(),
+        };
+        await StorageService.saveAccount(updatedAccount);
+        Alert.alert(t('success'), t('accountUpdated'));
+      } else {
+        // Create new account
+        const newAccount = {
+          id: Date.now().toString(),
+          name: name.trim(),
+          description: description.trim(),
+          currency: selectedCurrency,
+          totalOwed: 0,
+          totalOwedToMe: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+        await StorageService.saveAccount(newAccount);
+        Alert.alert(t('success'), t('accountCreated'));
+      }
 
-      await StorageService.saveAccount(newAccount);
       resetForm();
       onSave();
       onClose();
-      Alert.alert('Success', 'Account created successfully');
     } catch (error) {
       console.error('Failed to save account:', error);
-      Alert.alert('Error', 'Failed to create account');
+      Alert.alert(t('error'), t('accountActionFailed', { action: editAccount ? t('update') : t('create') }));
     }
   };
 
@@ -100,11 +127,11 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.cancelButton}>{t('cancel')}</Text>
+            <Ionicons name="close" size={24} color={theme.colors.text} />
           </TouchableOpacity>
-          <Text style={styles.title}>{t('addAccount')}</Text>
+          <Text style={styles.title}>{editAccount ? t('edit') + ' ' + t('accounts').slice(0, -1) : t('addAccount')}</Text>
           <TouchableOpacity onPress={handleSave}>
-            <Text style={styles.saveButton}>{t('save')}</Text>
+            <Ionicons name="checkmark" size={24} color={theme.colors.primary} />
           </TouchableOpacity>
         </View>
 
@@ -115,7 +142,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
               style={styles.input}
               value={name}
               onChangeText={setName}
-              placeholder="Enter account name"
+              placeholder={t('enterAccountName')}
               placeholderTextColor={theme.colors.textSecondary}
               maxLength={50}
             />
@@ -127,7 +154,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
               style={[styles.input, styles.textArea]}
               value={description}
               onChangeText={setDescription}
-              placeholder="Optional description"
+              placeholder={t('optionalDescription')}
               placeholderTextColor={theme.colors.textSecondary}
               multiline
               numberOfLines={3}
@@ -176,19 +203,10 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
   },
-  cancelButton: {
-    color: theme.colors.error,
-    fontSize: 16,
-  },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     color: theme.colors.text,
-  },
-  saveButton: {
-    color: theme.colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
   },
   content: {
     flex: 1,

@@ -24,3 +24,6 @@
 
 - [x] Ensure Documentation is Complete
 	README.md file created with comprehensive documentation. Project structure and setup instructions provided.
+
+## Custom Instructions
+- Everytime that you updating the app, please update the version number based on standard rules of version updating system.

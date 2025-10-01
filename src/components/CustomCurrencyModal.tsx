@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Currency } from '../types';
 import StorageService from '../utils/storage';
@@ -40,19 +41,19 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
   const handleSave = async () => {
     // Validate inputs
     if (!code.trim() || !name.trim() || !symbol.trim() || !rate.trim()) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert(t('error'), t('fillAllFields'));
       return;
     }
 
     const upperCode = code.trim().toUpperCase();
     if (!CurrencyService.validateCurrencyCode(upperCode)) {
-      Alert.alert('Error', 'Currency code must be exactly 3 letters (e.g., USD, EUR)');
+      Alert.alert(t('error'), t('currencyCodeInvalid'));
       return;
     }
 
     const numRate = parseFloat(rate.trim());
     if (!CurrencyService.validateExchangeRate(numRate)) {
-      Alert.alert('Error', 'Please enter a valid exchange rate (positive number)');
+      Alert.alert(t('error'), t('validExchangeRate'));
       return;
     }
 
@@ -62,7 +63,7 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
       const duplicate = existingCurrencies.find(c => c.code === upperCode);
       
       if (duplicate) {
-        Alert.alert('Error', `Currency ${upperCode} already exists`);
+        Alert.alert(t('error'), t('currencyExists', { code: upperCode }));
         return;
       }
 
@@ -81,10 +82,10 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
       resetForm();
       onSave();
       onClose();
-      Alert.alert('Success', `Custom currency ${upperCode} added successfully`);
+      Alert.alert(t('success'), t('customCurrencyAdded', { code: upperCode }));
     } catch (error) {
       console.error('Failed to save custom currency:', error);
-      Alert.alert('Error', 'Failed to add custom currency');
+      Alert.alert(t('error'), t('customCurrencyFailed'));
     }
   };
 
@@ -105,18 +106,18 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.cancelButton}>{t('cancel')}</Text>
+            <Ionicons name="close" size={24} color={theme.colors.text} />
           </TouchableOpacity>
           <Text style={styles.title}>{t('customCurrency')}</Text>
           <TouchableOpacity onPress={handleSave}>
-            <Text style={styles.saveButton}>{t('save')}</Text>
+            <Ionicons name="checkmark" size={24} color={theme.colors.primary} />
           </TouchableOpacity>
         </View>
 
         <ScrollView style={styles.content}>
           <View style={styles.infoBox}>
             <Text style={styles.infoText}>
-              Create a custom currency by providing the currency code, name, symbol, and exchange rate to USD.
+              {t('createCustomCurrency')}
             </Text>
           </View>
 
@@ -126,12 +127,12 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
               style={styles.input}
               value={code}
               onChangeText={setCode}
-              placeholder="e.g., BTC, ETH"
+              placeholder={t('currencyCodePlaceholder')}
               placeholderTextColor={theme.colors.textSecondary}
               maxLength={3}
               autoCapitalize="characters"
             />
-            <Text style={styles.helperText}>3 letter currency code</Text>
+            <Text style={styles.helperText}>{t('currencyCodeHelper')}</Text>
           </View>
 
           <View style={styles.inputGroup}>
@@ -140,7 +141,7 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
               style={styles.input}
               value={name}
               onChangeText={setName}
-              placeholder="e.g., Bitcoin, Ethereum"
+              placeholder={t('currencyNamePlaceholder')}
               placeholderTextColor={theme.colors.textSecondary}
               maxLength={50}
             />
@@ -152,7 +153,7 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
               style={styles.input}
               value={symbol}
               onChangeText={setSymbol}
-              placeholder="e.g., ₿, Ξ, ₹"
+              placeholder={t('symbolExample')}
               placeholderTextColor={theme.colors.textSecondary}
               maxLength={5}
             />
@@ -164,22 +165,19 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
               style={styles.input}
               value={rate}
               onChangeText={setRate}
-              placeholder="e.g., 45000.00"
+              placeholder={t('rateExample')}
               placeholderTextColor={theme.colors.textSecondary}
               keyboardType="decimal-pad"
             />
             <Text style={styles.helperText}>
-              How much 1 USD equals in your currency
+              {t('rateHelper')}
             </Text>
           </View>
 
           <View style={styles.exampleBox}>
-            <Text style={styles.exampleTitle}>Example:</Text>
+            <Text style={styles.exampleTitle}>{t('exampleTitle')}</Text>
             <Text style={styles.exampleText}>
-              Code: BTC{'\n'}
-              Name: Bitcoin{'\n'}
-              Symbol: ₿{'\n'}
-              Rate: 0.000025 (if 1 USD = 0.000025 BTC)
+              {t('exampleText')}
             </Text>
           </View>
         </ScrollView>
@@ -202,19 +200,10 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
   },
-  cancelButton: {
-    color: theme.colors.error,
-    fontSize: 16,
-  },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     color: theme.colors.text,
-  },
-  saveButton: {
-    color: theme.colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
   },
   content: {
     flex: 1,

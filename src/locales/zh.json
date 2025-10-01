@@ -50,5 +50,21 @@
   "totalBalance": "总余额",
   "account": "账户",
   "resetAllData": "重置所有数据",
-  "confirmReset": "您确定吗？此操作将删除所有数据。"
+  "confirmReset": "您确定吗？此操作将删除所有数据。",
+  "recentAccounts": "最近账户",
+  "noDescription": "无描述",
+  "exchangeRates": "汇率",
+  "dataManagement": "数据管理",
+  "createCustomCurrency": "创建自定义货币",
+  "customCurrencyExample": "例如：比特币 (BTC)",
+  "updating": "更新中...",
+  "fetchingRates": "获取最新汇率",
+  "ratesUpdated": "汇率更新成功",
+  "updateFailed": "汇率更新失败",
+  "settingsSaveFailed": "设置保存失败",
+  "resetConfirm": "这将永久删除所有账户、交易和设置。此操作无法撤销。",
+  "allDataReset": "所有数据已重置",
+  "resetFailed": "数据重置失败",
+  "success": "成功",
+  "reset": "重置"
 }

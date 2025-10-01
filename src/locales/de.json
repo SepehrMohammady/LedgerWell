@@ -44,5 +44,22 @@
   "name": "Name",
   "balance": "Saldo",
   "recent": "Kürzlich",
-  "oldest": "Älteste"
+  "oldest": "Älteste",
+  "recentAccounts": "Kürzliche Konten",
+  "noDescription": "Keine Beschreibung",
+  "exchangeRates": "Wechselkurse",
+  "dataManagement": "Datenverwaltung",
+  "resetAllData": "Alle Daten zurücksetzen",
+  "createCustomCurrency": "Benutzerdefinierte Währung erstellen",
+  "customCurrencyExample": "Zum Beispiel: Bitcoin (BTC)",
+  "updating": "Aktualisierung...",
+  "fetchingRates": "Neueste Wechselkurse abrufen",
+  "ratesUpdated": "Wechselkurse erfolgreich aktualisiert",
+  "updateFailed": "Aktualisierung der Wechselkurse fehlgeschlagen",
+  "settingsSaveFailed": "Speichern der Einstellungen fehlgeschlagen",
+  "resetConfirm": "Dies wird alle Konten, Transaktionen und Einstellungen dauerhaft löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
+  "allDataReset": "Alle Daten wurden zurückgesetzt",
+  "resetFailed": "Zurücksetzen der Daten fehlgeschlagen",
+  "success": "Erfolg",
+  "reset": "Zurücksetzen"
 }

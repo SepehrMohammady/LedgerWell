@@ -6,6 +6,7 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
+  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -24,6 +25,7 @@ const TransactionsScreen = () => {
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [addTransactionModalVisible, setAddTransactionModalVisible] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -71,6 +73,34 @@ const TransactionsScreen = () => {
     return type === 'debt' ? t('debt') : t('credit');
   };
 
+  const handleEditTransaction = (transaction: Transaction) => {
+    setEditingTransaction(transaction);
+    setAddTransactionModalVisible(true);
+  };
+
+  const handleDeleteTransaction = (transaction: Transaction) => {
+    Alert.alert(
+      t('confirm'),
+      t('confirmDelete'),
+      [
+        { text: t('cancel'), style: 'cancel' },
+        {
+          text: t('delete'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await StorageService.deleteTransaction(transaction.id);
+              loadTransactions();
+            } catch (error) {
+              console.error('Failed to delete transaction:', error);
+              Alert.alert('Error', 'Failed to delete transaction');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const renderTransactionItem = ({ item }: { item: Transaction }) => {
     return (
       <View style={styles.transactionCard}>
@@ -79,13 +109,29 @@ const TransactionsScreen = () => {
             <Text style={styles.transactionDescription}>{item.description}</Text>
             <Text style={styles.transactionDate}>{formatDate(item.date)}</Text>
           </View>
-          <View style={styles.transactionAmount}>
-            <Text style={[styles.typeLabel, { color: getTypeColor(item.type) }]}>
-              {getTypeLabel(item.type)}
-            </Text>
-            <Text style={[styles.amountText, { color: getTypeColor(item.type) }]}>
-              {CurrencyService.formatAmount(item.amount, item.currency)}
-            </Text>
+          <View style={styles.transactionActions}>
+            <View style={styles.transactionAmount}>
+              <Text style={[styles.typeLabel, { color: getTypeColor(item.type) }]}>
+                {getTypeLabel(item.type)}
+              </Text>
+              <Text style={[styles.amountText, { color: getTypeColor(item.type) }]}>
+                {CurrencyService.formatAmount(item.amount, item.currency)}
+              </Text>
+            </View>
+            <View style={styles.actionButtons}>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.editButton]}
+                onPress={() => handleEditTransaction(item)}
+              >
+                <Ionicons name="pencil" size={16} color="white" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.actionButton, styles.deleteButton]}
+                onPress={() => handleDeleteTransaction(item)}
+              >
+                <Ionicons name="trash" size={16} color="white" />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
@@ -118,6 +164,7 @@ const TransactionsScreen = () => {
               style={styles.addButton}
               onPress={() => setAddTransactionModalVisible(true)}
             >
+              <Ionicons name="add-circle" size={20} color={theme.colors.primary} />
               <Text style={styles.addButtonText}>{t('addTransaction')}</Text>
             </TouchableOpacity>
           </View>
@@ -133,12 +180,20 @@ const TransactionsScreen = () => {
 
       <AddTransactionModal
         visible={addTransactionModalVisible}
-        onClose={() => setAddTransactionModalVisible(false)}
-        onSave={() => loadTransactions()}
+        onClose={() => {
+          setAddTransactionModalVisible(false);
+          setEditingTransaction(null);
+        }}
+        onSave={() => {
+          loadTransactions();
+          setEditingTransaction(null);
+        }}
         onNavigateToAccounts={() => {
           setAddTransactionModalVisible(false);
+          setEditingTransaction(null);
           navigation.navigate('Accounts' as never);
         }}
+        editTransaction={editingTransaction}
       />
     </View>
   );
@@ -198,6 +253,28 @@ const createStyles = (theme: Theme) => StyleSheet.create({
   transactionAmount: {
     alignItems: 'flex-end',
   },
+  transactionActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  actionButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  editButton: {
+    backgroundColor: theme.colors.primary,
+  },
+  deleteButton: {
+    backgroundColor: '#F44336',
+  },
   typeLabel: {
     fontSize: 12,
     fontWeight: '600',
@@ -223,6 +300,9 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   addButtonText: {
     color: 'white',

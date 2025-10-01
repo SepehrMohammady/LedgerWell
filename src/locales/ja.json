@@ -50,5 +50,21 @@
   "totalBalance": "総残高",
   "account": "アカウント",
   "resetAllData": "すべてのデータをリセット",
-  "confirmReset": "本当によろしいですか？この操作によりすべてのデータが削除されます。"
+  "confirmReset": "本当によろしいですか？この操作によりすべてのデータが削除されます。",
+  "recentAccounts": "最近のアカウント",
+  "noDescription": "説明なし",
+  "exchangeRates": "為替レート",
+  "dataManagement": "データ管理",
+  "createCustomCurrency": "カスタム通貨を作成",
+  "customCurrencyExample": "例：ビットコイン (BTC)",
+  "updating": "更新中...",
+  "fetchingRates": "最新の為替レートを取得中",
+  "ratesUpdated": "為替レートが正常に更新されました",
+  "updateFailed": "為替レートの更新に失敗しました",
+  "settingsSaveFailed": "設定の保存に失敗しました",
+  "resetConfirm": "すべてのアカウント、取引、設定が完全に削除されます。この操作は元に戻せません。",
+  "allDataReset": "すべてのデータがリセットされました",
+  "resetFailed": "データのリセットに失敗しました",
+  "success": "成功",
+  "reset": "リセット"
 }

@@ -44,5 +44,22 @@
   "name": "Nom",
   "balance": "Solde",
   "recent": "Récent",
-  "oldest": "Plus Ancien"
+  "oldest": "Plus Ancien",
+  "recentAccounts": "Comptes récents",
+  "noDescription": "Aucune description",
+  "exchangeRates": "Taux de change",
+  "dataManagement": "Gestion des données",
+  "resetAllData": "Réinitialiser toutes les données",
+  "createCustomCurrency": "Créer une devise personnalisée",
+  "customCurrencyExample": "Par exemple: Bitcoin (BTC)",
+  "updating": "Mise à jour...",
+  "fetchingRates": "Récupération des derniers taux de change",
+  "ratesUpdated": "Taux de change mis à jour avec succès",
+  "updateFailed": "Échec de la mise à jour des taux de change",
+  "settingsSaveFailed": "Échec de l'enregistrement des paramètres",
+  "resetConfirm": "Cela supprimera définitivement tous les comptes, transactions et paramètres. Cette action ne peut pas être annulée.",
+  "allDataReset": "Toutes les données ont été réinitialisées",
+  "resetFailed": "Échec de la réinitialisation des données",
+  "success": "Succès",
+  "reset": "Réinitialiser"
 }

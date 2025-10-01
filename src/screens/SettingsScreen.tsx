@@ -53,15 +53,29 @@ const SettingsScreen = () => {
       setSettings(newSettings);
     } catch (error) {
       console.error('Failed to save settings:', error);
-      Alert.alert('Error', 'Failed to save settings');
+      Alert.alert('Error', t('settingsSaveFailed'));
     }
   };
 
   const changeLanguage = (language: string) => {
+    const currentLanguage = i18n.language;
+    const wasRTL = ['ar', 'fa'].includes(currentLanguage);
+    const willBeRTL = ['ar', 'fa'].includes(language);
+    
     i18n.changeLanguage(language);
     setRTL(language);
+    
     if (settings) {
       updateSettings({ ...settings, language });
+    }
+    
+    // If switching between RTL and LTR, inform user about restart requirement
+    if (wasRTL !== willBeRTL) {
+      Alert.alert(
+        t('languageChanged'),
+        t('restartRequired'),
+        [{ text: 'OK' }]
+      );
     }
   };
 
@@ -80,33 +94,33 @@ const SettingsScreen = () => {
 
   const updateExchangeRates = async () => {
     try {
-      Alert.alert('Updating...', 'Fetching latest exchange rates');
+      Alert.alert(t('updating'), t('fetchingRates'));
       const updatedCurrencies = await CurrencyService.updateCurrencyRates(currencies);
       await StorageService.saveCurrencies(updatedCurrencies);
       setCurrencies(updatedCurrencies);
-      Alert.alert('Success', 'Exchange rates updated successfully');
+      Alert.alert('Success', t('ratesUpdated'));
     } catch (error) {
-      Alert.alert('Error', 'Failed to update exchange rates');
+      Alert.alert('Error', t('updateFailed'));
     }
   };
 
   const resetAllData = () => {
     Alert.alert(
-      'Reset All Data',
-      'This will permanently delete all accounts, transactions, and settings. This action cannot be undone.',
+      t('resetAllData'),
+      t('resetConfirm'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('cancel'), style: 'cancel' },
         {
-          text: 'Reset',
+          text: t('reset'),
           style: 'destructive',
           onPress: async () => {
             try {
               await StorageService.clearAllData();
-              Alert.alert('Success', 'All data has been reset');
+              Alert.alert(t('success'), t('allDataReset'));
               loadSettings();
               loadCurrencies();
             } catch (error) {
-              Alert.alert('Error', 'Failed to reset data');
+              Alert.alert('Error', t('resetFailed'));
             }
           },
         },
@@ -192,7 +206,7 @@ const SettingsScreen = () => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Exchange Rates</Text>
+        <Text style={styles.sectionTitle}>{t('exchangeRates')}</Text>
         <TouchableOpacity style={styles.button} onPress={updateExchangeRates}>
           <Text style={styles.buttonText}>{t('updateRates')}</Text>
         </TouchableOpacity>
@@ -202,7 +216,7 @@ const SettingsScreen = () => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Custom Currency</Text>
+        <Text style={styles.sectionTitle}>{t('customCurrency')}</Text>
         <TouchableOpacity 
           style={styles.button}
           onPress={() => setCustomCurrencyModalVisible(true)}
@@ -212,9 +226,9 @@ const SettingsScreen = () => {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Data Management</Text>
+        <Text style={styles.sectionTitle}>{t('dataManagement')}</Text>
         <TouchableOpacity style={[styles.button, styles.dangerButton]} onPress={resetAllData}>
-          <Text style={[styles.buttonText, styles.dangerButtonText]}>Reset All Data</Text>
+          <Text style={[styles.buttonText, styles.dangerButtonText]}>{t('resetAllData')}</Text>
         </TouchableOpacity>
       </View>
 

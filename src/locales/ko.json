@@ -50,5 +50,21 @@
   "totalBalance": "총 잔액",
   "account": "계정",
   "resetAllData": "모든 데이터 재설정",
-  "confirmReset": "정말로 하시겠습니까? 이 작업은 모든 데이터를 삭제합니다."
+  "confirmReset": "정말로 하시겠습니까? 이 작업은 모든 데이터를 삭제합니다.",
+  "recentAccounts": "최근 계정",
+  "noDescription": "설명 없음",
+  "exchangeRates": "환율",
+  "dataManagement": "데이터 관리",
+  "createCustomCurrency": "사용자 정의 통화 생성",
+  "customCurrencyExample": "예: 비트코인 (BTC)",
+  "updating": "업데이트 중...",
+  "fetchingRates": "최신 환율 가져오는 중",
+  "ratesUpdated": "환율이 성공적으로 업데이트되었습니다",
+  "updateFailed": "환율 업데이트에 실패했습니다",
+  "settingsSaveFailed": "설정 저장에 실패했습니다",
+  "resetConfirm": "모든 계정, 거래 및 설정이 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다.",
+  "allDataReset": "모든 데이터가 재설정되었습니다",
+  "resetFailed": "데이터 재설정에 실패했습니다",
+  "success": "성공",
+  "reset": "재설정"
 }

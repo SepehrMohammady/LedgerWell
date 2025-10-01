@@ -24,6 +24,7 @@ const AccountsScreen = () => {
   const [filteredAccounts, setFilteredAccounts] = useState<Account[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [addAccountModalVisible, setAddAccountModalVisible] = useState(false);
+  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -54,6 +55,11 @@ const AccountsScreen = () => {
       );
       setFilteredAccounts(filtered);
     }
+  };
+
+  const handleEditAccount = (account: Account) => {
+    setEditingAccount(account);
+    setAddAccountModalVisible(true);
   };
 
   const handleDeleteAccount = (account: Account) => {
@@ -100,16 +106,17 @@ const AccountsScreen = () => {
             )}
           </View>
           <View style={styles.accountActions}>
-            <TouchableOpacity style={styles.actionButton}>
-              <Text style={styles.actionButtonText}>{t('edit')}</Text>
+            <TouchableOpacity 
+              style={styles.actionButton}
+              onPress={() => handleEditAccount(item)}
+            >
+              <Ionicons name="pencil" size={18} color="white" />
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionButton, styles.deleteButton]}
               onPress={() => handleDeleteAccount(item)}
             >
-              <Text style={[styles.actionButtonText, styles.deleteButtonText]}>
-                {t('delete')}
-              </Text>
+              <Ionicons name="trash" size={18} color="white" />
             </TouchableOpacity>
           </View>
         </View>
@@ -181,8 +188,15 @@ const AccountsScreen = () => {
 
       <AddAccountModal
         visible={addAccountModalVisible}
-        onClose={() => setAddAccountModalVisible(false)}
-        onSave={() => loadAccounts()}
+        onClose={() => {
+          setAddAccountModalVisible(false);
+          setEditingAccount(null);
+        }}
+        onSave={() => {
+          loadAccounts();
+          setEditingAccount(null);
+        }}
+        editAccount={editingAccount}
       />
     </View>
   );

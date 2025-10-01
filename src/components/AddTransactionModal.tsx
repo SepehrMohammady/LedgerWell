@@ -10,9 +10,10 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Picker } from '@react-native-picker/picker';
-import { Account, Currency } from '../types';
+import { Account, Currency, Transaction } from '../types';
 import StorageService from '../utils/storage';
 import { useTheme, Theme } from '../utils/theme';
 
@@ -21,9 +22,10 @@ interface AddTransactionModalProps {
   onClose: () => void;
   onSave: () => void;
   onNavigateToAccounts?: () => void;
+  editTransaction?: Transaction | null;
 }
 
-const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onClose, onSave, onNavigateToAccounts }) => {
+const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onClose, onSave, onNavigateToAccounts, editTransaction }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
@@ -35,15 +37,23 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
   useEffect(() => {
     if (visible) {
       loadAccounts();
-      resetForm();
+      if (!editTransaction) {
+        resetForm();
+      }
     }
   }, [visible]);
+
+  useEffect(() => {
+    if (visible && editTransaction && accounts.length > 0) {
+      populateFormForEdit();
+    }
+  }, [visible, editTransaction, accounts]);
 
   const loadAccounts = async () => {
     try {
       const accountsData = await StorageService.getAccounts();
       setAccounts(accountsData);
-      if (accountsData.length > 0 && !selectedAccount) {
+      if (accountsData.length > 0 && !selectedAccount && !editTransaction) {
         setSelectedAccount(accountsData[0]);
       }
     } catch (error) {
@@ -58,44 +68,74 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
     setDescription('');
   };
 
+  const populateFormForEdit = async () => {
+    if (editTransaction && accounts.length > 0) {
+      const account = accounts.find(acc => acc.id === editTransaction.accountId);
+      setSelectedAccount(account || null);
+      setType(editTransaction.type as 'debt' | 'credit');
+      setAmount(editTransaction.amount.toString());
+      setDescription(editTransaction.description);
+    }
+  };
+
   const handleSave = async () => {
     if (!selectedAccount) {
-      Alert.alert('Error', 'Please select an account');
+      Alert.alert(t('error'), t('pleaseSelectAccount'));
       return;
     }
 
     if (!description.trim()) {
-      Alert.alert('Error', 'Please enter a description');
+      Alert.alert(t('error'), t('pleaseEnterDescription'));
       return;
     }
 
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount) || numAmount <= 0) {
-      Alert.alert('Error', 'Please enter a valid amount');
+      Alert.alert(t('error'), t('pleaseEnterValidAmount'));
       return;
     }
 
     try {
-      const newTransaction = {
-        id: Date.now().toString(),
-        accountId: selectedAccount.id,
-        type,
-        amount: numAmount,
-        currency: selectedAccount.currency,
-        description: description.trim(),
-        date: new Date(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      };
+      if (editTransaction) {
+        // Update existing transaction
+        const updatedTransaction = {
+          ...editTransaction,
+          accountId: selectedAccount.id,
+          type,
+          amount: numAmount,
+          currency: selectedAccount.currency,
+          description: description.trim(),
+          updatedAt: new Date(),
+        };
 
-      await StorageService.saveTransaction(newTransaction);
-      resetForm();
-      onSave();
-      onClose();
-      Alert.alert('Success', 'Transaction added successfully');
+        await StorageService.saveTransaction(updatedTransaction);
+        resetForm();
+        onSave();
+        onClose();
+        Alert.alert(t('success'), t('transactionUpdated'));
+      } else {
+        // Create new transaction
+        const newTransaction = {
+          id: Date.now().toString(),
+          accountId: selectedAccount.id,
+          type,
+          amount: numAmount,
+          currency: selectedAccount.currency,
+          description: description.trim(),
+          date: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        await StorageService.saveTransaction(newTransaction);
+        resetForm();
+        onSave();
+        onClose();
+        Alert.alert(t('success'), t('transactionAdded'));
+      }
     } catch (error) {
       console.error('Failed to save transaction:', error);
-      Alert.alert('Error', 'Failed to add transaction');
+      Alert.alert(t('error'), t('transactionActionFailed', { action: editTransaction ? t('update') : 'add' }));
     }
   };
 
@@ -111,9 +151,9 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
         <SafeAreaView style={styles.container}>
           <View style={styles.header}>
             <TouchableOpacity onPress={onClose}>
-              <Text style={styles.cancelButton}>{t('cancel')}</Text>
+              <Ionicons name="close" size={24} color={theme.colors.text} />
             </TouchableOpacity>
-            <Text style={styles.title}>{t('addTransaction')}</Text>
+            <Text style={styles.title}>{editTransaction ? t('edit') + ' ' + t('transactions').slice(0, -1) : t('addTransaction')}</Text>
             <View />
           </View>
           <View style={styles.emptyState}>
@@ -144,11 +184,11 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose}>
-            <Text style={styles.cancelButton}>{t('cancel')}</Text>
+            <Ionicons name="close" size={24} color={theme.colors.text} />
           </TouchableOpacity>
-          <Text style={styles.title}>{t('addTransaction')}</Text>
+          <Text style={styles.title}>{editTransaction ? t('edit') + ' Transaction' : t('addTransaction')}</Text>
           <TouchableOpacity onPress={handleSave}>
-            <Text style={styles.saveButton}>{t('save')}</Text>
+            <Ionicons name="checkmark" size={24} color={theme.colors.primary} />
           </TouchableOpacity>
         </View>
 
@@ -205,7 +245,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
               style={styles.input}
               value={amount}
               onChangeText={setAmount}
-              placeholder="0.00"
+              placeholder={t('amountPlaceholder')}
               placeholderTextColor={theme.colors.textSecondary}
               keyboardType="decimal-pad"
             />
@@ -217,7 +257,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
               style={[styles.input, styles.textArea]}
               value={description}
               onChangeText={setDescription}
-              placeholder="What is this transaction for?"
+              placeholder={t('transactionDescriptionPlaceholder')}
               placeholderTextColor={theme.colors.textSecondary}
               multiline
               numberOfLines={3}
@@ -244,19 +284,10 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: theme.colors.border,
   },
-  cancelButton: {
-    color: theme.colors.error,
-    fontSize: 16,
-  },
   title: {
     fontSize: 18,
     fontWeight: 'bold',
     color: theme.colors.text,
-  },
-  saveButton: {
-    color: theme.colors.primary,
-    fontSize: 16,
-    fontWeight: '600',
   },
   content: {
     flex: 1,
