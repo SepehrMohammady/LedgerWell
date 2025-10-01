@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { Transaction } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
@@ -127,7 +128,7 @@ const TransactionsScreen = () => {
         style={styles.fab}
         onPress={() => setAddTransactionModalVisible(true)}
       >
-        <Text style={styles.fabText}>+</Text>
+        <Ionicons name="add" size={24} color="white" />
       </TouchableOpacity>
 
       <AddTransactionModal
@@ -243,11 +244,6 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
-  },
-  fabText: {
-    color: 'white',
-    fontSize: 24,
-    fontWeight: 'bold',
   },
 });
 
