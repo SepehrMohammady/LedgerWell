@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
@@ -7,6 +7,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import i18n from './src/utils/i18n';
 import { ThemeProvider, useTheme } from './src/utils/theme';
+import StorageService from './src/utils/storage';
+import { setRTL } from './src/utils/i18n';
 
 // Import screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -19,6 +21,23 @@ const Tab = createBottomTabNavigator();
 const AppContent = () => {
   const { theme, isDark } = useTheme();
   const { t } = useTranslation();
+
+  useEffect(() => {
+    // Initialize language on app startup
+    const initializeLanguage = async () => {
+      try {
+        const settings = await StorageService.getSettings();
+        if (settings && settings.language && settings.language !== i18n.language) {
+          await i18n.changeLanguage(settings.language);
+          setRTL(settings.language);
+        }
+      } catch (error) {
+        console.error('Failed to initialize language:', error);
+      }
+    };
+    
+    initializeLanguage();
+  }, []);
 
   return (
     <NavigationContainer>

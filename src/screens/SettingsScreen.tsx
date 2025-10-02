@@ -7,7 +7,9 @@ import {
   TouchableOpacity,
   Switch,
   Alert,
+  Linking,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Picker } from '@react-native-picker/picker';
 import { AppSettings, Currency } from '../types';
@@ -16,6 +18,58 @@ import CurrencyService, { DEFAULT_CURRENCIES } from '../utils/currency';
 import CustomCurrencyModal from '../components/CustomCurrencyModal';
 import { useTheme, Theme } from '../utils/theme';
 import { setRTL } from '../utils/i18n';
+
+// SettingItem component for reusable settings list items
+interface SettingItemProps {
+  title: string;
+  description: string;
+  onPress?: () => void;
+  rightElement?: React.ReactNode;
+  isLast?: boolean;
+}
+
+const SettingItem: React.FC<SettingItemProps> = ({ 
+  title, 
+  description, 
+  onPress, 
+  rightElement, 
+  isLast = false 
+}) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+
+  const content = (
+    <View style={[styles.settingItem, isLast && styles.settingItemLast]}>
+      <View style={styles.settingItemContent}>
+        <Text style={styles.settingItemTitle}>{title}</Text>
+        <Text style={styles.settingItemDescription}>{description}</Text>
+      </View>
+      {rightElement && <View style={styles.settingItemRight}>{rightElement}</View>}
+    </View>
+  );
+
+  if (onPress) {
+    return (
+      <TouchableOpacity onPress={onPress} activeOpacity={0.7}>
+        {content}
+      </TouchableOpacity>
+    );
+  }
+
+  return content;
+};
+
+// SectionHeader component for section titles
+interface SectionHeaderProps {
+  title: string;
+}
+
+const SectionHeader: React.FC<SectionHeaderProps> = ({ title }) => {
+  const { theme } = useTheme();
+  const styles = createStyles(theme);
+  
+  return <Text style={styles.sectionTitle}>{title}</Text>;
+};
 
 const SettingsScreen = () => {
   const { t, i18n } = useTranslation();
@@ -182,6 +236,14 @@ const SettingsScreen = () => {
     );
   };
 
+  const handleOpenWebsite = () => {
+    Linking.openURL('https://sepehrmohammady.ir/');
+  };
+
+  const handleOpenGitHub = () => {
+    Linking.openURL('https://github.com/SepehrMohammady/LedgerWell');
+  };
+
   if (!settings) {
     const styles = createStyles(theme);
     return (
@@ -204,19 +266,19 @@ const SettingsScreen = () => {
             onValueChange={changeLanguage}
             style={styles.picker}
           >
+            <Picker.Item label="العربية" value="ar" />
+            <Picker.Item label="Bahasa Indonesia" value="id" />
+            <Picker.Item label="Deutsch" value="de" />
             <Picker.Item label="English" value="en" />
             <Picker.Item label="Español" value="es" />
-            <Picker.Item label="Français" value="fr" />
-            <Picker.Item label="Deutsch" value="de" />
-            <Picker.Item label="العربية" value="ar" />
             <Picker.Item label="فارسی" value="fa" />
+            <Picker.Item label="Français" value="fr" />
             <Picker.Item label="Italiano" value="it" />
+            <Picker.Item label="日本語" value="ja" />
+            <Picker.Item label="한국어" value="ko" />
             <Picker.Item label="Português" value="pt" />
             <Picker.Item label="Русский" value="ru" />
             <Picker.Item label="中文" value="zh" />
-            <Picker.Item label="日本語" value="ja" />
-            <Picker.Item label="한국어" value="ko" />
-            <Picker.Item label="Bahasa Indonesia" value="id" />
           </Picker>
         </View>
       </View>
@@ -300,13 +362,13 @@ const SettingsScreen = () => {
                   style={[styles.actionButton, styles.editButton]}
                   onPress={() => editCustomCurrency(currency)}
                 >
-                  <Text style={styles.actionButtonText}>{t('edit')}</Text>
+                  <Ionicons name="pencil" size={16} color="white" />
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={[styles.actionButton, styles.deleteButton]}
                   onPress={() => deleteCustomCurrency(currency.id)}
                 >
-                  <Text style={styles.actionButtonText}>{t('delete')}</Text>
+                  <Ionicons name="trash" size={16} color="white" />
                 </TouchableOpacity>
               </View>
             </View>
@@ -319,6 +381,45 @@ const SettingsScreen = () => {
         <TouchableOpacity style={[styles.button, styles.dangerButton]} onPress={resetAllData}>
           <Text style={[styles.buttonText, styles.dangerButtonText]}>{t('resetAllData')}</Text>
         </TouchableOpacity>
+      </View>
+
+      {/* About Section */}
+      <View style={styles.section}>
+        <SectionHeader title={t('about')} />
+        <SettingItem
+          title="LedgerWell"
+          description={t('appDescription')}
+        />
+        <SettingItem
+          title={t('version')}
+          description="0.2.3"
+        />
+        <SettingItem
+          title={t('developer')}
+          description="Sepehr Mohammady"
+          onPress={handleOpenWebsite}
+          rightElement={<Ionicons name="open-outline" size={20} color="#007AFF" />}
+        />
+        <SettingItem
+          title={t('sourceCode')}
+          description="github.com/SepehrMohammady/LedgerWell"
+          onPress={handleOpenGitHub}
+          rightElement={<Ionicons name="logo-github" size={20} color="#007AFF" />}
+        />
+        <SettingItem
+          title={t('privacy')}
+          description={t('privacyDescription')}
+          isLast={true}
+        />
+      </View>
+
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>
+          {t('footerDescription')}
+        </Text>
+        <Text style={styles.copyrightText}>
+          {t('copyrightText')}
+        </Text>
       </View>
 
       <CustomCurrencyModal
@@ -443,6 +544,53 @@ const createStyles = (theme: Theme) => StyleSheet.create({
   },
   deleteButton: {
     backgroundColor: '#F44336',
+  },
+  // SettingItem styles
+  settingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  settingItemLast: {
+    borderBottomWidth: 0,
+  },
+  settingItemContent: {
+    flex: 1,
+  },
+  settingItemTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: theme.colors.text,
+    marginBottom: 2,
+  },
+  settingItemDescription: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+  },
+  settingItemRight: {
+    marginLeft: 12,
+  },
+  // Footer styles
+  footer: {
+    margin: 16,
+    padding: 16,
+    alignItems: 'center',
+  },
+  footerText: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    lineHeight: 20,
+    marginBottom: 12,
+  },
+  copyrightText: {
+    fontSize: 12,
+    color: theme.colors.textSecondary,
+    textAlign: 'center',
+    opacity: 0.7,
   },
 });
 
