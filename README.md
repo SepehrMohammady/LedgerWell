@@ -2,7 +2,7 @@
 
 A comprehensive React Native Expo app for tracking personal debts and credits with extensive multi-currency support and full internationalization.
 
-[![Version](https://img.shields.io/badge/version-0.2.3-blue.svg)](https://github.com/SepehrMohammady/LedgerWell)
+[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/SepehrMohammady/LedgerWell)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![React Native](https://img.shields.io/badge/React%20Native-Expo-blue.svg)](https://expo.dev)
 
@@ -16,7 +16,7 @@ A comprehensive React Native Expo app for tracking personal debts and credits wi
 - Comprehensive transaction history per account
 
 ### 💰 Multi-Currency Support
-- Support for **38 international currencies** including major and regional currencies
+- Support for **39 international currencies** including major and regional currencies
 - Add unlimited custom currencies with manual exchange rates
 - Automatic currency conversion using live exchange rates
 - Manual exchange rate override option
@@ -103,7 +103,7 @@ LedgerWell/
 │   ├── types/              # TypeScript type definitions
 │   │   └── index.ts          # Core app types
 │   ├── utils/              # Utility functions
-│   │   ├── currency.ts       # Currency conversion & 38 currency definitions
+│   │   ├── currency.ts       # Currency conversion & 39 currency definitions
 │   │   ├── storage.ts        # Data persistence layer
 │   │   ├── theme.ts          # Theme management
 │   │   └── i18n.ts          # Internationalization setup
@@ -153,7 +153,7 @@ LedgerWell/
 
 ### Currency Management
 1. Go to "Settings" tab
-2. Set your default currency from 38 available options
+2. Set your default currency from 39 available options
 3. Toggle auto-update for exchange rates
 4. Create custom currencies with manual exchange rates
 5. Manage and delete custom currencies
@@ -162,7 +162,7 @@ LedgerWell/
 
 The app uses [ExchangeRate-API](https://exchangerate-api.com/) for fetching live currency exchange rates. The API is free and doesn't require authentication for basic usage.
 
-**Supported base currencies**: USD, EUR, GBP, JPY, AUD, CAD, CHF, CNY, SEK, NZD, MXN, SGD, HKD, NOK, TRY, RUB, INR, BRL, ZAR, KRW, PLN, THB, IDR, HUF, CZK, ILS, CLP, PHP, AED, COP, SAR, MYR, RON, VND, ARS, EGP, QAR, KWD
+**Supported base currencies**: USD, EUR, GBP, JPY, AUD, CAD, CHF, CNY, SEK, NZD, MXN, SGD, HKD, NOK, TRY, RUB, INR, BRL, ZAR, KRW, PLN, THB, IDR, HUF, CZK, ILS, CLP, PHP, AED, COP, SAR, MYR, VND, ARS, EGP, NGN, KES, DKK, PEN
 
 ## Development
 

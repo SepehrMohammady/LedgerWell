@@ -392,7 +392,7 @@ const SettingsScreen = () => {
         />
         <SettingItem
           title={t('version')}
-          description="0.2.3"
+          description="0.3.0"
         />
         <SettingItem
           title={t('developer')}

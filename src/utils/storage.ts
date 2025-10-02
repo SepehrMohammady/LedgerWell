@@ -137,7 +137,30 @@ export class StorageService {
   static async getCurrencies(): Promise<Currency[]> {
     try {
       const data = await AsyncStorage.getItem(STORAGE_KEYS.CURRENCIES);
-      return data ? JSON.parse(data) : DEFAULT_CURRENCIES;
+      const storedCurrencies = data ? JSON.parse(data) : [];
+      
+      // Always ensure all default currencies are available
+      // Merge stored currencies with defaults, preserving custom currencies and updated rates
+      const currencyMap = new Map<string, Currency>();
+      
+      // First, add all default currencies
+      DEFAULT_CURRENCIES.forEach(currency => {
+        currencyMap.set(currency.id, currency);
+      });
+      
+      // Then, overlay any stored currencies (this preserves custom currencies and updated rates)
+      storedCurrencies.forEach((currency: Currency) => {
+        currencyMap.set(currency.id, currency);
+      });
+      
+      const mergedCurrencies = Array.from(currencyMap.values());
+      
+      // If we had to merge, save the updated list
+      if (storedCurrencies.length !== mergedCurrencies.length) {
+        await this.saveCurrencies(mergedCurrencies);
+      }
+      
+      return mergedCurrencies;
     } catch (error) {
       console.error('Failed to get currencies:', error);
       return DEFAULT_CURRENCIES;
