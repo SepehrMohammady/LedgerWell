@@ -16,7 +16,11 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "icon": "./assets/icon.png"
+      "icon": "./assets/icon.png",
+      "bundleIdentifier": "com.sepehrmohammady.ledgerwell",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.sepehrmohammady.ledgerwell",
