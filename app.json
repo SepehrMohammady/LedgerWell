@@ -2,33 +2,37 @@
   "expo": {
     "name": "LedgerWell",
     "slug": "ledgerwell",
-    "version": "0.2.2",
+    "owner": "sepehrmohammady",
+    "version": "0.2.3",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#007AFF"
-    },
-    "assetBundlePatterns": [
-      "**/*"
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "description": "A comprehensive personal debt and credit tracking application with multi-currency support",
+    "keywords": [
+      "debt-tracking",
+      "credit-tracking",
+      "react-native",
+      "expo",
+      "finance"
     ],
+    "githubUrl": "https://github.com/SepehrMohammady/LedgerWell",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "ios": {
-      "supportsTablet": true,
-      "icon": "./assets/icon.png",
-      "bundleIdentifier": "com.sepehrmohammady.ledgerwell",
-      "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
+      "supportsTablet": true
     },
     "android": {
-      "package": "com.sepehrmohammady.ledgerwell",
-      "icon": "./assets/icon.png",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#007AFF"
-      }
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.sepehrmohammady.ledgerwell"
     },
     "web": {
       "favicon": "./assets/favicon.png"
