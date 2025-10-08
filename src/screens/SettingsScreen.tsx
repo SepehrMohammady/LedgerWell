@@ -20,6 +20,7 @@ import { useTheme, Theme } from '../utils/theme';
 import { setRTL } from '../utils/i18n';
 import { getAppVersion } from '../utils/version';
 import ExcelExportService from '../utils/excelExport';
+import ExcelImportService, { ImportData, ImportOptions } from '../utils/excelImport';
 
 // SettingItem component for reusable settings list items
 interface SettingItemProps {
@@ -291,6 +292,175 @@ const SettingsScreen = () => {
     }
   };
 
+  const importFromExcel = async () => {
+    try {
+      Alert.alert(t('importData'), t('selectExcelFile'));
+      
+      // Import data from Excel file
+      const importData = await ExcelImportService.importFromExcel({
+        validateCurrencies: true,
+        skipDuplicates: false
+      });
+
+      if (!importData) {
+        // User cancelled file selection
+        return;
+      }
+
+      // Validate import data
+      const validation = ExcelImportService.validateImportData(importData);
+      
+      if (!validation.isValid) {
+        Alert.alert(
+          t('importValidationFailed'), 
+          validation.errors.join('\n')
+        );
+        return;
+      }
+
+      // Show import preview and confirmation
+      const preview = ExcelImportService.getImportPreview(importData);
+      
+      const duplicateInfo = importData.summary.duplicateAccounts > 0 || importData.summary.duplicateTransactions > 0
+        ? [
+            '',
+            '⚠️ ' + t('duplicatesDetected'),
+            t('duplicateAccountsFound', { count: importData.summary.duplicateAccounts }),
+            t('duplicateTransactionsFound', { count: importData.summary.duplicateTransactions }),
+            ''
+          ]
+        : [''];
+      
+      const confirmationMessage = [
+        preview.summary,
+        '',
+        t('importPreviewAccounts') + ':',
+        ...preview.accountsList.slice(0, 5).map(acc => `• ${acc}`),
+        preview.accountsList.length > 5 ? `... ${t('andMoreAccounts', { count: preview.accountsList.length - 5 })}` : '',
+        '',
+        t('importPreviewDateRange') + ': ' + preview.dateRange,
+        ...duplicateInfo,
+        t('importWarning')
+      ].filter(Boolean).join('\n');
+
+      Alert.alert(
+        t('importData'),
+        confirmationMessage,
+        [
+          { text: t('cancel'), style: 'cancel' },
+          {
+            text: t('replaceData'),
+            style: 'destructive',
+            onPress: () => executeImport(importData, { replaceExistingData: true })
+          },
+          {
+            text: t('mergeData'),
+            onPress: () => executeImport(importData, { replaceExistingData: false })
+          }
+        ]
+      );
+    } catch (error) {
+      console.error('Import failed:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      Alert.alert(t('error'), t('importFailed', { error: errorMessage }));
+    }
+  };
+
+  const executeImport = async (importData: ImportData, options: ImportOptions) => {
+    try {
+      Alert.alert(t('importData'), t('processingImport'));
+      
+      if (options.replaceExistingData) {
+        // Clear existing data
+        await StorageService.clearAllData();
+        
+        // Save all imported data
+        for (const account of importData.accounts) {
+          await StorageService.saveAccount(account);
+        }
+        
+        for (const transaction of importData.transactions) {
+          await StorageService.saveTransaction(transaction);
+        }
+      } else {
+        // Merge mode - handle duplicates
+        const existingAccounts = await StorageService.getAccounts();
+        const existingTransactions = await StorageService.getTransactions();
+        
+        let addedAccounts = 0;
+        let addedTransactions = 0;
+        
+        // Add non-duplicate accounts
+        for (const account of importData.accounts) {
+          const isDuplicate = existingAccounts.some(existing => 
+            existing.name.toLowerCase() === account.name.toLowerCase() &&
+            existing.currency.code === account.currency.code
+          );
+          
+          if (!isDuplicate || !options.skipDuplicates) {
+            if (isDuplicate) {
+              // Generate new ID for duplicate account
+              account.id = `${account.id}_imported_${Date.now()}`;
+              account.name = `${account.name} (Imported)`;
+            }
+            await StorageService.saveAccount(account);
+            addedAccounts++;
+          }
+        }
+        
+        // Add non-duplicate transactions
+        for (const transaction of importData.transactions) {
+          const isDuplicate = existingTransactions.some(existing => {
+            const dateDiff = Math.abs(existing.date.getTime() - transaction.date.getTime());
+            const isDateClose = dateDiff < 24 * 60 * 60 * 1000;
+            
+            return (
+              existing.name.toLowerCase().trim() === transaction.name.toLowerCase().trim() &&
+              existing.type === transaction.type &&
+              Math.abs(existing.amount - transaction.amount) < 0.01 &&
+              isDateClose
+            );
+          });
+          
+          if (!isDuplicate || !options.skipDuplicates) {
+            await StorageService.saveTransaction(transaction);
+            addedTransactions++;
+          }
+        }
+        
+        // Update success message for merge mode
+        Alert.alert(
+          t('importSuccess'),
+          t('importMergeSuccess', {
+            accounts: addedAccounts,
+            transactions: addedTransactions,
+            skippedAccounts: importData.summary.duplicateAccounts,
+            skippedTransactions: importData.summary.duplicateTransactions
+          })
+        );
+        
+        // Reload settings to reflect any changes
+        loadSettings();
+        return;
+      }
+
+      // Show success message with statistics
+      Alert.alert(
+        t('importSuccess'),
+        t('importSuccessMessage', {
+          accounts: importData.summary.totalAccounts,
+          transactions: importData.summary.totalTransactions
+        })
+      );
+
+      // Reload settings to reflect any changes
+      loadSettings();
+    } catch (error) {
+      console.error('Import execution failed:', error);
+      Alert.alert(t('error'), t('importExecutionFailed'));
+    }
+  };
+
   if (!settings) {
     const styles = createStyles(theme);
     return (
@@ -428,6 +598,9 @@ const SettingsScreen = () => {
         <TouchableOpacity style={styles.button} onPress={exportToExcel}>
           <Text style={styles.buttonText}>{t('exportToExcel')}</Text>
         </TouchableOpacity>
+        <TouchableOpacity style={[styles.button, styles.importButton]} onPress={importFromExcel}>
+          <Text style={[styles.buttonText, styles.importButtonText]}>{t('importFromExcel')}</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={[styles.button, styles.dangerButton]} onPress={resetAllData}>
           <Text style={[styles.buttonText, styles.dangerButtonText]}>{t('resetAllData')}</Text>
         </TouchableOpacity>
@@ -548,6 +721,12 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     backgroundColor: theme.colors.error,
   },
   dangerButtonText: {
+    color: 'white',
+  },
+  importButton: {
+    backgroundColor: theme.colors.success || '#28a745',
+  },
+  importButtonText: {
     color: 'white',
   },
   lastUpdatedText: {
