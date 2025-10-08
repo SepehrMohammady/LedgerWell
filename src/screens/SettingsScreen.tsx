@@ -77,6 +77,7 @@ const SettingsScreen = () => {
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [customCurrencyModalVisible, setCustomCurrencyModalVisible] = useState(false);
+  const [editingCurrency, setEditingCurrency] = useState<Currency | null>(null);
 
   useEffect(() => {
     loadSettings();
@@ -188,19 +189,8 @@ const SettingsScreen = () => {
   };
 
   const editCustomCurrency = (currency: Currency) => {
-    // TODO: Implement edit functionality - for now, show info
-    Alert.alert(
-      t('edit') + ' ' + currency.code,
-      `${t('currencyCode')}: ${currency.code}\n${t('currencyName')}: ${currency.name}\n${t('currencySymbol')}: ${currency.symbol}\n${t('exchangeRate')}: ${currency.rate.toFixed(4)}`,
-      [
-        { text: t('cancel') },
-        { 
-          text: t('delete'), 
-          style: 'destructive',
-          onPress: () => deleteCustomCurrency(currency.id)
-        }
-      ]
-    );
+    setEditingCurrency(currency);
+    setCustomCurrencyModalVisible(true);
   };
 
   const deleteCustomCurrency = (currencyId: string) => {
@@ -424,7 +414,11 @@ const SettingsScreen = () => {
 
       <CustomCurrencyModal
         visible={customCurrencyModalVisible}
-        onClose={() => setCustomCurrencyModalVisible(false)}
+        editingCurrency={editingCurrency}
+        onClose={() => {
+          setCustomCurrencyModalVisible(false);
+          setEditingCurrency(null);
+        }}
         onSave={() => {
           loadCurrencies();
         }}

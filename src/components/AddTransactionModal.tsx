@@ -16,6 +16,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Account, Currency, Transaction } from '../types';
 import StorageService from '../utils/storage';
 import { useTheme, Theme } from '../utils/theme';
+import LocalizedNumberInput from './LocalizedNumberInput';
 
 interface AddTransactionModalProps {
   visible: boolean;
@@ -246,13 +247,12 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
             <Text style={styles.label}>
               {t('amount')} {selectedAccount ? `(${selectedAccount.currency.symbol})` : ''} *
             </Text>
-            <TextInput
+            <LocalizedNumberInput
               style={styles.input}
               value={amount}
               onChangeText={setAmount}
               placeholder={t('amountPlaceholder')}
               placeholderTextColor={theme.colors.textSecondary}
-              keyboardType="decimal-pad"
             />
           </View>
 

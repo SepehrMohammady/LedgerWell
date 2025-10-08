@@ -108,7 +108,10 @@
   "validExchangeRate": "Inserire un tasso di cambio valido (numero positivo)",
   "currencyExists": "La valuta {code} esiste già",
   "customCurrencyAdded": "Valuta personalizzata {code} aggiunta con successo",
+  "customCurrencyUpdated": "Valuta personalizzata {code} aggiornata con successo",
   "customCurrencyFailed": "Errore nell'aggiungere valuta personalizzata",
+  "editCustomCurrency": "Modifica Valuta Personalizzata",
+  "editCustomCurrencyInfo": "Aggiorna i dettagli della tua valuta personalizzata. Il tasso di cambio dovrebbe essere relativo all'USD.",
   "currencyCodePlaceholder": "es., BTC, ETH",
   "currencyNamePlaceholder": "es., Bitcoin, Ethereum",
   "about": "Info",
@@ -117,5 +120,7 @@
   "developer": "Sviluppatore",
   "sourceCode": "Codice Sorgente",
   "privacy": "Privacy",
-  "privacyDescription": "I tuoi dati rimangono sul tuo dispositivo"
+  "privacyDescription": "I tuoi dati rimangono sul tuo dispositivo",
+  "footerDescription": "LedgerWell ti aiuta a tracciare debiti e crediti con supporto multi-valuta e privacy completa.",
+  "copyrightText": "© 2025 Sepehr Mohammady. Open source sotto licenza MIT."
 }

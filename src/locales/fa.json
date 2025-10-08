@@ -81,7 +81,10 @@
   "update": "به‌روزرسانی",
   "create": "ایجاد",
   "customCurrencyAdded": "ارز سفارشی {code} با موفقیت اضافه شد",
+  "customCurrencyUpdated": "ارز سفارشی {code} با موفقیت به‌روزرسانی شد",
   "customCurrencyFailed": "خطا در افزودن ارز سفارشی",
+  "editCustomCurrency": "ویرایش ارز سفارشی",
+  "editCustomCurrencyInfo": "جزئیات ارز سفارشی خود را به‌روزرسانی کنید. نرخ ارز باید نسبت به دلار آمریکا باشد.",
   "enterAccountName": "نام حساب را وارد کنید",
   "optionalDescription": "توضیح اختیاری",
   "amountPlaceholder": "0.00",
@@ -90,7 +93,7 @@
   "currencyCodeInvalid": "کد ارز باید دقیقاً ۳ حرف باشد (مثل USD، EUR)",
   "currencyCodePlaceholder": "مثل BTC، ETH",
   "currencyNamePlaceholder": "مثل Bitcoin، Ethereum",
-  "exampleText": "کد: BTC\nنام: Bitcoin\nنماد: ₿\nنرخ: 0.000025 (اگر 1 USD = 0.000025 BTC)",
+  "exampleText": "کد: BTC\nنام: Bitcoin\nنماد: ₿\nنرخ: ۰.۰۰۰۰۲۵ (اگر ۱ USD = ۰.۰۰۰۰۲۵ BTC)",
   "exampleTitle": "مثال:",
   "fillAllFields": "لطفاً همه فیلدها را پر کنید",
   "filterBy": "فیلتر بر اساس",
@@ -102,7 +105,7 @@
   "pleaseEnterDescription": "لطفاً توضیحی وارد کنید",
   "pleaseEnterValidAmount": "لطفاً مقدار معتبری وارد کنید",
   "pleaseSelectAccount": "لطفاً حسابی انتخاب کنید",
-  "rateExample": "مثل 45000.00",
+  "rateExample": "مثل ۴۵۰۰۰.۰۰",
   "rateHelper": "۱ دلار آمریکا چقدر در ارز شما می‌ارزد",
   "recent": "اخیر",
   "sortBy": "مرتب‌سازی بر اساس",
@@ -117,5 +120,7 @@
   "developer": "توسعه‌دهنده",
   "sourceCode": "کد منبع",
   "privacy": "حریم خصوصی",
-  "privacyDescription": "داده‌های شما روی دستگاه شما باقی می‌ماند"
+  "privacyDescription": "داده‌های شما روی دستگاه شما باقی می‌ماند",
+  "footerDescription": "LedgerWell به شما کمک می‌کند تا بدهی‌ها و اعتبارات را با پشتیبانی چند ارزی و حریم خصوصی کامل پیگیری کنید.",
+  "copyrightText": "© ۲۰۲۵ سپهر محمدی. متن‌باز تحت مجوز MIT."
 }

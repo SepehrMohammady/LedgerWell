@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Currency, ConversionRate } from '../types';
+import { formatLocalizedNumber } from './numberLocalization';
 
 // Predefined currencies
 export const DEFAULT_CURRENCIES: Currency[] = [
@@ -93,7 +94,8 @@ export class CurrencyService {
   }
 
   static formatAmount(amount: number, currency: Currency): string {
-    return `${currency.symbol}${amount.toFixed(2)}`;
+    const formattedAmount = formatLocalizedNumber(amount, undefined, 2);
+    return `${currency.symbol}${formattedAmount}`;
   }
 
   static createCustomCurrency(

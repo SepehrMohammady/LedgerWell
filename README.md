@@ -2,7 +2,7 @@
 
 A comprehensive React Native Expo app for tracking personal debts and credits with extensive multi-currency support and full internationalization.
 
-[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](https://github.com/SepehrMohammady/LedgerWell)
+[![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](https://github.com/SepehrMohammady/LedgerWell)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![React Native](https://img.shields.io/badge/React%20Native-Expo-blue.svg)](https://expo.dev)
 
@@ -26,8 +26,10 @@ A comprehensive React Native Expo app for tracking personal debts and credits wi
 - **13 language support**: English, Spanish, French, German, Arabic, Persian, Italian, Portuguese, Russian, Chinese, Japanese, Korean, Indonesian
 - Right-to-left (RTL) language support for Arabic and Persian
 - Easy language switching in settings with instant app reload
-- Fully localized UI with 112+ translation keys per language
-- Localized number and currency formatting
+- Fully localized UI with 124+ translation keys per language
+- **Native numeral system support**: Arabic-Indic numerals for Arabic (٠١٢٣٤٥٦٧٨٩), Persian numerals for Farsi (۰۱۲۳۴۵۶۷۸۹)
+- Localized number input and display throughout the app
+- Localized currency formatting with proper numeral systems
 
 ### 📱 Modern UI/UX
 - Clean, intuitive Material Design interface
@@ -258,8 +260,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Web dashboard companion app
 
 ### Completed Recently
+- [x] **Localized number input system** - Native numeral support for Arabic and Farsi
 - [x] Complete 13-language internationalization
-- [x] 38-currency support with live exchange rates
+- [x] 39-currency support with live exchange rates
+- [x] Custom currency editing functionality
 - [x] Dark/Light theme system
 - [x] Custom currency creation and management
 - [x] About section with developer info

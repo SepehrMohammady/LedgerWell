@@ -16,26 +16,36 @@ import { Currency } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
 import { useTheme, Theme } from '../utils/theme';
+import LocalizedNumberInput from './LocalizedNumberInput';
 
 interface CustomCurrencyModalProps {
   visible: boolean;
   onClose: () => void;
   onSave: () => void;
+  editingCurrency?: Currency | null;
 }
 
-const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onClose, onSave }) => {
+const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onClose, onSave, editingCurrency }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [symbol, setSymbol] = useState('');
   const [rate, setRate] = useState('');
+  const isEditing = !!editingCurrency;
 
   const resetForm = () => {
-    setCode('');
-    setName('');
-    setSymbol('');
-    setRate('');
+    if (editingCurrency) {
+      setCode(editingCurrency.code);
+      setName(editingCurrency.name);
+      setSymbol(editingCurrency.symbol);
+      setRate(editingCurrency.rate.toString());
+    } else {
+      setCode('');
+      setName('');
+      setSymbol('');
+      setRate('');
+    }
   };
 
   const handleSave = async () => {
@@ -58,31 +68,59 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
     }
 
     try {
-      // Check if currency already exists
       const existingCurrencies = await StorageService.getCurrencies();
-      const duplicate = existingCurrencies.find(c => c.code === upperCode);
       
-      if (duplicate) {
-        Alert.alert(t('error'), t('currencyExists', { code: upperCode }));
-        return;
+      if (isEditing && editingCurrency) {
+        // Edit existing currency
+        const duplicate = existingCurrencies.find(c => c.code === upperCode && c.id !== editingCurrency.id);
+        
+        if (duplicate) {
+          Alert.alert(t('error'), t('currencyExists', { code: upperCode }));
+          return;
+        }
+
+        const updatedCurrencies = existingCurrencies.map(currency => {
+          if (currency.id === editingCurrency.id) {
+            return {
+              ...currency,
+              code: upperCode,
+              name: name.trim(),
+              symbol: symbol.trim(),
+              rate: numRate,
+            };
+          }
+          return currency;
+        });
+
+        await StorageService.saveCurrencies(updatedCurrencies);
+        resetForm();
+        onSave();
+        onClose();
+        Alert.alert(t('success'), t('customCurrencyUpdated', { code: upperCode }));
+      } else {
+        // Create new currency
+        const duplicate = existingCurrencies.find(c => c.code === upperCode);
+        
+        if (duplicate) {
+          Alert.alert(t('error'), t('currencyExists', { code: upperCode }));
+          return;
+        }
+
+        const newCurrency = CurrencyService.createCustomCurrency(
+          upperCode,
+          name.trim(),
+          symbol.trim(),
+          numRate
+        );
+
+        const updatedCurrencies = [...existingCurrencies, newCurrency];
+        await StorageService.saveCurrencies(updatedCurrencies);
+
+        resetForm();
+        onSave();
+        onClose();
+        Alert.alert(t('success'), t('customCurrencyAdded', { code: upperCode }));
       }
-
-      // Create new custom currency
-      const newCurrency = CurrencyService.createCustomCurrency(
-        upperCode,
-        name.trim(),
-        symbol.trim(),
-        numRate
-      );
-
-      // Save to storage
-      const updatedCurrencies = [...existingCurrencies, newCurrency];
-      await StorageService.saveCurrencies(updatedCurrencies);
-
-      resetForm();
-      onSave();
-      onClose();
-      Alert.alert(t('success'), t('customCurrencyAdded', { code: upperCode }));
     } catch (error) {
       console.error('Failed to save custom currency:', error);
       Alert.alert(t('error'), t('customCurrencyFailed'));
@@ -108,7 +146,7 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
           <TouchableOpacity onPress={onClose}>
             <Ionicons name="close" size={24} color={theme.colors.text} />
           </TouchableOpacity>
-          <Text style={styles.title}>{t('customCurrency')}</Text>
+          <Text style={styles.title}>{isEditing ? t('editCustomCurrency') : t('customCurrency')}</Text>
           <TouchableOpacity onPress={handleSave}>
             <Ionicons name="checkmark" size={24} color={theme.colors.primary} />
           </TouchableOpacity>
@@ -117,7 +155,7 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
         <ScrollView style={styles.content}>
           <View style={styles.infoBox}>
             <Text style={styles.infoText}>
-              {t('createCustomCurrency')}
+              {isEditing ? t('editCustomCurrencyInfo') : t('createCustomCurrency')}
             </Text>
           </View>
 
@@ -161,13 +199,12 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>{t('exchangeRate')} *</Text>
-            <TextInput
+            <LocalizedNumberInput
               style={styles.input}
               value={rate}
               onChangeText={setRate}
               placeholder={t('rateExample')}
               placeholderTextColor={theme.colors.textSecondary}
-              keyboardType="decimal-pad"
             />
             <Text style={styles.helperText}>
               {t('rateHelper')}
