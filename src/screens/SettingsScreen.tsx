@@ -18,6 +18,7 @@ import CurrencyService, { DEFAULT_CURRENCIES } from '../utils/currency';
 import CustomCurrencyModal from '../components/CustomCurrencyModal';
 import { useTheme, Theme } from '../utils/theme';
 import { setRTL } from '../utils/i18n';
+import { getAppVersion } from '../utils/version';
 
 // SettingItem component for reusable settings list items
 interface SettingItemProps {
@@ -382,7 +383,7 @@ const SettingsScreen = () => {
         />
         <SettingItem
           title={t('version')}
-          description="0.3.0"
+          description={getAppVersion()}
         />
         <SettingItem
           title={t('developer')}
