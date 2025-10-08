@@ -42,6 +42,7 @@ A comprehensive React Native Expo app for tracking personal debts and credits wi
 ### 💾 Data Management & Privacy
 - **100% local data storage** using AsyncStorage - no cloud dependencies
 - Complete privacy - your data never leaves your device
+- **Excel export functionality** - Export all accounts and transactions to Excel files
 - Robust data persistence and recovery
 - Reset all data functionality with confirmation
 - No tracking, no analytics, no data collection
@@ -163,6 +164,14 @@ LedgerWell/
 4. Create custom currencies with manual exchange rates
 5. Manage and delete custom currencies
 
+### Data Export
+1. Go to "Settings" tab
+2. Scroll to "Data Management" section
+3. Tap "Export to Excel" button
+4. Review export statistics and confirm
+5. Excel file will be created and shared automatically
+6. Each account becomes a separate sheet with all transactions
+
 ## API Integration
 
 The app uses [ExchangeRate-API](https://exchangerate-api.com/) for fetching live currency exchange rates. The API is free and doesn't require authentication for basic usage.
@@ -253,7 +262,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Roadmap
 
 ### Planned Features
-- [ ] Data export/import functionality (JSON/CSV)
+- [ ] Data import functionality (JSON/CSV)
 - [ ] Cloud backup options (Google Drive/iCloud)
 - [ ] Expense categories and tags system
 - [ ] Advanced reporting and analytics dashboard
@@ -263,6 +272,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Web dashboard companion app
 
 ### Completed Recently
+- [x] **Excel export functionality** - Export all accounts and transactions to Excel files
 - [x] **Localized number input system** - Native numeral support for Arabic and Farsi
 - [x] Complete 13-language internationalization
 - [x] 39-currency support with live exchange rates

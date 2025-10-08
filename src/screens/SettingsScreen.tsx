@@ -19,6 +19,7 @@ import CustomCurrencyModal from '../components/CustomCurrencyModal';
 import { useTheme, Theme } from '../utils/theme';
 import { setRTL } from '../utils/i18n';
 import { getAppVersion } from '../utils/version';
+import ExcelExportService from '../utils/excelExport';
 
 // SettingItem component for reusable settings list items
 interface SettingItemProps {
@@ -235,6 +236,61 @@ const SettingsScreen = () => {
     Linking.openURL('https://github.com/SepehrMohammady/LedgerWell');
   };
 
+  const exportToExcel = async () => {
+    try {
+      Alert.alert(t('exportData'), t('preparingExport'));
+      
+      // Load all data
+      const [accounts, transactions] = await Promise.all([
+        StorageService.getAccounts(),
+        StorageService.getTransactions()
+      ]);
+
+      if (accounts.length === 0) {
+        Alert.alert(t('noData'), t('noDataToExport'));
+        return;
+      }
+
+      // Get export statistics
+      const stats = ExcelExportService.getExportStats({ accounts, transactions });
+      
+      // Show export confirmation with statistics
+      Alert.alert(
+        t('exportData'),
+        t('exportConfirmation', {
+          accounts: stats.totalAccounts,
+          transactions: stats.totalTransactions,
+          currencies: stats.currencies.join(', ')
+        }),
+        [
+          { text: t('cancel'), style: 'cancel' },
+          {
+            text: t('export'),
+            onPress: async () => {
+              try {
+                await ExcelExportService.exportToExcel(
+                  { accounts, transactions },
+                  {
+                    includeLocalizedNumbers: true,
+                    dateFormat: 'localized',
+                    includeMetadata: true
+                  }
+                );
+                Alert.alert(t('success'), t('exportSuccess'));
+              } catch (error) {
+                console.error('Export failed:', error);
+                Alert.alert(t('error'), t('exportFailed'));
+              }
+            }
+          }
+        ]
+      );
+    } catch (error) {
+      console.error('Failed to prepare export:', error);
+      Alert.alert(t('error'), t('exportPreparationFailed'));
+    }
+  };
+
   if (!settings) {
     const styles = createStyles(theme);
     return (
@@ -369,6 +425,9 @@ const SettingsScreen = () => {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('dataManagement')}</Text>
+        <TouchableOpacity style={styles.button} onPress={exportToExcel}>
+          <Text style={styles.buttonText}>{t('exportToExcel')}</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={[styles.button, styles.dangerButton]} onPress={resetAllData}>
           <Text style={[styles.buttonText, styles.dangerButtonText]}>{t('resetAllData')}</Text>
         </TouchableOpacity>
