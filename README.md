@@ -96,7 +96,8 @@ LedgerWell/
 │   ├── components/          # Reusable UI components
 │   │   ├── AddAccountModal.tsx
 │   │   ├── AddTransactionModal.tsx
-│   │   └── CustomCurrencyModal.tsx
+│   │   ├── CustomCurrencyModal.tsx
+│   │   └── LocalizedNumberInput.tsx # Localized number input for Arabic/Farsi
 │   ├── screens/            # Main app screens
 │   │   ├── HomeScreen.tsx     # Dashboard with summary
 │   │   ├── AccountsScreen.tsx # Account management
@@ -108,6 +109,8 @@ LedgerWell/
 │   │   ├── currency.ts       # Currency conversion & 39 currency definitions
 │   │   ├── storage.ts        # Data persistence layer
 │   │   ├── theme.ts          # Theme management
+│   │   ├── version.ts        # Dynamic app version utilities
+│   │   ├── numberLocalization.ts # Number localization for Arabic/Farsi
 │   │   └── i18n.ts          # Internationalization setup
 │   └── locales/            # Translation files (112+ keys each)
 │       ├── en.json           # English
