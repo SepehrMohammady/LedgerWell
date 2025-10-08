@@ -1,5 +1,5 @@
 import * as XLSX from 'xlsx';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import { Account, Transaction } from '../types';
 import CurrencyService from './currency';
@@ -73,16 +73,16 @@ export class ExcelExportService {
 
       // Save to device
       const fileName = this.generateFileName();
-      const documentsDir = (FileSystem as any).documentDirectory || (FileSystem as any).cacheDirectory || '';
+      const documentsDir = FileSystem.documentDirectory || FileSystem.cacheDirectory || '';
       const fileUri = documentsDir + fileName;
       
-      await (FileSystem as any).writeAsStringAsync(fileUri, excelBuffer, {
-        encoding: 'base64',
+      await FileSystem.writeAsStringAsync(fileUri, excelBuffer, {
+        encoding: FileSystem.EncodingType.Base64,
       });
 
       // Share the file
-      if (await (Sharing as any).isAvailableAsync()) {
-        await (Sharing as any).shareAsync(fileUri, {
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri, {
           mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           dialogTitle: i18n.t('exportData'),
           UTI: 'com.microsoft.excel.xlsx'
