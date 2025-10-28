@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Currency } from '../types';
+import i18n from '../utils/i18n';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
 import { useTheme, Theme } from '../utils/theme';
@@ -75,7 +76,11 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
         const duplicate = existingCurrencies.find(c => c.code === upperCode && c.id !== editingCurrency.id);
         
         if (duplicate) {
-          Alert.alert(t('error'), t('currencyExists', { code: upperCode }));
+          let errorMessage = i18n.t('currencyExists', { code: upperCode });
+          if (errorMessage.includes('{code}')) {
+            errorMessage = errorMessage.replace(/{code}/g, upperCode);
+          }
+          Alert.alert(t('error'), errorMessage);
           return;
         }
 
@@ -96,13 +101,24 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
         resetForm();
         onSave();
         onClose();
-        Alert.alert(t('success'), t('customCurrencyUpdated', { code: upperCode }));
+        // Try direct i18n.t() call instead of useTranslation hook  
+        let message = i18n.t('customCurrencyUpdated', { code: upperCode });
+        // Fallback: if interpolation failed, manually replace the placeholder
+        if (message.includes('{code}')) {
+          message = message.replace(/{code}/g, upperCode);
+        }
+        console.log('Currency updated message:', message, 'Code:', upperCode, 'Direct i18n call');
+        Alert.alert(t('success'), message);
       } else {
         // Create new currency
         const duplicate = existingCurrencies.find(c => c.code === upperCode);
         
         if (duplicate) {
-          Alert.alert(t('error'), t('currencyExists', { code: upperCode }));
+          let errorMessage = i18n.t('currencyExists', { code: upperCode });
+          if (errorMessage.includes('{code}')) {
+            errorMessage = errorMessage.replace(/{code}/g, upperCode);
+          }
+          Alert.alert(t('error'), errorMessage);
           return;
         }
 
@@ -119,7 +135,14 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
         resetForm();
         onSave();
         onClose();
-        Alert.alert(t('success'), t('customCurrencyAdded', { code: upperCode }));
+        // Try direct i18n.t() call instead of useTranslation hook
+        let message = i18n.t('customCurrencyAdded', { code: upperCode });
+        // Fallback: if interpolation failed, manually replace the placeholder
+        if (message.includes('{code}')) {
+          message = message.replace(/{code}/g, upperCode);
+        }
+        console.log('Currency added message:', message, 'Code:', upperCode, 'Direct i18n call');
+        Alert.alert(t('success'), message);
       }
     } catch (error) {
       console.error('Failed to save custom currency:', error);
