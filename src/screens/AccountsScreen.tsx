@@ -15,6 +15,7 @@ import { Account } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
 import AddAccountModal from '../components/AddAccountModal';
+import AccountTransactionsModal from '../components/AccountTransactionsModal';
 import { useTheme, Theme } from '../utils/theme';
 
 const AccountsScreen = () => {
@@ -25,6 +26,8 @@ const AccountsScreen = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [addAccountModalVisible, setAddAccountModalVisible] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+  const [transactionsModalVisible, setTransactionsModalVisible] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -87,6 +90,11 @@ const AccountsScreen = () => {
     }
   };
 
+  const handleViewTransactions = (account: Account) => {
+    setSelectedAccount(account);
+    setTransactionsModalVisible(true);
+  };
+
   const getBalanceColor = (balance: number) => {
     if (balance > 0) return '#4CAF50';
     if (balance < 0) return '#F44336';
@@ -97,7 +105,11 @@ const AccountsScreen = () => {
     const netBalance = item.totalOwedToMe - item.totalOwed;
     
     return (
-      <View style={styles.accountCard}>
+      <TouchableOpacity 
+        style={styles.accountCard}
+        onPress={() => handleViewTransactions(item)}
+        activeOpacity={0.7}
+      >
         <View style={styles.accountHeader}>
           <View style={styles.accountInfo}>
             <Text style={styles.accountName}>{item.name}</Text>
@@ -108,13 +120,19 @@ const AccountsScreen = () => {
           <View style={styles.accountActions}>
             <TouchableOpacity 
               style={styles.actionButton}
-              onPress={() => handleEditAccount(item)}
+              onPress={(e) => {
+                e.stopPropagation();
+                handleEditAccount(item);
+              }}
             >
               <Ionicons name="pencil" size={18} color="white" />
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionButton, styles.deleteButton]}
-              onPress={() => handleDeleteAccount(item)}
+              onPress={(e) => {
+                e.stopPropagation();
+                handleDeleteAccount(item);
+              }}
             >
               <Ionicons name="trash" size={18} color="white" />
             </TouchableOpacity>
@@ -143,7 +161,7 @@ const AccountsScreen = () => {
             </Text>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
@@ -197,6 +215,15 @@ const AccountsScreen = () => {
           setEditingAccount(null);
         }}
         editAccount={editingAccount}
+      />
+
+      <AccountTransactionsModal
+        visible={transactionsModalVisible}
+        account={selectedAccount}
+        onClose={() => {
+          setTransactionsModalVisible(false);
+          setSelectedAccount(null);
+        }}
       />
     </View>
   );

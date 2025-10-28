@@ -177,8 +177,8 @@
   "importFailed": "فشل الاستيراد: {{error}}",
   "importExecutionFailed": "فشل في معالجة بيانات الاستيراد",
   "noAccountsToImport": "لم يتم العثور على حسابات صحيحة في ملف Excel",
-  "invalidAccountName": "الحساب {{index}} له اسم غير صحيح",
-  "invalidAccountCurrency": "الحساب {{index}} له عملة غير صحيحة",
+  "invalidAccountName": "حساب {{index}} له اسم غير صحيح",
+  "invalidAccountCurrency": "حساب {{index}} له عملة غير صحيحة",
   "emptyTransactionName": "المعاملة {{index}} لها اسم فارغ",
   "invalidTransactionAmount": "المعاملة {{index}} لها مبلغ غير صحيح",
   "invalidTransactionType": "المعاملة {{index}} لها نوع غير صحيح"
