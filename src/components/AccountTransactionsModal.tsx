@@ -14,6 +14,7 @@ import { Account, Transaction } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
 import { useTheme, Theme } from '../utils/theme';
+import { toLocalizedNumerals } from '../utils/numberLocalization';
 
 interface AccountTransactionsModalProps {
   visible: boolean;
@@ -191,7 +192,7 @@ const AccountTransactionsModal: React.FC<AccountTransactionsModalProps> = ({
         <View style={styles.content}>
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-              {t('transactions')} ({transactions.length})
+              {t('transactions')} ({toLocalizedNumerals(transactions.length.toString())})
             </Text>
           </View>
           
