@@ -621,13 +621,13 @@ const SettingsScreen = () => {
           title={t('developer')}
           description="Sepehr Mohammady"
           onPress={handleOpenWebsite}
-          rightElement={<Ionicons name="open-outline" size={20} color="#007AFF" />}
+          rightElement={<Ionicons name="open-outline" size={20} color={theme.colors.primary} />}
         />
         <SettingItem
           title={t('sourceCode')}
           description="github.com/SepehrMohammady/LedgerWell"
           onPress={handleOpenGitHub}
-          rightElement={<Ionicons name="logo-github" size={20} color="#007AFF" />}
+          rightElement={<Ionicons name="logo-github" size={20} color={theme.colors.primary} />}
         />
         <SettingItem
           title={t('privacy')}
@@ -724,7 +724,7 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     color: 'white',
   },
   importButton: {
-    backgroundColor: theme.colors.success || '#28a745',
+    backgroundColor: theme.colors.success,
   },
   importButtonText: {
     color: 'white',
@@ -776,7 +776,7 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     backgroundColor: theme.colors.primary,
   },
   deleteButton: {
-    backgroundColor: '#F44336',
+    backgroundColor: theme.colors.error,
   },
   // SettingItem styles
   settingItem: {

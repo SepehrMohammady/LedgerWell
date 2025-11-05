@@ -67,7 +67,7 @@ const TransactionsScreen = () => {
   };
 
   const getTypeColor = (type: string) => {
-    return type === 'debt' ? '#F44336' : '#4CAF50';
+    return type === 'debt' ? theme.colors.error : theme.colors.success;
   };
 
   const getTypeLabel = (type: string) => {
@@ -283,7 +283,7 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     backgroundColor: theme.colors.primary,
   },
   deleteButton: {
-    backgroundColor: '#F44336',
+    backgroundColor: theme.colors.error,
   },
   typeLabel: {
     fontSize: 12,

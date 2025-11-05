@@ -87,9 +87,9 @@ const HomeScreen = () => {
   };
 
   const getBalanceColor = (balance: number) => {
-    if (balance > 0) return '#4CAF50'; // Green for positive
-    if (balance < 0) return '#F44336'; // Red for negative
-    return '#9E9E9E'; // Gray for zero
+    if (balance > 0) return theme.colors.success; // Positive balance
+    if (balance < 0) return theme.colors.error; // Negative balance
+    return theme.colors.textSecondary; // Zero balance
   };
 
   const styles = createStyles(theme);
@@ -108,7 +108,7 @@ const HomeScreen = () => {
       <View style={styles.summaryContainer}>
         <View style={styles.summaryCard}>
           <Text style={styles.summaryLabel}>{t('totalOwed')}</Text>
-          <Text style={[styles.summaryAmount, { color: '#F44336' }]}>
+          <Text style={[styles.summaryAmount, { color: theme.colors.error }]}>
             {defaultCurrency
               ? CurrencyService.formatAmount(summary.totalOwed, defaultCurrency)
               : '$0.00'}
@@ -117,7 +117,7 @@ const HomeScreen = () => {
 
         <View style={styles.summaryCard}>
           <Text style={styles.summaryLabel}>{t('totalOwedToMe')}</Text>
-          <Text style={[styles.summaryAmount, { color: '#4CAF50' }]}>
+          <Text style={[styles.summaryAmount, { color: theme.colors.success }]}>
             {defaultCurrency
               ? CurrencyService.formatAmount(summary.totalOwedToMe, defaultCurrency)
               : '$0.00'}

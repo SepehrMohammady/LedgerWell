@@ -20,35 +20,35 @@ export interface Theme {
 
 const lightTheme: Theme = {
   colors: {
-    primary: '#007AFF',
-    background: '#f5f5f5',
-    surface: '#ffffff',
-    text: '#333333',
-    textSecondary: '#666666',
-    border: '#e0e0e0',
-    success: '#4CAF50',
-    error: '#F44336',
-    warning: '#FF9800',
-    tabBarBackground: '#ffffff',
-    tabBarActiveTint: '#007AFF',
-    tabBarInactiveTint: '#8E8E93',
+    primary: '#5F758E',        // Muted blue-gray
+    background: '#F0F0F0',     // Light neutral gray
+    surface: '#FFFFFF',        // Pure white
+    text: '#2C2C2C',          // Dark gray
+    textSecondary: '#758793',  // Muted blue-gray
+    border: '#E7E7E7',        // Very light gray
+    success: '#A2A9A3',       // Muted sage green
+    error: '#CD9C8B',         // Muted terracotta
+    warning: '#CB936A',       // Muted amber
+    tabBarBackground: '#FFFFFF',
+    tabBarActiveTint: '#5F758E',
+    tabBarInactiveTint: '#B6BCBE',
   },
 };
 
 const darkTheme: Theme = {
   colors: {
-    primary: '#0A84FF',
-    background: '#000000',
-    surface: '#1C1C1E',
-    text: '#FFFFFF',
-    textSecondary: '#8E8E93',
-    border: '#38383A',
-    success: '#30D158',
-    error: '#FF453A',
-    warning: '#FF9F0A',
-    tabBarBackground: '#1C1C1E',
-    tabBarActiveTint: '#0A84FF',
-    tabBarInactiveTint: '#8E8E93',
+    primary: '#A6B4B2',       // Light muted teal-gray
+    background: '#1A1A1A',    // Very dark gray
+    surface: '#2C2C2E',       // Dark gray surface
+    text: '#E8C9B5',          // Warm light beige
+    textSecondary: '#A17F66', // Muted tan
+    border: '#3A3A3C',        // Dark border
+    success: '#A2A9A3',       // Muted sage green
+    error: '#D6AD9D',         // Muted rose
+    warning: '#CD9E7A',       // Muted caramel
+    tabBarBackground: '#2C2C2E',
+    tabBarActiveTint: '#A6B4B2',
+    tabBarInactiveTint: '#758793',
   },
 };
 

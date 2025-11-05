@@ -66,7 +66,7 @@ const AccountTransactionsModal: React.FC<AccountTransactionsModalProps> = ({
   };
 
   const getTransactionColor = (type: 'debt' | 'credit') => {
-    return type === 'debt' ? '#F44336' : '#4CAF50';
+    return type === 'debt' ? theme.colors.error : theme.colors.success;
   };
 
   const renderTransactionItem = ({ item }: { item: Transaction }) => {
@@ -121,9 +121,9 @@ const AccountTransactionsModal: React.FC<AccountTransactionsModalProps> = ({
 
   const netBalance = account.totalOwedToMe - account.totalOwed;
   const getBalanceColor = (balance: number) => {
-    if (balance > 0) return '#4CAF50';
-    if (balance < 0) return '#F44336';
-    return '#9E9E9E';
+    if (balance > 0) return theme.colors.success;
+    if (balance < 0) return theme.colors.error;
+    return theme.colors.text;
   };
 
   const styles = createStyles(theme);

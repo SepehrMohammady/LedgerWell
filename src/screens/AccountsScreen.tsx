@@ -96,9 +96,9 @@ const AccountsScreen = () => {
   };
 
   const getBalanceColor = (balance: number) => {
-    if (balance > 0) return '#4CAF50';
-    if (balance < 0) return '#F44336';
-    return '#9E9E9E';
+    if (balance > 0) return theme.colors.success;
+    if (balance < 0) return theme.colors.error;
+    return theme.colors.text;
   };
 
   const renderAccountItem = ({ item }: { item: Account }) => {
@@ -142,14 +142,14 @@ const AccountsScreen = () => {
         <View style={styles.balanceContainer}>
           <View style={styles.balanceItem}>
             <Text style={styles.balanceLabel}>{t('totalOwed')}</Text>
-            <Text style={[styles.balanceAmount, { color: '#F44336' }]}>
+            <Text style={[styles.balanceAmount, { color: theme.colors.error }]}>
               {CurrencyService.formatAmount(item.totalOwed, item.currency)}
             </Text>
           </View>
           
           <View style={styles.balanceItem}>
             <Text style={styles.balanceLabel}>{t('totalOwedToMe')}</Text>
-            <Text style={[styles.balanceAmount, { color: '#4CAF50' }]}>
+            <Text style={[styles.balanceAmount, { color: theme.colors.success }]}>
               {CurrencyService.formatAmount(item.totalOwedToMe, item.currency)}
             </Text>
           </View>
