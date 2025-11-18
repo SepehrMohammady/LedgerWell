@@ -1,43 +1,101 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { AppState, AppStateStatus } from 'react-native';
 import i18n from './src/utils/i18n';
 import { ThemeProvider, useTheme } from './src/utils/theme';
 import StorageService from './src/utils/storage';
 import { setRTL } from './src/utils/i18n';
+import { isPasswordSet } from './src/utils/auth';
 
 // Import screens
 import HomeScreen from './src/screens/HomeScreen';
 import AccountsScreen from './src/screens/AccountsScreen';
 import TransactionsScreen from './src/screens/TransactionsScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
+import { LockScreen } from './src/screens/LockScreen';
+import { SetupPasswordScreen } from './src/screens/SetupPasswordScreen';
 
 const Tab = createBottomTabNavigator();
 
 const AppContent = () => {
   const { theme, isDark } = useTheme();
   const { t } = useTranslation();
+  const [isLocked, setIsLocked] = useState(true);
+  const [isPasswordConfigured, setIsPasswordConfigured] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   useEffect(() => {
-    // Initialize language on app startup
-    const initializeLanguage = async () => {
+    // Initialize language and authentication on app startup
+    const initializeApp = async () => {
       try {
+        // Initialize language
         const settings = await StorageService.getSettings();
         if (settings && settings.language && settings.language !== i18n.language) {
           await i18n.changeLanguage(settings.language);
           setRTL(settings.language);
         }
+
+        // Check if password is configured
+        const passwordConfigured = await isPasswordSet();
+        setIsPasswordConfigured(passwordConfigured);
+        setIsLocked(passwordConfigured);
       } catch (error) {
-        console.error('Failed to initialize language:', error);
+        console.error('Failed to initialize app:', error);
+      } finally {
+        setIsCheckingAuth(false);
       }
     };
     
-    initializeLanguage();
+    initializeApp();
   }, []);
+
+  // Lock app when it goes to background
+  useEffect(() => {
+    const handleAppStateChange = async (nextAppState: AppStateStatus) => {
+      if (nextAppState === 'background' || nextAppState === 'inactive') {
+        const passwordConfigured = await isPasswordSet();
+        if (passwordConfigured) {
+          setIsLocked(true);
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
+
+  const handleUnlock = () => {
+    setIsLocked(false);
+  };
+
+  const handlePasswordSetup = async () => {
+    const passwordConfigured = await isPasswordSet();
+    setIsPasswordConfigured(passwordConfigured);
+    setIsLocked(false);
+  };
+
+  // Show loading state while checking authentication
+  if (isCheckingAuth) {
+    return null; // Or a loading screen
+  }
+
+  // Show setup screen if password is not configured
+  if (!isPasswordConfigured) {
+    return <SetupPasswordScreen onComplete={handlePasswordSetup} />;
+  }
+
+  // Show lock screen if app is locked
+  if (isLocked) {
+    return <LockScreen onUnlock={handleUnlock} />;
+  }
 
   return (
     <NavigationContainer>

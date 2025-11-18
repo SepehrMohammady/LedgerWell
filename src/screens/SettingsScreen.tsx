@@ -8,6 +8,8 @@ import {
   Switch,
   Alert,
   Linking,
+  TextInput,
+  Modal,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
@@ -21,6 +23,14 @@ import { setRTL } from '../utils/i18n';
 import { getAppVersion } from '../utils/version';
 import ExcelExportService from '../utils/excelExport';
 import ExcelImportService, { ImportData, ImportOptions } from '../utils/excelImport';
+import {
+  isPasswordSet,
+  isBiometricAvailable,
+  isBiometricEnabled,
+  setBiometricEnabled,
+  changePassword,
+  resetPassword,
+} from '../utils/auth';
 
 // SettingItem component for reusable settings list items
 interface SettingItemProps {
@@ -81,11 +91,38 @@ const SettingsScreen = () => {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [customCurrencyModalVisible, setCustomCurrencyModalVisible] = useState(false);
   const [editingCurrency, setEditingCurrency] = useState<Currency | null>(null);
+  
+  // Security states
+  const [hasPassword, setHasPassword] = useState(false);
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [biometricEnabled, setBiometricEnabledState] = useState(false);
+  const [changePasswordModalVisible, setChangePasswordModalVisible] = useState(false);
+  const [oldPassword, setOldPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
 
   useEffect(() => {
     loadSettings();
     loadCurrencies();
+    loadSecuritySettings();
   }, []);
+
+  const loadSecuritySettings = async () => {
+    try {
+      const passwordSet = await isPasswordSet();
+      setHasPassword(passwordSet);
+      
+      const bioAvailable = await isBiometricAvailable();
+      setBiometricAvailable(bioAvailable);
+      
+      if (bioAvailable) {
+        const bioEnabled = await isBiometricEnabled();
+        setBiometricEnabledState(bioEnabled);
+      }
+    } catch (error) {
+      console.error('Failed to load security settings:', error);
+    }
+  };
 
   const loadSettings = async () => {
     try {
@@ -366,6 +403,72 @@ const SettingsScreen = () => {
     }
   };
 
+  // Security handlers
+  const handleToggleBiometric = async (value: boolean) => {
+    try {
+      await setBiometricEnabled(value);
+      setBiometricEnabledState(value);
+      Alert.alert(
+        t('success'),
+        value ? t('biometricEnabled') : t('biometricDisabled')
+      );
+    } catch (error) {
+      Alert.alert(t('error'), t('failedToUpdateBiometric'));
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (!oldPassword || !newPassword || !confirmNewPassword) {
+      Alert.alert(t('error'), t('pleaseEnterPassword'));
+      return;
+    }
+
+    if (newPassword.length < 4) {
+      Alert.alert(t('error'), t('passwordTooShort'));
+      return;
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      Alert.alert(t('error'), t('passwordsDoNotMatch'));
+      return;
+    }
+
+    const result = await changePassword(oldPassword, newPassword);
+    
+    if (result.success) {
+      Alert.alert(t('success'), t('passwordChangedSuccessfully'));
+      setChangePasswordModalVisible(false);
+      setOldPassword('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+    } else {
+      Alert.alert(t('error'), result.error || t('failedToChangePassword'));
+    }
+  };
+
+  const handleRemovePassword = () => {
+    Alert.alert(
+      t('removePassword'),
+      t('removePasswordWarning'),
+      [
+        { text: t('cancel'), style: 'cancel' },
+        {
+          text: t('remove'),
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await resetPassword();
+              await loadSecuritySettings();
+              Alert.alert(t('success'), t('passwordRemovedSuccessfully'));
+            } catch (error) {
+              Alert.alert(t('error'), t('failedToRemovePassword'));
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const executeImport = async (importData: ImportData, options: ImportOptions) => {
     try {
       Alert.alert(t('importData'), t('processingImport'));
@@ -593,6 +696,51 @@ const SettingsScreen = () => {
         </View>
       )}
 
+      {/* Security Section */}
+      <View style={styles.section}>
+        <SectionHeader title={t('security')} />
+        
+        {hasPassword ? (
+          <>
+            <SettingItem
+              title={t('changePassword')}
+              description={t('changePasswordDescription')}
+              onPress={() => setChangePasswordModalVisible(true)}
+              rightElement={<Ionicons name="key" size={20} color={theme.colors.primary} />}
+            />
+            
+            {biometricAvailable && (
+              <SettingItem
+                title={t('biometricAuth')}
+                description={t('biometricAuthDescription')}
+                rightElement={
+                  <Switch
+                    value={biometricEnabled}
+                    onValueChange={handleToggleBiometric}
+                    trackColor={{ false: theme.colors.border, true: theme.colors.primary }}
+                    thumbColor="white"
+                  />
+                }
+              />
+            )}
+            
+            <SettingItem
+              title={t('removePassword')}
+              description={t('removePasswordDescription')}
+              onPress={handleRemovePassword}
+              rightElement={<Ionicons name="trash" size={20} color={theme.colors.error} />}
+              isLast={true}
+            />
+          </>
+        ) : (
+          <SettingItem
+            title={t('noPasswordSet')}
+            description={t('noPasswordSetDescription')}
+            isLast={true}
+          />
+        )}
+      </View>
+
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('dataManagement')}</Text>
         <TouchableOpacity style={styles.button} onPress={exportToExcel}>
@@ -656,6 +804,80 @@ const SettingsScreen = () => {
           loadCurrencies();
         }}
       />
+
+      {/* Change Password Modal */}
+      <Modal
+        visible={changePasswordModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setChangePasswordModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{t('changePassword')}</Text>
+              <TouchableOpacity onPress={() => setChangePasswordModalVisible(false)}>
+                <Ionicons name="close" size={24} color={theme.colors.text} />
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.modalBody}>
+              <Text style={styles.inputLabel}>{t('currentPassword')}</Text>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder={t('enterCurrentPassword')}
+                placeholderTextColor={theme.colors.textSecondary}
+                value={oldPassword}
+                onChangeText={setOldPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+
+              <Text style={styles.inputLabel}>{t('newPassword')}</Text>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder={t('enterNewPassword')}
+                placeholderTextColor={theme.colors.textSecondary}
+                value={newPassword}
+                onChangeText={setNewPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+
+              <Text style={styles.inputLabel}>{t('confirmNewPassword')}</Text>
+              <TextInput
+                style={styles.passwordInput}
+                placeholder={t('confirmNewPassword')}
+                placeholderTextColor={theme.colors.textSecondary}
+                value={confirmNewPassword}
+                onChangeText={setConfirmNewPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+
+              <View style={styles.modalButtons}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.modalCancelButton]}
+                  onPress={() => {
+                    setChangePasswordModalVisible(false);
+                    setOldPassword('');
+                    setNewPassword('');
+                    setConfirmNewPassword('');
+                  }}
+                >
+                  <Text style={styles.modalCancelButtonText}>{t('cancel')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.modalConfirmButton]}
+                  onPress={handleChangePassword}
+                >
+                  <Text style={styles.modalConfirmButtonText}>{t('change')}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 };
@@ -824,6 +1046,86 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     color: theme.colors.textSecondary,
     textAlign: 'center',
     opacity: 0.7,
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContent: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: 16,
+    width: '100%',
+    maxWidth: 400,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.border,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: theme.colors.text,
+  },
+  modalBody: {
+    padding: 20,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: theme.colors.text,
+    marginBottom: 8,
+    marginTop: 12,
+  },
+  passwordInput: {
+    backgroundColor: theme.colors.background,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 16,
+    color: theme.colors.text,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 24,
+  },
+  modalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  modalCancelButton: {
+    backgroundColor: theme.colors.background,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  modalCancelButtonText: {
+    color: theme.colors.text,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  modalConfirmButton: {
+    backgroundColor: theme.colors.primary,
+  },
+  modalConfirmButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });
 
