@@ -30,6 +30,7 @@ import {
   setBiometricEnabled,
   changePassword,
   resetPassword,
+  setPassword,
 } from '../utils/auth';
 
 // SettingItem component for reusable settings list items
@@ -418,6 +419,38 @@ const SettingsScreen = () => {
   };
 
   const handleChangePassword = async () => {
+    // If no password is set, allow setting one without old password
+    if (!hasPassword) {
+      if (!newPassword || !confirmNewPassword) {
+        Alert.alert(t('error'), t('pleaseEnterPassword'));
+        return;
+      }
+
+      if (newPassword.length < 4) {
+        Alert.alert(t('error'), t('passwordTooShort'));
+        return;
+      }
+
+      if (newPassword !== confirmNewPassword) {
+        Alert.alert(t('error'), t('passwordsDoNotMatch'));
+        return;
+      }
+
+      try {
+        await setPassword(newPassword);
+        await loadSecuritySettings();
+        Alert.alert(t('success'), t('passwordSetSuccessfully'));
+        setChangePasswordModalVisible(false);
+        setOldPassword('');
+        setNewPassword('');
+        setConfirmNewPassword('');
+      } catch (error) {
+        Alert.alert(t('error'), t('failedToSetPassword'));
+      }
+      return;
+    }
+
+    // If password exists, require old password to change
     if (!oldPassword || !newPassword || !confirmNewPassword) {
       Alert.alert(t('error'), t('pleaseEnterPassword'));
       return;
@@ -734,8 +767,10 @@ const SettingsScreen = () => {
           </>
         ) : (
           <SettingItem
-            title={t('noPasswordSet')}
-            description={t('noPasswordSetDescription')}
+            title={t('setupPassword')}
+            description={t('setupPasswordDescription')}
+            onPress={() => setChangePasswordModalVisible(true)}
+            rightElement={<Ionicons name="key" size={20} color={theme.colors.primary} />}
             isLast={true}
           />
         )}
@@ -822,18 +857,22 @@ const SettingsScreen = () => {
             </View>
 
             <View style={styles.modalBody}>
-              <Text style={styles.inputLabel}>{t('currentPassword')}</Text>
-              <TextInput
-                style={styles.passwordInput}
-                placeholder={t('enterCurrentPassword')}
-                placeholderTextColor={theme.colors.textSecondary}
-                value={oldPassword}
-                onChangeText={setOldPassword}
-                secureTextEntry
-                autoCapitalize="none"
-              />
+              {hasPassword && (
+                <>
+                  <Text style={styles.inputLabel}>{t('currentPassword')}</Text>
+                  <TextInput
+                    style={styles.passwordInput}
+                    placeholder={t('enterCurrentPassword')}
+                    placeholderTextColor={theme.colors.textSecondary}
+                    value={oldPassword}
+                    onChangeText={setOldPassword}
+                    secureTextEntry
+                    autoCapitalize="none"
+                  />
+                </>
+              )}
 
-              <Text style={styles.inputLabel}>{t('newPassword')}</Text>
+              <Text style={styles.inputLabel}>{hasPassword ? t('newPassword') : t('password')}</Text>
               <TextInput
                 style={styles.passwordInput}
                 placeholder={t('enterNewPassword')}

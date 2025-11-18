@@ -10,7 +10,7 @@ import i18n from './src/utils/i18n';
 import { ThemeProvider, useTheme } from './src/utils/theme';
 import StorageService from './src/utils/storage';
 import { setRTL } from './src/utils/i18n';
-import { isPasswordSet } from './src/utils/auth';
+import { isPasswordSet, isSetupCompleted } from './src/utils/auth';
 
 // Import screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -28,6 +28,7 @@ const AppContent = () => {
   const [isLocked, setIsLocked] = useState(true);
   const [isPasswordConfigured, setIsPasswordConfigured] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+  const [showSetupScreen, setShowSetupScreen] = useState(false);
 
   useEffect(() => {
     // Initialize language and authentication on app startup
@@ -40,10 +41,16 @@ const AppContent = () => {
           setRTL(settings.language);
         }
 
+        // Check if user has completed setup
+        const setupCompleted = await isSetupCompleted();
+        
         // Check if password is configured
         const passwordConfigured = await isPasswordSet();
         setIsPasswordConfigured(passwordConfigured);
         setIsLocked(passwordConfigured);
+        
+        // Show setup screen only if not completed and no password set
+        setShowSetupScreen(!setupCompleted && !passwordConfigured);
       } catch (error) {
         console.error('Failed to initialize app:', error);
       } finally {
@@ -87,13 +94,13 @@ const AppContent = () => {
     return null; // Or a loading screen
   }
 
-  // Show setup screen if password is not configured
-  if (!isPasswordConfigured) {
+  // Show setup screen only on first launch (if user hasn't completed setup)
+  if (showSetupScreen) {
     return <SetupPasswordScreen onComplete={handlePasswordSetup} />;
   }
 
-  // Show lock screen if app is locked
-  if (isLocked) {
+  // Show lock screen if app is locked and password is configured
+  if (isLocked && isPasswordConfigured) {
     return <LockScreen onUnlock={handleUnlock} />;
   }
 

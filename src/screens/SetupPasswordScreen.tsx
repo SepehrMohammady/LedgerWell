@@ -18,6 +18,7 @@ import {
   setPassword,
   isBiometricAvailable,
   setBiometricEnabled,
+  setSetupCompleted,
 } from '../utils/auth';
 
 interface SetupPasswordScreenProps {
@@ -81,6 +82,9 @@ export const SetupPasswordScreen: React.FC<SetupPasswordScreenProps> = ({
       if (biometricAvailable) {
         await setBiometricEnabled(enableBiometric);
       }
+
+      // Mark setup as completed
+      await setSetupCompleted(true);
 
       Alert.alert(
         t('success'),
@@ -228,7 +232,10 @@ export const SetupPasswordScreen: React.FC<SetupPasswordScreenProps> = ({
 
           <TouchableOpacity
             style={styles.skipButton}
-            onPress={onComplete}
+            onPress={async () => {
+              await setSetupCompleted(true);
+              onComplete();
+            }}
             disabled={loading}
           >
             <Text style={styles.skipButtonText}>{t('skipForNow')}</Text>

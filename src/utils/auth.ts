@@ -4,6 +4,7 @@ import * as Crypto from 'expo-crypto';
 
 const PASSWORD_KEY = 'user_password_hash';
 const BIOMETRIC_ENABLED_KEY = 'biometric_enabled';
+const SETUP_COMPLETED_KEY = 'setup_completed';
 
 /**
  * Hash a password using SHA-256
@@ -158,4 +159,19 @@ export const changePassword = async (
 export const resetPassword = async (): Promise<void> => {
   await SecureStore.deleteItemAsync(PASSWORD_KEY);
   await SecureStore.deleteItemAsync(BIOMETRIC_ENABLED_KEY);
+};
+
+/**
+ * Check if user has completed the initial setup
+ */
+export const isSetupCompleted = async (): Promise<boolean> => {
+  const completed = await SecureStore.getItemAsync(SETUP_COMPLETED_KEY);
+  return completed === 'true';
+};
+
+/**
+ * Mark setup as completed
+ */
+export const setSetupCompleted = async (completed: boolean): Promise<void> => {
+  await SecureStore.setItemAsync(SETUP_COMPLETED_KEY, completed.toString());
 };
