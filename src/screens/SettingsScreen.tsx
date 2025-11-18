@@ -510,12 +510,22 @@ const SettingsScreen = () => {
         // Clear existing data
         await StorageService.clearAllData();
         
-        // Save all imported data
+        // Create a map of old account IDs to new account IDs
+        const accountIdMap = new Map<string, string>();
+        
+        // Save all imported accounts and build ID map
         for (const account of importData.accounts) {
+          const oldId = account.id;
           await StorageService.saveAccount(account);
+          accountIdMap.set(oldId, account.id);
         }
         
+        // Save all imported transactions with updated account IDs
         for (const transaction of importData.transactions) {
+          const newAccountId = accountIdMap.get(transaction.accountId);
+          if (newAccountId) {
+            transaction.accountId = newAccountId;
+          }
           await StorageService.saveTransaction(transaction);
         }
       } else {
@@ -526,8 +536,12 @@ const SettingsScreen = () => {
         let addedAccounts = 0;
         let addedTransactions = 0;
         
+        // Create a map of old account IDs to new account IDs
+        const accountIdMap = new Map<string, string>();
+        
         // Add non-duplicate accounts
         for (const account of importData.accounts) {
+          const oldId = account.id;
           const isDuplicate = existingAccounts.some(existing => 
             existing.name.toLowerCase() === account.name.toLowerCase() &&
             existing.currency.code === account.currency.code
@@ -540,12 +554,28 @@ const SettingsScreen = () => {
               account.name = `${account.name} (Imported)`;
             }
             await StorageService.saveAccount(account);
+            accountIdMap.set(oldId, account.id);
             addedAccounts++;
+          } else {
+            // Account was skipped, but we still need to map its ID for transactions
+            const existingAccount = existingAccounts.find(existing => 
+              existing.name.toLowerCase() === account.name.toLowerCase() &&
+              existing.currency.code === account.currency.code
+            );
+            if (existingAccount) {
+              accountIdMap.set(oldId, existingAccount.id);
+            }
           }
         }
         
-        // Add non-duplicate transactions
+        // Add non-duplicate transactions with updated account IDs
         for (const transaction of importData.transactions) {
+          // Update transaction's account ID to match the imported/existing account
+          const newAccountId = accountIdMap.get(transaction.accountId);
+          if (newAccountId) {
+            transaction.accountId = newAccountId;
+          }
+          
           const isDuplicate = existingTransactions.some(existing => {
             const dateDiff = Math.abs(existing.date.getTime() - transaction.date.getTime());
             const isDateClose = dateDiff < 24 * 60 * 60 * 1000;
