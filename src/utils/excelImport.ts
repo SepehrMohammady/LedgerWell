@@ -194,14 +194,21 @@ export class ExcelImportService {
       };
 
       // Find transaction data start (look for headers)
+      // We need to find a row with multiple transaction-related columns
       let transactionStartRow = -1;
       for (let i = 0; i < data.length; i++) {
         const row = data[i];
-        if (row && row.some((cell: any) => 
-          cell === i18n.t('date') || 
-          cell === 'Date' || 
-          String(cell).toLowerCase().includes('date')
-        )) {
+        if (!row || row.length < 4) continue;
+        
+        // Check if this row contains transaction headers
+        // Must have Date, Type, Amount, and Name columns
+        const rowStr = row.map((cell: any) => String(cell || '').toLowerCase()).join('|');
+        const hasDate = row.some((cell: any) => String(cell).toLowerCase() === 'date' || cell === i18n.t('date'));
+        const hasType = row.some((cell: any) => String(cell).toLowerCase() === 'type' || cell === i18n.t('type'));
+        const hasAmount = row.some((cell: any) => String(cell).toLowerCase() === 'amount' || cell === i18n.t('amount'));
+        const hasName = row.some((cell: any) => String(cell).toLowerCase() === 'name' || cell === i18n.t('name'));
+        
+        if (hasDate && hasType && hasAmount && hasName) {
           transactionStartRow = i;
           break;
         }
