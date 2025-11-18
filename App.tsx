@@ -86,6 +86,7 @@ const AppContent = () => {
   const handlePasswordSetup = async () => {
     const passwordConfigured = await isPasswordSet();
     setIsPasswordConfigured(passwordConfigured);
+    setShowSetupScreen(false);
     setIsLocked(false);
   };
 
