@@ -319,10 +319,25 @@ export class ExcelImportService {
         // Excel serial date
         date = new Date((dateValue - 25569) * 86400 * 1000);
       } else {
-        date = new Date(String(dateValue));
+        // String date - try different formats
+        const dateStr = String(dateValue);
+        
+        // Try parsing as M/D/YYYY or D/M/YYYY
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+          // Assume M/D/YYYY format (US format) since Excel typically exports in this format
+          const month = parseInt(parts[0], 10);
+          const day = parseInt(parts[1], 10);
+          const year = parseInt(parts[2], 10);
+          date = new Date(year, month - 1, day);
+        } else {
+          // Fallback to standard parsing
+          date = new Date(dateStr);
+        }
       }
 
       if (isNaN(date.getTime())) {
+        console.error(`Invalid date value: ${dateValue}, parsed as: ${date}`);
         throw new Error(`Invalid date: ${dateValue}`);
       }
 
