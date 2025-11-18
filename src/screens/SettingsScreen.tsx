@@ -506,9 +506,38 @@ const SettingsScreen = () => {
     try {
       Alert.alert(t('importData'), t('processingImport'));
       
+      // Extract and save custom currencies first
+      const customCurrencies = importData.accounts
+        .map(account => account.currency)
+        .filter(currency => currency.isCustom);
+      
+      if (customCurrencies.length > 0) {
+        const existingCurrencies = await StorageService.getCurrencies();
+        const currenciesMap = new Map(existingCurrencies.map(c => [c.code, c]));
+        
+        // Add custom currencies that don't exist yet
+        customCurrencies.forEach(currency => {
+          if (!currenciesMap.has(currency.code)) {
+            currenciesMap.set(currency.code, currency);
+          }
+        });
+        
+        await StorageService.saveCurrencies(Array.from(currenciesMap.values()));
+      }
+      
       if (options.replaceExistingData) {
         // Clear existing data
         await StorageService.clearAllData();
+        
+        // Re-save custom currencies after clearing (since clearAllData removes them)
+        if (customCurrencies.length > 0) {
+          const defaultCurrencies = await StorageService.getCurrencies();
+          const currenciesMap = new Map(defaultCurrencies.map(c => [c.code, c]));
+          customCurrencies.forEach(currency => {
+            currenciesMap.set(currency.code, currency);
+          });
+          await StorageService.saveCurrencies(Array.from(currenciesMap.values()));
+        }
         
         // Create a map of old account IDs to new account IDs
         const accountIdMap = new Map<string, string>();
