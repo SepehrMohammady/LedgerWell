@@ -310,9 +310,14 @@ export class ExcelImportService {
       // Parse type
       const typeStr = String(typeValue).toLowerCase();
       let type: 'debt' | 'credit';
-      if (typeStr.includes('debt') || typeStr.includes(i18n.t('debt').toLowerCase())) {
+      
+      // Check against all possible translations
+      const debtTranslations = ['debt', 'owe', 'devo', 'deber', 'schuld', 'dette', 'débito', 'должен'];
+      const creditTranslations = ['credit', 'someone', 'owed', 'qualcuno', 'alguien', 'quelqu', 'crédito', 'кредит', 'quelqu\'un'];
+      
+      if (debtTranslations.some(term => typeStr.includes(term))) {
         type = 'debt';
-      } else if (typeStr.includes('credit') || typeStr.includes(i18n.t('credit').toLowerCase())) {
+      } else if (creditTranslations.some(term => typeStr.includes(term))) {
         type = 'credit';
       } else {
         throw new Error(`Invalid transaction type: ${typeValue}`);
