@@ -218,6 +218,9 @@ export class ExcelImportService {
         const nameCol = this.findColumnIndex(headers, [i18n.t('name'), 'Name', 'Person']);
         const descCol = this.findColumnIndex(headers, [i18n.t('description'), 'Description']);
 
+        console.log('Transaction headers found:', { dateCol, typeCol, amountCol, nameCol, descCol });
+        console.log('Headers:', headers);
+
         // Parse transaction rows
         for (let i = transactionStartRow + 1; i < data.length; i++) {
           const row = data[i];
@@ -232,6 +235,7 @@ export class ExcelImportService {
           }
 
           try {
+            console.log(`Parsing row ${i}:`, row);
             const transaction = this.parseTransactionRow(
               row, 
               { dateCol, typeCol, amountCol, nameCol, descCol },
@@ -239,14 +243,19 @@ export class ExcelImportService {
             );
             
             if (transaction) {
+              console.log('Transaction parsed successfully:', transaction);
               transactions.push(transaction);
+            } else {
+              console.warn(`Row ${i} returned null transaction`);
             }
           } catch (error) {
-            console.warn(`Failed to parse transaction row ${i}:`, error);
+            console.error(`Failed to parse transaction row ${i}:`, error);
             // Continue with other rows
           }
         }
       }
+      
+      console.log(`Total transactions parsed for account "${account.name}": ${transactions.length}`);
 
       // Calculate account totals based on transactions
       let totalOwed = 0;
@@ -288,7 +297,10 @@ export class ExcelImportService {
       const nameValue = nameCol >= 0 ? row[nameCol] : null;
       const descValue = descCol >= 0 ? row[descCol] : null;
 
+      console.log('Extracted values:', { dateValue, typeValue, amountValue, nameValue, descValue });
+
       if (!dateValue || !typeValue || !amountValue || !nameValue) {
+        console.warn('Missing required values:', { dateValue, typeValue, amountValue, nameValue });
         return null;
       }
 
