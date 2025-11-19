@@ -21,8 +21,7 @@ import CustomCurrencyModal from '../components/CustomCurrencyModal';
 import { useTheme, Theme } from '../utils/theme';
 import { setRTL } from '../utils/i18n';
 import { getAppVersion } from '../utils/version';
-import ExcelExportService from '../utils/excelExport';
-import ExcelImportService, { ImportData, ImportOptions } from '../utils/excelImport';
+import CSVBackupService, { BackupData } from '../utils/csvBackup';
 import {
   isPasswordSet,
   isBiometricAvailable,
@@ -275,14 +274,15 @@ const SettingsScreen = () => {
     Linking.openURL('https://github.com/SepehrMohammady/LedgerWell');
   };
 
-  const exportToExcel = async () => {
+  const exportBackup = async () => {
     try {
       Alert.alert(t('exportData'), t('preparingExport'));
       
-      // Load all data
-      const [accounts, transactions] = await Promise.all([
+      // Load all data including settings and custom currencies
+      const [accounts, transactions, customCurrencies] = await Promise.all([
         StorageService.getAccounts(),
-        StorageService.getTransactions()
+        StorageService.getTransactions(),
+        StorageService.getCurrencies().then(currencies => currencies.filter(c => c.isCustom))
       ]);
 
       if (accounts.length === 0) {
@@ -290,30 +290,34 @@ const SettingsScreen = () => {
         return;
       }
 
-      // Get export statistics
-      const stats = ExcelExportService.getExportStats({ accounts, transactions });
+      // Prepare backup data with current settings
+      const backupData: BackupData = {
+        version: await getAppVersion(),
+        exportDate: new Date().toISOString(),
+        accounts,
+        transactions,
+        settings: settings!,
+        customCurrencies
+      };
+
+      // Get backup statistics
+      const stats = CSVBackupService.getBackupStats(backupData);
       
       // Show export confirmation with statistics
       Alert.alert(
         t('exportData'),
-        t('exportConfirmation', {
-          accounts: stats.totalAccounts,
-          transactions: stats.totalTransactions,
-          currencies: stats.currencies.join(', ')
-        }),
+        `${t('accounts')}: ${stats.totalAccounts}\n${t('transactions')}: ${stats.totalTransactions}\n${t('customCurrencies')}: ${stats.totalCustomCurrencies}${stats.dateRange ? `\n${t('dateRange')}: ${stats.dateRange.from} - ${stats.dateRange.to}` : ''}`,
         [
           { text: t('cancel'), style: 'cancel' },
           {
             text: t('export'),
             onPress: async () => {
               try {
-                await ExcelExportService.exportToExcel(
-                  { accounts, transactions },
-                  {
-                    includeLocalizedNumbers: true,
-                    dateFormat: 'localized',
-                    includeMetadata: true
-                  }
+                await CSVBackupService.exportBackup(
+                  accounts,
+                  transactions,
+                  settings!,
+                  customCurrencies
                 );
                 Alert.alert(t('success'), t('exportSuccess'));
               } catch (error) {
@@ -330,23 +334,20 @@ const SettingsScreen = () => {
     }
   };
 
-  const importFromExcel = async () => {
+  const importBackup = async () => {
     try {
-      Alert.alert(t('importData'), t('selectExcelFile'));
+      Alert.alert(t('importData'), t('selectBackupFile'));
       
-      // Import data from Excel file
-      const importData = await ExcelImportService.importFromExcel({
-        validateCurrencies: true,
-        skipDuplicates: false
-      });
+      // Import backup from CSV file
+      const backupData = await CSVBackupService.importBackup();
 
-      if (!importData) {
+      if (!backupData) {
         // User cancelled file selection
         return;
       }
 
-      // Validate import data
-      const validation = ExcelImportService.validateImportData(importData);
+      // Validate backup data
+      const validation = CSVBackupService.validateBackup(backupData);
       
       if (!validation.isValid) {
         Alert.alert(
@@ -502,61 +503,42 @@ const SettingsScreen = () => {
     );
   };
 
-  const executeImport = async (importData: ImportData, options: ImportOptions) => {
+  const executeBackupRestore = async (backupData: BackupData, replaceExisting: boolean) => {
     try {
       Alert.alert(t('importData'), t('processingImport'));
       
-      // Extract and save custom currencies first
-      const customCurrencies = importData.accounts
-        .map(account => account.currency)
-        .filter(currency => currency.isCustom);
-      
-      if (customCurrencies.length > 0) {
-        const existingCurrencies = await StorageService.getCurrencies();
-        const currenciesMap = new Map(existingCurrencies.map(c => [c.code, c]));
-        
-        // Add custom currencies that don't exist yet
-        customCurrencies.forEach(currency => {
-          if (!currenciesMap.has(currency.code)) {
-            currenciesMap.set(currency.code, currency);
-          }
-        });
-        
-        await StorageService.saveCurrencies(Array.from(currenciesMap.values()));
-      }
-      
-      if (options.replaceExistingData) {
+      if (replaceExisting) {
         // Clear existing data
         await StorageService.clearAllData();
         
-        // Re-save custom currencies after clearing (since clearAllData removes them)
-        if (customCurrencies.length > 0) {
+        // Restore custom currencies
+        if (backupData.customCurrencies.length > 0) {
           const defaultCurrencies = await StorageService.getCurrencies();
           const currenciesMap = new Map(defaultCurrencies.map(c => [c.code, c]));
-          customCurrencies.forEach(currency => {
+          backupData.customCurrencies.forEach(currency => {
             currenciesMap.set(currency.code, currency);
           });
           await StorageService.saveCurrencies(Array.from(currenciesMap.values()));
         }
         
-        // Create a map of old account IDs to new account IDs
-        const accountIdMap = new Map<string, string>();
+        // Restore settings
+        await StorageService.saveSettings(backupData.settings);
         
-        // Save all imported accounts and build ID map
-        for (const account of importData.accounts) {
-          const oldId = account.id;
+        // Restore all accounts
+        for (const account of backupData.accounts) {
           await StorageService.saveAccount(account);
-          accountIdMap.set(oldId, account.id);
         }
         
-        // Save all imported transactions with updated account IDs
-        for (const transaction of importData.transactions) {
-          const newAccountId = accountIdMap.get(transaction.accountId);
-          if (newAccountId) {
-            transaction.accountId = newAccountId;
-          }
+        // Restore all transactions
+        for (const transaction of backupData.transactions) {
           await StorageService.saveTransaction(transaction);
         }
+        
+        // Show success message
+        Alert.alert(
+          t('importSuccess'),
+          `${t('restored')}:\n${t('accounts')}: ${backupData.accounts.length}\n${t('transactions')}: ${backupData.transactions.length}\n${t('customCurrencies')}: ${backupData.customCurrencies.length}`
+        );
       } else {
         // Merge mode - handle duplicates
         const existingAccounts = await StorageService.getAccounts();
@@ -564,24 +546,35 @@ const SettingsScreen = () => {
         
         let addedAccounts = 0;
         let addedTransactions = 0;
+        let addedCurrencies = 0;
+        
+        // Merge custom currencies
+        if (backupData.customCurrencies.length > 0) {
+          const existingCurrencies = await StorageService.getCurrencies();
+          const currenciesMap = new Map(existingCurrencies.map(c => [c.code, c]));
+          
+          backupData.customCurrencies.forEach(currency => {
+            if (!currenciesMap.has(currency.code)) {
+              currenciesMap.set(currency.code, currency);
+              addedCurrencies++;
+            }
+          });
+          
+          await StorageService.saveCurrencies(Array.from(currenciesMap.values()));
+        }
         
         // Create a map of old account IDs to new account IDs
         const accountIdMap = new Map<string, string>();
         
         // Add non-duplicate accounts
-        for (const account of importData.accounts) {
+        for (const account of backupData.accounts) {
           const oldId = account.id;
           const isDuplicate = existingAccounts.some(existing => 
             existing.name.toLowerCase() === account.name.toLowerCase() &&
             existing.currency.code === account.currency.code
           );
           
-          if (!isDuplicate || !options.skipDuplicates) {
-            if (isDuplicate) {
-              // Generate new ID for duplicate account
-              account.id = `${account.id}_imported_${Date.now()}`;
-              account.name = `${account.name} (Imported)`;
-            }
+          if (!isDuplicate) {
             await StorageService.saveAccount(account);
             accountIdMap.set(oldId, account.id);
             addedAccounts++;
@@ -598,7 +591,7 @@ const SettingsScreen = () => {
         }
         
         // Add non-duplicate transactions with updated account IDs
-        for (const transaction of importData.transactions) {
+        for (const transaction of backupData.transactions) {
           // Update transaction's account ID to match the imported/existing account
           const newAccountId = accountIdMap.get(transaction.accountId);
           if (newAccountId) {
@@ -619,7 +612,7 @@ const SettingsScreen = () => {
             );
           });
           
-          if (!isDuplicate || !options.skipDuplicates) {
+          if (!isDuplicate) {
             await StorageService.saveTransaction(transaction);
             addedTransactions++;
           }
@@ -628,33 +621,17 @@ const SettingsScreen = () => {
         // Update success message for merge mode
         Alert.alert(
           t('importSuccess'),
-          t('importMergeSuccess', {
-            accounts: addedAccounts,
-            transactions: addedTransactions,
-            skippedAccounts: importData.summary.duplicateAccounts,
-            skippedTransactions: importData.summary.duplicateTransactions
-          })
+          `${t('added')}:\n${t('accounts')}: ${addedAccounts}\n${t('transactions')}: ${addedTransactions}\n${t('customCurrencies')}: ${addedCurrencies}`
         );
-        
-        // Reload settings to reflect any changes
-        loadSettings();
-        return;
       }
 
-      // Show success message with statistics
-      Alert.alert(
-        t('importSuccess'),
-        t('importSuccessMessage', {
-          accounts: importData.summary.totalAccounts,
-          transactions: importData.summary.totalTransactions
-        })
-      );
-
-      // Reload settings to reflect any changes
-      loadSettings();
+      
+      // Reload all data to reflect changes
+      await loadSettings();
+      await loadCurrencies();
     } catch (error) {
-      console.error('Import execution failed:', error);
-      Alert.alert(t('error'), t('importExecutionFailed'));
+      console.error('Backup restore failed:', error);
+      Alert.alert(t('error'), t('restoreFailed'));
     }
   };
 
@@ -839,11 +816,11 @@ const SettingsScreen = () => {
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('dataManagement')}</Text>
-        <TouchableOpacity style={styles.button} onPress={exportToExcel}>
-          <Text style={styles.buttonText}>{t('exportToExcel')}</Text>
+        <TouchableOpacity style={styles.button} onPress={exportBackup}>
+          <Text style={styles.buttonText}>{t('exportBackup')}</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.button, styles.importButton]} onPress={importFromExcel}>
-          <Text style={[styles.buttonText, styles.importButtonText]}>{t('importFromExcel')}</Text>
+        <TouchableOpacity style={[styles.button, styles.importButton]} onPress={importBackup}>
+          <Text style={[styles.buttonText, styles.importButtonText]}>{t('importBackup')}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.button, styles.dangerButton]} onPress={resetAllData}>
           <Text style={[styles.buttonText, styles.dangerButtonText]}>{t('resetAllData')}</Text>
