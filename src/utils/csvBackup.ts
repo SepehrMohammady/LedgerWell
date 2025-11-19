@@ -1,4 +1,4 @@
-import * as FileSystem from 'expo-file-system/legacy';
+import { Paths, File } from 'expo-file-system';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
 import { Account, Transaction, Currency, AppSettings } from '../types';
@@ -52,25 +52,30 @@ export class CSVBackupService {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
       const fileName = `LedgerWell_Backup_${timestamp}.csv`;
       
-      const documentsDir = FileSystem.documentDirectory || FileSystem.cacheDirectory || '';
-      const fileUri = documentsDir + fileName;
-      
-      await FileSystem.writeAsStringAsync(fileUri, csvContent, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
+      // Create file in cache directory
+      const file = new File(Paths.cache, fileName);
+      await file.create();
+      await file.write(csvContent, { encoding: 'utf8' });
 
       // Share the file
       if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(fileUri, {
+        await Sharing.shareAsync(file.uri, {
           mimeType: 'text/csv',
           dialogTitle: 'Export Backup',
           UTI: 'public.comma-separated-values-text'
         });
       }
 
-      return fileUri;
+      return file.uri;
     } catch (error) {
       console.error('CSV backup export failed:', error);
+      if (error instanceof Error) {
+        console.error('Error details:', {
+          message: error.message,
+          stack: error.stack,
+          name: error.name
+        });
+      }
       throw new Error(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
@@ -93,10 +98,9 @@ export class CSVBackupService {
 
       const fileUri = result.assets[0].uri;
       
-      // Read the CSV file
-      const fileContent = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
+      // Read the CSV file using File class
+      const file = new File(fileUri);
+      const fileContent = await file.text();
 
       // Parse CSV content
       const backupData = this.parseCSVContent(fileContent);
