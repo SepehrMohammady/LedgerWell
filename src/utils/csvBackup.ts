@@ -327,11 +327,21 @@ export class CSVBackupService {
       sections.TRANSACTIONS,
       (row) => {
         const type = row.type?.trim().toLowerCase();
+        const amount = parseFloat(row.amount);
+        
+        if (isNaN(amount)) {
+          console.error('[CSV Backup] Failed to parse amount:', {
+            rawAmount: row.amount,
+            typeOf: typeof row.amount,
+            name: row.name
+          });
+        }
+        
         return {
           id: row.id,
           accountId: row.accountId,
           type: (type === 'debt' || type === 'credit' ? type : 'debt') as 'debt' | 'credit',
-          amount: parseFloat(row.amount),
+          amount,
           currency: {
             id: row.currency_id,
             code: row.currency_code,
@@ -426,15 +436,15 @@ export class CSVBackupService {
           inQuotes = !inQuotes;
         }
       } else if (char === ',' && !inQuotes) {
-        // End of field
-        result.push(this.unescapeCSV(current));
+        // End of field - just trim, don't unescape (already handled above)
+        result.push(current.trim());
         current = '';
       } else {
         current += char;
       }
     }
     
-    result.push(this.unescapeCSV(current));
+    result.push(current.trim());
     return result;
   }
 
