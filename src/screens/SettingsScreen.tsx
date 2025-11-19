@@ -322,7 +322,8 @@ const SettingsScreen = () => {
                 Alert.alert(t('success'), t('exportSuccess'));
               } catch (error) {
                 console.error('Export failed:', error);
-                Alert.alert(t('error'), t('exportFailed'));
+                const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+                Alert.alert(t('error'), `${t('exportFailed')}\n\n${errorMessage}`);
               }
             }
           }

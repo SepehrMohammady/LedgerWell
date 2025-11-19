@@ -52,31 +52,60 @@ export class CSVBackupService {
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
       const fileName = `LedgerWell_Backup_${timestamp}.csv`;
       
+      console.log('[CSV Backup] Creating file:', fileName);
+      
       // Create file in cache directory
       const file = new File(Paths.cache, fileName);
-      await file.create();
-      await file.write(csvContent, { encoding: 'utf8' });
+      
+      try {
+        // Create file (synchronous) - use overwrite option to avoid conflicts
+        file.create({ overwrite: true });
+        console.log('[CSV Backup] File created:', file.uri);
+      } catch (createError) {
+        console.error('[CSV Backup] Create failed:', createError);
+        throw new Error(`Failed to create file: ${createError instanceof Error ? createError.message : 'Unknown error'}`);
+      }
+
+      try {
+        // Write content (synchronous)
+        file.write(csvContent, { encoding: 'utf8' });
+        console.log('[CSV Backup] Content written, size:', csvContent.length, 'bytes');
+      } catch (writeError) {
+        console.error('[CSV Backup] Write failed:', writeError);
+        throw new Error(`Failed to write content: ${writeError instanceof Error ? writeError.message : 'Unknown error'}`);
+      }
 
       // Share the file
-      if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(file.uri, {
-          mimeType: 'text/csv',
-          dialogTitle: 'Export Backup',
-          UTI: 'public.comma-separated-values-text'
-        });
+      try {
+        const isAvailable = await Sharing.isAvailableAsync();
+        console.log('[CSV Backup] Sharing available:', isAvailable);
+        
+        if (isAvailable) {
+          await Sharing.shareAsync(file.uri, {
+            mimeType: 'text/csv',
+            dialogTitle: 'Export Backup',
+            UTI: 'public.comma-separated-values-text'
+          });
+          console.log('[CSV Backup] File shared successfully');
+        } else {
+          throw new Error('Sharing is not available on this device');
+        }
+      } catch (shareError) {
+        console.error('[CSV Backup] Share failed:', shareError);
+        throw new Error(`Failed to share file: ${shareError instanceof Error ? shareError.message : 'Unknown error'}`);
       }
 
       return file.uri;
     } catch (error) {
-      console.error('CSV backup export failed:', error);
+      console.error('[CSV Backup] Export failed:', error);
       if (error instanceof Error) {
-        console.error('Error details:', {
+        console.error('[CSV Backup] Error details:', {
           message: error.message,
           stack: error.stack,
           name: error.name
         });
       }
-      throw new Error(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw error;
     }
   }
 
