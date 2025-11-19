@@ -333,7 +333,9 @@ export class CSVBackupService {
           console.error('[CSV Backup] Failed to parse amount:', {
             rawAmount: row.amount,
             typeOf: typeof row.amount,
-            name: row.name
+            name: row.name,
+            id: row.id,
+            fullRow: row
           });
         }
         
@@ -387,6 +389,7 @@ export class CSVBackupService {
 
   /**
    * Parse table section (ACCOUNTS, TRANSACTIONS, CUSTOM_CURRENCIES)
+   * Handles multi-line fields properly
    */
   private static parseTableSection<T>(
     lines: string[],
@@ -394,29 +397,110 @@ export class CSVBackupService {
   ): T[] {
     if (lines.length === 0) return [];
 
-    const headers = this.parseCSVLine(lines[0]);
+    // Join all lines and parse as complete CSV to handle multi-line fields
+    const fullContent = lines.join('\n');
+    const allLines = this.parseCSVRows(fullContent);
+    
+    if (allLines.length === 0) return [];
+    
+    const headers = allLines[0];
     const results: T[] = [];
 
-    for (let i = 1; i < lines.length; i++) {
-      const values = this.parseCSVLine(lines[i]);
+    for (let i = 1; i < allLines.length; i++) {
+      const values = allLines[i];
       const row: any = {};
       
+      // Debug: Check if values count matches headers count
+      if (values.length !== headers.length) {
+        console.warn(`[CSV Backup] Row ${i}: Header/value count mismatch. Headers: ${headers.length}, Values: ${values.length}`);
+        console.warn(`[CSV Backup] Headers:`, headers);
+        console.warn(`[CSV Backup] Values:`, values);
+      }
+      
       for (let j = 0; j < headers.length; j++) {
-        row[headers[j]] = values[j] || '';
+        row[headers[j]] = values[j] !== undefined ? values[j] : '';
       }
       
       try {
         results.push(mapper(row));
       } catch (error) {
-        console.warn(`Failed to parse row ${i}:`, error);
+        console.warn(`[CSV Backup] Failed to parse row ${i}:`, error);
       }
     }
 
     return results;
   }
+  
+  /**
+   * Parse complete CSV content into rows, handling multi-line fields
+   */
+  private static parseCSVRows(content: string): string[][] {
+    const rows: string[][] = [];
+    const lines = content.split('\n');
+    let currentRow: string[] = [];
+    let currentField = '';
+    let inQuotes = false;
+    let i = 0;
+    
+    while (i < content.length) {
+      const char = content[i];
+      
+      if (char === '"') {
+        if (inQuotes && content[i + 1] === '"') {
+          // Escaped quote
+          currentField += '"';
+          i += 2;
+          continue;
+        } else {
+          // Toggle quote mode
+          inQuotes = !inQuotes;
+          i++;
+          continue;
+        }
+      }
+      
+      if (!inQuotes) {
+        if (char === ',') {
+          // End of field
+          currentRow.push(currentField);
+          currentField = '';
+          i++;
+          continue;
+        } else if (char === '\n' || char === '\r') {
+          // End of row
+          if (char === '\r' && content[i + 1] === '\n') {
+            i++; // Skip \r in \r\n
+          }
+          currentRow.push(currentField);
+          if (currentRow.length > 0 && currentRow.some(f => f.length > 0)) {
+            rows.push(currentRow);
+          }
+          currentRow = [];
+          currentField = '';
+          i++;
+          continue;
+        }
+      }
+      
+      // Add character to current field
+      currentField += char;
+      i++;
+    }
+    
+    // Add last field and row if any
+    if (currentField.length > 0 || currentRow.length > 0) {
+      currentRow.push(currentField);
+      if (currentRow.some(f => f.length > 0)) {
+        rows.push(currentRow);
+      }
+    }
+    
+    return rows;
+  }
 
   /**
-   * Parse a single CSV line (handles quoted values with commas)
+   * Parse a single CSV line (handles quoted values with commas and newlines)
+   * For multi-line fields, this needs to be called with the complete record
    */
   private static parseCSVLine(line: string): string[] {
     const result: string[] = [];
@@ -436,15 +520,16 @@ export class CSVBackupService {
           inQuotes = !inQuotes;
         }
       } else if (char === ',' && !inQuotes) {
-        // End of field - just trim, don't unescape (already handled above)
-        result.push(current.trim());
+        // End of field
+        result.push(current);
         current = '';
       } else {
+        // Include all characters when inside quotes, including newlines
         current += char;
       }
     }
     
-    result.push(current.trim());
+    result.push(current);
     return result;
   }
 
