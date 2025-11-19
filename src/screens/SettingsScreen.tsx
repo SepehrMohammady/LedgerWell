@@ -606,7 +606,9 @@ const SettingsScreen = () => {
           }
           
           const isDuplicate = existingTransactions.some(existing => {
-            const dateDiff = Math.abs(existing.date.getTime() - transaction.date.getTime());
+            const existingDate = new Date(existing.date);
+            const transactionDate = new Date(transaction.date);
+            const dateDiff = Math.abs(existingDate.getTime() - transactionDate.getTime());
             const isDateClose = dateDiff < 24 * 60 * 60 * 1000;
             
             return (

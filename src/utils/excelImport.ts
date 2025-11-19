@@ -351,15 +351,16 @@ export class ExcelImportService {
       console.log(`Parsing type: "${typeValue}" (lowercase: "${typeStr}")`);
       
       // Check against all possible translations
-      const debtTranslations = ['debt', 'owe', 'devo', 'deber', 'schuld', 'dette', 'débito', 'должен'];
-      const creditTranslations = ['credit', 'someone', 'owed', 'qualcuno', 'alguien', 'quelqu', 'crédito', 'кредит', 'quelqu\'un'];
+      // IMPORTANT: Check credit translations first because "Someone Owes Me" contains "owe"
+      const creditTranslations = ['someone', 'owed', 'qualcuno', 'alguien', 'quelqu', 'crédito', 'кредит', 'quelqu\'un', 'credit'];
+      const debtTranslations = ['i owe', 'debt', 'devo', 'deber', 'schuld', 'dette', 'débito', 'должен'];
       
-      if (debtTranslations.some(term => typeStr.includes(term))) {
-        type = 'debt';
-        console.log(`Matched as DEBT`);
-      } else if (creditTranslations.some(term => typeStr.includes(term))) {
+      if (creditTranslations.some(term => typeStr.includes(term))) {
         type = 'credit';
         console.log(`Matched as CREDIT`);
+      } else if (debtTranslations.some(term => typeStr.includes(term))) {
+        type = 'debt';
+        console.log(`Matched as DEBT`);
       } else {
         console.error(`No match found for type: "${typeValue}"`);
         throw new Error(`Invalid transaction type: ${typeValue}`);
@@ -501,7 +502,9 @@ export class ExcelImportService {
    */
   private static areTransactionsSimilar(existing: Transaction, imported: Transaction): boolean {
     // Compare key fields to detect duplicates
-    const dateDiff = Math.abs(existing.date.getTime() - imported.date.getTime());
+    const existingDate = new Date(existing.date);
+    const importedDate = new Date(imported.date);
+    const dateDiff = Math.abs(existingDate.getTime() - importedDate.getTime());
     const isDateClose = dateDiff < 24 * 60 * 60 * 1000; // Within 1 day
     
     return (
