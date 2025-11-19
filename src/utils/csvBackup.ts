@@ -144,7 +144,10 @@ export class CSVBackupService {
   /**
    * Helper to safely convert date to ISO string
    */
-  private static toISOString(date: Date | string): string {
+  private static toISOString(date: Date | string | null | undefined): string {
+    if (!date) {
+      return new Date().toISOString(); // Fallback to current date if null/undefined
+    }
     if (typeof date === 'string') {
       return date;
     }
