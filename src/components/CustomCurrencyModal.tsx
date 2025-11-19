@@ -107,7 +107,6 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
         if (message.includes('{code}')) {
           message = message.replace(/{code}/g, upperCode);
         }
-        console.log('Currency updated message:', message, 'Code:', upperCode, 'Direct i18n call');
         Alert.alert(t('success'), message);
       } else {
         // Create new currency
@@ -141,7 +140,6 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
         if (message.includes('{code}')) {
           message = message.replace(/{code}/g, upperCode);
         }
-        console.log('Currency added message:', message, 'Code:', upperCode, 'Direct i18n call');
         Alert.alert(t('success'), message);
       }
     } catch (error) {

@@ -109,6 +109,16 @@ export class CSVBackupService {
   }
 
   /**
+   * Helper to safely convert date to ISO string
+   */
+  private static toISOString(date: Date | string): string {
+    if (typeof date === 'string') {
+      return date;
+    }
+    return date.toISOString();
+  }
+
+  /**
    * Create CSV content with all backup data
    */
   private static createCSVContent(data: BackupData): string {
@@ -164,8 +174,8 @@ export class CSVBackupService {
         this.escapeCSV(account.currency.symbol),
         account.currency.rate,
         account.currency.isCustom,
-        account.createdAt.toISOString(),
-        account.updatedAt.toISOString()
+        this.toISOString(account.createdAt),
+        this.toISOString(account.updatedAt)
       ].join(','));
     }
     lines.push('');
@@ -187,9 +197,9 @@ export class CSVBackupService {
         transaction.currency.isCustom,
         this.escapeCSV(transaction.name),
         this.escapeCSV(transaction.description || ''),
-        transaction.date.toISOString(),
-        transaction.createdAt.toISOString(),
-        transaction.updatedAt.toISOString()
+        this.toISOString(transaction.date),
+        this.toISOString(transaction.createdAt),
+        this.toISOString(transaction.updatedAt)
       ].join(','));
     }
 

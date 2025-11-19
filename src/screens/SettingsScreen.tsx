@@ -357,28 +357,21 @@ const SettingsScreen = () => {
         return;
       }
 
-      // Show import preview and confirmation
-      const preview = ExcelImportService.getImportPreview(importData);
+      // Get backup statistics
+      const stats = CSVBackupService.getBackupStats(backupData);
       
-      const duplicateInfo = importData.summary.duplicateAccounts > 0 || importData.summary.duplicateTransactions > 0
-        ? [
-            '',
-            '⚠️ ' + t('duplicatesDetected'),
-            t('duplicateAccountsFound', { count: importData.summary.duplicateAccounts }),
-            t('duplicateTransactionsFound', { count: importData.summary.duplicateTransactions }),
-            ''
-          ]
-        : [''];
+      // Show warnings if any
+      if (validation.warnings.length > 0) {
+        console.warn('Backup warnings:', validation.warnings);
+      }
       
       const confirmationMessage = [
-        preview.summary,
+        `${t('backupVersion')}: ${backupData.version}`,
+        `${t('accounts')}: ${stats.totalAccounts}`,
+        `${t('transactions')}: ${stats.totalTransactions}`,
+        `${t('customCurrencies')}: ${stats.totalCustomCurrencies}`,
+        stats.dateRange ? `${t('dateRange')}: ${stats.dateRange.from} - ${stats.dateRange.to}` : '',
         '',
-        t('importPreviewAccounts') + ':',
-        ...preview.accountsList.slice(0, 5).map(acc => `• ${acc}`),
-        preview.accountsList.length > 5 ? `... ${t('andMoreAccounts', { count: preview.accountsList.length - 5 })}` : '',
-        '',
-        t('importPreviewDateRange') + ': ' + preview.dateRange,
-        ...duplicateInfo,
         t('importWarning')
       ].filter(Boolean).join('\n');
 
@@ -390,11 +383,11 @@ const SettingsScreen = () => {
           {
             text: t('replaceData'),
             style: 'destructive',
-            onPress: () => executeImport(importData, { replaceExistingData: true })
+            onPress: () => executeBackupRestore(backupData, true)
           },
           {
             text: t('mergeData'),
-            onPress: () => executeImport(importData, { replaceExistingData: false })
+            onPress: () => executeBackupRestore(backupData, false)
           }
         ]
       );
