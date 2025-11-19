@@ -325,25 +325,28 @@ export class CSVBackupService {
     // Parse transactions
     const transactions = this.parseTableSection(
       sections.TRANSACTIONS,
-      (row) => ({
-        id: row.id,
-        accountId: row.accountId,
-        type: row.type as 'debt' | 'credit',
-        amount: parseFloat(row.amount),
-        currency: {
-          id: row.currency_id,
-          code: row.currency_code,
-          name: row.currency_name,
-          symbol: row.currency_symbol,
-          rate: parseFloat(row.currency_rate),
-          isCustom: row.currency_isCustom === 'true'
-        },
-        name: row.name,
-        description: row.description || undefined,
-        date: new Date(row.date),
-        createdAt: new Date(row.createdAt),
-        updatedAt: new Date(row.updatedAt)
-      })
+      (row) => {
+        const type = row.type?.trim().toLowerCase();
+        return {
+          id: row.id,
+          accountId: row.accountId,
+          type: (type === 'debt' || type === 'credit' ? type : 'debt') as 'debt' | 'credit',
+          amount: parseFloat(row.amount),
+          currency: {
+            id: row.currency_id,
+            code: row.currency_code,
+            name: row.currency_name,
+            symbol: row.currency_symbol,
+            rate: parseFloat(row.currency_rate),
+            isCustom: row.currency_isCustom === 'true'
+          },
+          name: row.name,
+          description: row.description || undefined,
+          date: new Date(row.date),
+          createdAt: new Date(row.createdAt),
+          updatedAt: new Date(row.updatedAt)
+        };
+      }
     );
 
     return {
@@ -531,9 +534,14 @@ export class CSVBackupService {
         errors.push(`Invalid transaction at position ${index + 1}`);
       }
       if (!['debt', 'credit'].includes(transaction.type)) {
-        errors.push(`Transaction ${index + 1} has invalid type: ${transaction.type}`);
+        console.error(`[CSV Backup] Transaction ${index + 1} validation failed:`, {
+          type: transaction.type,
+          typeOf: typeof transaction.type,
+          name: transaction.name
+        });
+        errors.push(`Transaction ${index + 1} has invalid type: "${transaction.type}"`);
       }
-      if (transaction.amount <= 0) {
+      if (transaction.amount <= 0 || isNaN(transaction.amount)) {
         errors.push(`Transaction ${index + 1} has invalid amount: ${transaction.amount}`);
       }
     });
