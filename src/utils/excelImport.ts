@@ -178,8 +178,11 @@ export class ExcelImportService {
       const currencyText = this.findValueInRows(data, i18n.t('currency')) || '';
       const createdDateText = this.findValueInRows(data, i18n.t('createdDate')) || '';
 
+      console.log(`Parsing account: ${accountName}, currency text: "${currencyText}"`);
+
       // Parse currency from text like "USD - US Dollar ($)"
       const currency = this.parseCurrencyFromText(currencyText);
+      console.log(`Parsed currency:`, currency);
       
       // Create account object
       const account: Account = {
@@ -345,15 +348,20 @@ export class ExcelImportService {
       const typeStr = String(typeValue).toLowerCase();
       let type: 'debt' | 'credit';
       
+      console.log(`Parsing type: "${typeValue}" (lowercase: "${typeStr}")`);
+      
       // Check against all possible translations
       const debtTranslations = ['debt', 'owe', 'devo', 'deber', 'schuld', 'dette', 'débito', 'должен'];
       const creditTranslations = ['credit', 'someone', 'owed', 'qualcuno', 'alguien', 'quelqu', 'crédito', 'кредит', 'quelqu\'un'];
       
       if (debtTranslations.some(term => typeStr.includes(term))) {
         type = 'debt';
+        console.log(`Matched as DEBT`);
       } else if (creditTranslations.some(term => typeStr.includes(term))) {
         type = 'credit';
+        console.log(`Matched as CREDIT`);
       } else {
+        console.error(`No match found for type: "${typeValue}"`);
         throw new Error(`Invalid transaction type: ${typeValue}`);
       }
 
