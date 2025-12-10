@@ -256,7 +256,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Sepehr Mohammady**
 - Website: [sepehrmohammady.ir](https://sepehrmohammady.ir/)
-- Email: SMohammady@outlook.com
 - GitHub: [@SepehrMohammady](https://github.com/SepehrMohammady)
 
 ## Roadmap
