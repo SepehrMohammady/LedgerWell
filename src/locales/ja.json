@@ -239,5 +239,7 @@
   "byAccount": "アカウント別",
   "monthlyTrend": "月次トレンド",
   "debtVsCredit": "借金 vs 貸付",
-  "noDataForChart": "グラフのデータがありません"
+  "noDataForChart": "グラフのデータがありません",
+  "creditShort": "貸し",
+  "debtShort": "借り"
 }

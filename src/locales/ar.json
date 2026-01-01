@@ -239,5 +239,7 @@
   "byAccount": "حسب الحساب",
   "monthlyTrend": "الاتجاه الشهري",
   "debtVsCredit": "الدين مقابل الائتمان",
-  "noDataForChart": "لا توجد بيانات للرسم البياني"
+  "noDataForChart": "لا توجد بيانات للرسم البياني",
+  "creditShort": "مدين لي",
+  "debtShort": "أنا مدين"
 }

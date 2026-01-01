@@ -239,5 +239,7 @@
   "byAccount": "By Account",
   "monthlyTrend": "Monthly Trend",
   "debtVsCredit": "Debt vs Credit",
-  "noDataForChart": "No data available for chart"
+  "noDataForChart": "No data available for chart",
+  "creditShort": "Owes Me",
+  "debtShort": "I Owe"
 }

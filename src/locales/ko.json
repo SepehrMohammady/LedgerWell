@@ -239,5 +239,7 @@
   "byAccount": "계정별",
   "monthlyTrend": "월별 추이",
   "debtVsCredit": "부채 vs 채권",
-  "noDataForChart": "차트 데이터가 없습니다"
+  "noDataForChart": "차트 데이터가 없습니다",
+  "creditShort": "받을 돈",
+  "debtShort": "갚을 돈"
 }

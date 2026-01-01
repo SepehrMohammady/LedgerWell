@@ -239,5 +239,7 @@
   "byAccount": "По счёту",
   "monthlyTrend": "Месячный тренд",
   "debtVsCredit": "Долг vs Кредит",
-  "noDataForChart": "Нет данных для графика"
+  "noDataForChart": "Нет данных для графика",
+  "creditShort": "Мне должны",
+  "debtShort": "Я должен"
 }

@@ -239,5 +239,7 @@
   "byAccount": "按账户",
   "monthlyTrend": "月度趋势",
   "debtVsCredit": "债务 vs 债权",
-  "noDataForChart": "无图表数据"
+  "noDataForChart": "无图表数据",
+  "creditShort": "应收",
+  "debtShort": "应付"
 }

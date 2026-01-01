@@ -239,5 +239,7 @@
   "byAccount": "بر اساس حساب",
   "monthlyTrend": "روند ماهانه",
   "debtVsCredit": "بدهی در مقابل طلب",
-  "noDataForChart": "داده‌ای برای نمودار وجود ندارد"
+  "noDataForChart": "داده‌ای برای نمودار وجود ندارد",
+  "creditShort": "بدهکار من",
+  "debtShort": "بدهکار هستم"
 }

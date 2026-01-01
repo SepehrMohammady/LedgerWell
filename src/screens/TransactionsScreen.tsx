@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { LineChart, PieChart, BarChart } from 'react-native-chart-kit';
-import { Transaction, Account } from '../types';
+import { Transaction, Account, AppSettings, Currency } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
 import AddTransactionModal from '../components/AddTransactionModal';
@@ -33,6 +33,7 @@ const TransactionsScreen = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [addTransactionModalVisible, setAddTransactionModalVisible] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [settings, setSettings] = useState<AppSettings | null>(null);
   
   // Selection mode state
   const [selectionMode, setSelectionMode] = useState(false);
@@ -47,6 +48,7 @@ const TransactionsScreen = () => {
     React.useCallback(() => {
       loadTransactions();
       loadAccounts();
+      loadSettings();
     }, [])
   );
 
@@ -73,6 +75,19 @@ const TransactionsScreen = () => {
     } catch (error) {
       console.error('Failed to load accounts:', error);
     }
+  };
+
+  const loadSettings = async () => {
+    try {
+      const settingsData = await StorageService.getSettings();
+      setSettings(settingsData);
+    } catch (error) {
+      console.error('Failed to load settings:', error);
+    }
+  };
+
+  const getDefaultCurrency = (): Currency => {
+    return settings?.defaultCurrency || CurrencyService.getDefaultCurrency();
   };
 
   const filterTransactions = () => {
@@ -352,20 +367,24 @@ const TransactionsScreen = () => {
       }
     });
 
+    const total = totalDebt + totalCredit;
+    const creditPercent = total > 0 ? Math.round((totalCredit / total) * 100) : 0;
+    const debtPercent = total > 0 ? Math.round((totalDebt / total) * 100) : 0;
+
     return [
       {
-        name: t('credit'),
+        name: `${creditPercent}%\n${t('creditShort')}`,
         amount: Math.round(totalCredit * 100) / 100,
         color: theme.colors.success,
         legendFontColor: theme.colors.text,
-        legendFontSize: 12,
+        legendFontSize: 11,
       },
       {
-        name: t('debt'),
+        name: `${debtPercent}%\n${t('debtShort')}`,
         amount: Math.round(totalDebt * 100) / 100,
         color: theme.colors.error,
         legendFontColor: theme.colors.text,
-        legendFontSize: 12,
+        legendFontSize: 11,
       },
     ];
   };
@@ -443,7 +462,7 @@ const TransactionsScreen = () => {
     if (!selectionMode) return null;
     
     const { debtSum, creditSum, netSum } = getSelectedSum();
-    const defaultCurrency = CurrencyService.getDefaultCurrency();
+    const defaultCurrency = getDefaultCurrency();
     
     return (
       <View style={styles.selectionBar}>

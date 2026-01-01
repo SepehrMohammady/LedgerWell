@@ -239,5 +239,7 @@
   "byAccount": "Per Akun",
   "monthlyTrend": "Tren Bulanan",
   "debtVsCredit": "Hutang vs Piutang",
-  "noDataForChart": "Tidak ada data untuk grafik"
+  "noDataForChart": "Tidak ada data untuk grafik",
+  "creditShort": "Hutang ke saya",
+  "debtShort": "Saya berhutang"
 }

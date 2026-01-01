@@ -239,5 +239,7 @@
   "byAccount": "Nach Konto",
   "monthlyTrend": "Monatlicher Trend",
   "debtVsCredit": "Schulden vs. Guthaben",
-  "noDataForChart": "Keine Daten für Diagramm"
+  "noDataForChart": "Keine Daten für Diagramm",
+  "creditShort": "Schuldet mir",
+  "debtShort": "Ich schulde"
 }

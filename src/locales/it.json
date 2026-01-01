@@ -239,5 +239,7 @@
   "byAccount": "Per Conto",
   "monthlyTrend": "Tendenza Mensile",
   "debtVsCredit": "Debito vs Credito",
-  "noDataForChart": "Nessun dato per il grafico"
+  "noDataForChart": "Nessun dato per il grafico",
+  "creditShort": "Mi deve",
+  "debtShort": "Devo"
 }
