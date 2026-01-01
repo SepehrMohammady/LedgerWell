@@ -367,24 +367,20 @@ const TransactionsScreen = () => {
       }
     });
 
-    const total = totalDebt + totalCredit;
-    const creditPercent = total > 0 ? Math.round((totalCredit / total) * 100) : 0;
-    const debtPercent = total > 0 ? Math.round((totalDebt / total) * 100) : 0;
-
     return [
       {
-        name: `${creditPercent}%\n${t('creditShort')}`,
+        name: t('creditShort'),
         amount: Math.round(totalCredit * 100) / 100,
         color: theme.colors.success,
         legendFontColor: theme.colors.text,
-        legendFontSize: 11,
+        legendFontSize: 12,
       },
       {
-        name: `${debtPercent}%\n${t('debtShort')}`,
+        name: t('debtShort'),
         amount: Math.round(totalDebt * 100) / 100,
         color: theme.colors.error,
         legendFontColor: theme.colors.text,
-        legendFontSize: 11,
+        legendFontSize: 12,
       },
     ];
   };
