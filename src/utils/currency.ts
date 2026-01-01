@@ -121,6 +121,26 @@ export class CurrencyService {
   static validateExchangeRate(rate: number): boolean {
     return rate > 0 && isFinite(rate);
   }
+
+  static getDefaultCurrency(): Currency {
+    // Return USD as the default currency for calculations
+    return {
+      id: 'usd',
+      code: 'USD',
+      name: 'US Dollar',
+      symbol: '$',
+      rate: 1,
+      isCustom: false,
+    };
+  }
+
+  static convertToDefault(amount: number, currency: Currency): number {
+    // Convert to USD (default currency with rate = 1)
+    if (currency.code === 'USD') {
+      return amount;
+    }
+    return amount / currency.rate;
+  }
 }
 
 export default CurrencyService;
