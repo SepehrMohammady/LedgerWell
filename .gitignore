@@ -156,3 +156,15 @@ web-build/
 
 # Local copilot instructions (keep personal settings private)
 .github/copilot-instructions.md
+
+# Windows system files
+desktop.ini
+Thumbs.db
+
+# Test files (not needed in production)
+test-*.js
+IMPORT_TESTING.md
+
+# One-time scripts (already executed)
+cleanup-translations.js
+scripts/add-*-translations.js
