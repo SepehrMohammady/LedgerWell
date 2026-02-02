@@ -142,19 +142,21 @@ const TransactionsScreen = () => {
   const getSelectedSum = () => {
     let debtSum = 0;
     let creditSum = 0;
+    const defaultCurrency = getDefaultCurrency();
     
     selectedTransactions.forEach(id => {
       const transaction = transactions.find(t => t.id === id);
       if (transaction) {
-        // Convert to default currency for summing
-        const amountInDefault = CurrencyService.convertToDefault(
+        // Convert to the user's default currency for summing
+        const amountInDefaultCurrency = CurrencyService.convertAmount(
           transaction.amount,
-          transaction.currency
+          transaction.currency,
+          defaultCurrency
         );
         if (transaction.type === 'debt') {
-          debtSum += amountInDefault;
+          debtSum += amountInDefaultCurrency;
         } else {
-          creditSum += amountInDefault;
+          creditSum += amountInDefaultCurrency;
         }
       }
     });
