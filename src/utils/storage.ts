@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Account, Transaction, Currency, AppSettings } from '../types';
+import { Account, Transaction, Currency, AppSettings, Contact } from '../types';
 import { DEFAULT_CURRENCIES } from './currency';
 
 // Storage keys
@@ -8,6 +8,7 @@ const STORAGE_KEYS = {
   TRANSACTIONS: 'transactions',
   CURRENCIES: 'currencies',
   SETTINGS: 'settings',
+  CONTACTS: 'contacts',
 };
 
 export class StorageService {
@@ -53,6 +54,58 @@ export class StorageService {
     } catch (error) {
       console.error('Failed to delete account:', error);
       throw error;
+    }
+  }
+
+  // Contact operations
+  static async getContacts(): Promise<Contact[]> {
+    try {
+      const data = await AsyncStorage.getItem(STORAGE_KEYS.CONTACTS);
+      const contacts = data ? JSON.parse(data) : [];
+      // Sort by name alphabetically
+      return contacts.sort((a: Contact, b: Contact) => a.name.localeCompare(b.name));
+    } catch (error) {
+      console.error('Failed to get contacts:', error);
+      return [];
+    }
+  }
+
+  static async saveContact(contact: Contact): Promise<void> {
+    try {
+      const contacts = await this.getContacts();
+      const existingIndex = contacts.findIndex(c => c.id === contact.id);
+      
+      if (existingIndex >= 0) {
+        contacts[existingIndex] = contact;
+      } else {
+        contacts.push(contact);
+      }
+      
+      await AsyncStorage.setItem(STORAGE_KEYS.CONTACTS, JSON.stringify(contacts));
+    } catch (error) {
+      console.error('Failed to save contact:', error);
+      throw error;
+    }
+  }
+
+  static async deleteContact(contactId: string): Promise<void> {
+    try {
+      const contacts = await this.getContacts();
+      const filteredContacts = contacts.filter(c => c.id !== contactId);
+      await AsyncStorage.setItem(STORAGE_KEYS.CONTACTS, JSON.stringify(filteredContacts));
+    } catch (error) {
+      console.error('Failed to delete contact:', error);
+      throw error;
+    }
+  }
+
+  static async getContactById(contactId: string): Promise<Contact | null> {
+    try {
+      const contacts = await this.getContacts();
+      return contacts.find(c => c.id === contactId) || null;
+    } catch (error) {
+      console.error('Failed to get contact:', error);
+      return null;
     }
   }
 

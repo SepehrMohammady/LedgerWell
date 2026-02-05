@@ -7,6 +7,14 @@ export interface Currency {
   isCustom: boolean;
 }
 
+export interface Contact {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Account {
   id: string;
   name: string;
@@ -21,10 +29,11 @@ export interface Account {
 export interface Transaction {
   id: string;
   accountId: string;
+  contactId?: string; // Reference to contact (new field)
   type: 'debt' | 'credit'; // debt = I owe money, credit = someone owes me
   amount: number;
   currency: Currency;
-  name: string; // Person/Company name who owes or is owed
+  name: string; // Person/Company name who owes or is owed (kept for backward compatibility)
   description?: string; // Additional details/notes (optional)
   date: Date;
   createdAt: Date;

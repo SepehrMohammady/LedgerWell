@@ -13,10 +13,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { Picker } from '@react-native-picker/picker';
-import { Account, Currency, Transaction } from '../types';
+import { Account, Currency, Transaction, Contact } from '../types';
 import StorageService from '../utils/storage';
 import { useTheme, Theme } from '../utils/theme';
 import LocalizedNumberInput from './LocalizedNumberInput';
+import AddContactModal from './AddContactModal';
 
 interface AddTransactionModalProps {
   visible: boolean;
@@ -32,13 +33,18 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [type, setType] = useState<'debt' | 'credit'>('debt');
   const [amount, setAmount] = useState('');
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [personName, setPersonName] = useState('');
   const [description, setDescription] = useState('');
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [addContactModalVisible, setAddContactModalVisible] = useState(false);
+  const [useManualName, setUseManualName] = useState(false);
 
   useEffect(() => {
     if (visible) {
       loadAccounts();
+      loadContacts();
       if (!editTransaction) {
         resetForm();
       }
@@ -63,12 +69,23 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
     }
   };
 
+  const loadContacts = async () => {
+    try {
+      const contactsData = await StorageService.getContacts();
+      setContacts(contactsData);
+    } catch (error) {
+      console.error('Failed to load contacts:', error);
+    }
+  };
+
   const resetForm = () => {
     setSelectedAccount(null);
     setType('debt');
     setAmount('');
+    setSelectedContact(null);
     setPersonName('');
     setDescription('');
+    setUseManualName(false);
   };
 
   const populateFormForEdit = async () => {
@@ -79,6 +96,26 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
       setAmount(editTransaction.amount.toString());
       setPersonName(editTransaction.name);
       setDescription(editTransaction.description || '');
+      
+      // Try to find matching contact
+      if (editTransaction.contactId) {
+        const contact = contacts.find(c => c.id === editTransaction.contactId);
+        if (contact) {
+          setSelectedContact(contact);
+          setUseManualName(false);
+        } else {
+          setUseManualName(true);
+        }
+      } else {
+        // Check if name matches any contact
+        const matchingContact = contacts.find(c => c.name === editTransaction.name);
+        if (matchingContact) {
+          setSelectedContact(matchingContact);
+          setUseManualName(false);
+        } else {
+          setUseManualName(true);
+        }
+      }
     }
   };
 
@@ -88,8 +125,11 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
       return;
     }
 
-    if (!personName.trim()) {
-      Alert.alert(t('error'), t('pleaseEnterPersonName'));
+    // Get the name from contact or manual input
+    const finalName = useManualName ? personName.trim() : (selectedContact?.name || '');
+    
+    if (!finalName) {
+      Alert.alert(t('error'), t('pleaseSelectOrEnterName'));
       return;
     }
 
@@ -105,10 +145,11 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
         const updatedTransaction = {
           ...editTransaction,
           accountId: selectedAccount.id,
+          contactId: useManualName ? undefined : selectedContact?.id,
           type,
           amount: numAmount,
           currency: selectedAccount.currency,
-          name: personName.trim(),
+          name: finalName,
           description: description.trim() || undefined,
           updatedAt: new Date(),
         };
@@ -123,10 +164,11 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
         const newTransaction = {
           id: Date.now().toString(),
           accountId: selectedAccount.id,
+          contactId: useManualName ? undefined : selectedContact?.id,
           type,
           amount: numAmount,
           currency: selectedAccount.currency,
-          name: personName.trim(),
+          name: finalName,
           description: description.trim() || undefined,
           date: new Date(),
           createdAt: new Date(),
@@ -257,15 +299,80 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>{t('personName')} *</Text>
-            <TextInput
-              style={styles.input}
-              value={personName}
-              onChangeText={setPersonName}
-              placeholder={t('personNamePlaceholder')}
-              placeholderTextColor={theme.colors.textSecondary}
-              maxLength={100}
-            />
+            <View style={styles.labelRow}>
+              <Text style={styles.label}>{t('personName')} *</Text>
+              <TouchableOpacity 
+                style={styles.toggleButton}
+                onPress={() => {
+                  setUseManualName(!useManualName);
+                  if (!useManualName) {
+                    setSelectedContact(null);
+                  } else {
+                    setPersonName('');
+                  }
+                }}
+              >
+                <Text style={styles.toggleButtonText}>
+                  {useManualName ? t('selectFromContacts') : t('typeManually')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            
+            {useManualName ? (
+              <TextInput
+                style={styles.input}
+                value={personName}
+                onChangeText={setPersonName}
+                placeholder={t('personNamePlaceholder')}
+                placeholderTextColor={theme.colors.textSecondary}
+                maxLength={100}
+              />
+            ) : (
+              <View>
+                {contacts.length === 0 ? (
+                  <View style={styles.noContactsContainer}>
+                    <Text style={styles.noContactsText}>{t('noContactsYet')}</Text>
+                    <TouchableOpacity
+                      style={styles.addContactInlineButton}
+                      onPress={() => setAddContactModalVisible(true)}
+                    >
+                      <Ionicons name="add" size={16} color={theme.colors.primary} />
+                      <Text style={styles.addContactInlineText}>{t('addContact')}</Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : (
+                  <View>
+                    <View style={styles.pickerWithButton}>
+                      <View style={[styles.pickerContainer, { flex: 1 }]}>
+                        <Picker
+                          selectedValue={selectedContact?.id || ''}
+                          onValueChange={(value) => {
+                            const contact = contacts.find(c => c.id === value);
+                            setSelectedContact(contact || null);
+                          }}
+                          style={styles.picker}
+                        >
+                          <Picker.Item label={t('selectContact')} value="" />
+                          {contacts.map((contact) => (
+                            <Picker.Item
+                              key={contact.id}
+                              label={contact.name}
+                              value={contact.id}
+                            />
+                          ))}
+                        </Picker>
+                      </View>
+                      <TouchableOpacity
+                        style={styles.addContactButton}
+                        onPress={() => setAddContactModalVisible(true)}
+                      >
+                        <Ionicons name="add" size={24} color={theme.colors.primary} />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+              </View>
+            )}
           </View>
 
           <View style={styles.inputGroup}>
@@ -282,6 +389,14 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
             />
           </View>
         </ScrollView>
+
+        <AddContactModal
+          visible={addContactModalVisible}
+          onClose={() => setAddContactModalVisible(false)}
+          onSave={() => {
+            loadContacts();
+          }}
+        />
       </SafeAreaView>
     </Modal>
   );
@@ -388,6 +503,54 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  labelRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  toggleButton: {
+    padding: 4,
+  },
+  toggleButtonText: {
+    fontSize: 14,
+    color: theme.colors.primary,
+  },
+  pickerWithButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  addContactButton: {
+    padding: 12,
+    marginLeft: 8,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 8,
+    backgroundColor: theme.colors.surface,
+  },
+  noContactsContainer: {
+    padding: 16,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 8,
+    backgroundColor: theme.colors.surface,
+    alignItems: 'center',
+  },
+  noContactsText: {
+    fontSize: 14,
+    color: theme.colors.textSecondary,
+    marginBottom: 12,
+  },
+  addContactInlineButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+  },
+  addContactInlineText: {
+    fontSize: 14,
+    color: theme.colors.primary,
+    marginLeft: 4,
   },
 });
 

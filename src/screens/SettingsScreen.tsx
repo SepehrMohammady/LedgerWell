@@ -18,6 +18,7 @@ import { AppSettings, Currency } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService, { DEFAULT_CURRENCIES } from '../utils/currency';
 import CustomCurrencyModal from '../components/CustomCurrencyModal';
+import { ContactsListModal } from '../components/AddContactModal';
 import { useTheme, Theme } from '../utils/theme';
 import { setRTL } from '../utils/i18n';
 import { getAppVersion } from '../utils/version';
@@ -91,6 +92,7 @@ const SettingsScreen = () => {
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [customCurrencyModalVisible, setCustomCurrencyModalVisible] = useState(false);
   const [editingCurrency, setEditingCurrency] = useState<Currency | null>(null);
+  const [contactsModalVisible, setContactsModalVisible] = useState(false);
   
   // Security states
   const [hasPassword, setHasPassword] = useState(false);
@@ -761,6 +763,18 @@ const SettingsScreen = () => {
         </View>
       )}
 
+      {/* Contacts Section */}
+      <View style={styles.section}>
+        <SectionHeader title={t('contacts')} />
+        <SettingItem
+          title={t('manageContacts')}
+          description={t('manageContactsDescription')}
+          onPress={() => setContactsModalVisible(true)}
+          rightElement={<Ionicons name="people" size={20} color={theme.colors.primary} />}
+          isLast={true}
+        />
+      </View>
+
       {/* Security Section */}
       <View style={styles.section}>
         <SectionHeader title={t('security')} />
@@ -870,6 +884,12 @@ const SettingsScreen = () => {
         onSave={() => {
           loadCurrencies();
         }}
+      />
+
+      {/* Contacts Modal */}
+      <ContactsListModal
+        visible={contactsModalVisible}
+        onClose={() => setContactsModalVisible(false)}
       />
 
       {/* Change Password Modal */}
