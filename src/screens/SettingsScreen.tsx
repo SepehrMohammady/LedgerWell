@@ -655,16 +655,33 @@ const SettingsScreen = () => {
           >
             <Picker.Item label="العربية" value="ar" />
             <Picker.Item label="Bahasa Indonesia" value="id" />
+            <Picker.Item label="Čeština" value="cs" />
+            <Picker.Item label="Dansk" value="da" />
             <Picker.Item label="Deutsch" value="de" />
+            <Picker.Item label="Ελληνικά" value="el" />
             <Picker.Item label="English" value="en" />
             <Picker.Item label="Español" value="es" />
             <Picker.Item label="فارسی" value="fa" />
+            <Picker.Item label="Filipino" value="tl" />
             <Picker.Item label="Français" value="fr" />
+            <Picker.Item label="Suomi" value="fi" />
+            <Picker.Item label="עברית" value="he" />
+            <Picker.Item label="हिन्दी" value="hi" />
             <Picker.Item label="Italiano" value="it" />
             <Picker.Item label="日本語" value="ja" />
             <Picker.Item label="한국어" value="ko" />
+            <Picker.Item label="Kiswahili" value="sw" />
+            <Picker.Item label="Magyar" value="hu" />
+            <Picker.Item label="Nederlands" value="nl" />
+            <Picker.Item label="Polski" value="pl" />
             <Picker.Item label="Português" value="pt" />
+            <Picker.Item label="Română" value="ro" />
             <Picker.Item label="Русский" value="ru" />
+            <Picker.Item label="Svenska" value="sv" />
+            <Picker.Item label="ไทย" value="th" />
+            <Picker.Item label="Türkçe" value="tr" />
+            <Picker.Item label="Українська" value="uk" />
+            <Picker.Item label="Tiếng Việt" value="vi" />
             <Picker.Item label="中文" value="zh" />
           </Picker>
         </View>

@@ -2,7 +2,7 @@
 
 A comprehensive React Native Expo app for tracking personal debts and credits with extensive multi-currency support and full internationalization.
 
-[![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](https://github.com/SepehrMohammady/LedgerWell)
+[![Version](https://img.shields.io/badge/version-0.9.5-blue.svg)](https://github.com/SepehrMohammady/LedgerWell)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![React Native](https://img.shields.io/badge/React%20Native-Expo-blue.svg)](https://expo.dev)
 
@@ -23,10 +23,11 @@ A comprehensive React Native Expo app for tracking personal debts and credits wi
 - Currency-specific formatting and symbols
 
 ### 🌍 Complete Internationalization
-- **13 language support**: English, Spanish, French, German, Arabic, Persian, Italian, Portuguese, Russian, Chinese, Japanese, Korean, Indonesian
-- Right-to-left (RTL) language support for Arabic and Persian
+- **30 language support** covering the top 30 languages by global internet users:
+  English, Spanish, French, German, Arabic, Persian, Italian, Portuguese, Russian, Chinese, Japanese, Korean, Indonesian, Hindi, Turkish, Vietnamese, Thai, Polish, Ukrainian, Dutch, Filipino (Tagalog), Swahili, Romanian, Czech, Hungarian, Greek, Hebrew, Swedish, Danish, Finnish
+- Right-to-left (RTL) language support for Arabic, Persian, and Hebrew
 - Easy language switching in settings with instant app reload
-- Fully localized UI with 124+ translation keys per language
+- Fully localized UI with 270+ translation keys per language
 - **Native numeral system support**: Arabic-Indic numerals for Arabic (٠١٢٣٤٥٦٧٨٩), Persian numerals for Farsi (۰۱۲۳۴۵۶۷۸۹)
 - Localized number input and display throughout the app
 - Localized currency formatting with proper numeral systems
@@ -113,20 +114,37 @@ LedgerWell/
 │   │   ├── version.ts        # Dynamic app version utilities
 │   │   ├── numberLocalization.ts # Number localization for Arabic/Farsi
 │   │   └── i18n.ts          # Internationalization setup
-│   └── locales/            # Translation files (112+ keys each)
+│   └── locales/            # Translation files (270+ keys each, 30 languages)
 │       ├── en.json           # English
 │       ├── es.json           # Spanish
 │       ├── fr.json           # French
 │       ├── de.json           # German
 │       ├── ar.json           # Arabic (RTL)
 │       ├── fa.json           # Persian (RTL)
+│       ├── he.json           # Hebrew (RTL)
 │       ├── it.json           # Italian
 │       ├── pt.json           # Portuguese
 │       ├── ru.json           # Russian
 │       ├── zh.json           # Chinese
 │       ├── ja.json           # Japanese
 │       ├── ko.json           # Korean
-│       └── id.json           # Indonesian
+│       ├── id.json           # Indonesian
+│       ├── hi.json           # Hindi
+│       ├── tr.json           # Turkish
+│       ├── vi.json           # Vietnamese
+│       ├── th.json           # Thai
+│       ├── pl.json           # Polish
+│       ├── uk.json           # Ukrainian
+│       ├── nl.json           # Dutch
+│       ├── tl.json           # Filipino (Tagalog)
+│       ├── sw.json           # Swahili
+│       ├── ro.json           # Romanian
+│       ├── cs.json           # Czech
+│       ├── hu.json           # Hungarian
+│       ├── el.json           # Greek
+│       ├── sv.json           # Swedish
+│       ├── da.json           # Danish
+│       └── fi.json           # Finnish
 ├── assets/                 # App assets
 ├── android/               # Android native code
 ├── scripts/               # Build and utility scripts
@@ -271,16 +289,18 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [ ] Web dashboard companion app
 
 ### Completed Recently
+- [x] **30-language internationalization** - Expanded from 13 to 30 languages covering top global internet users
+- [x] **Hebrew RTL support** - Right-to-left layout for Hebrew added alongside Arabic and Persian
+- [x] **Contact management system** - Add and manage contacts/entities linked to transactions
+- [x] **CSV backup & restore** - Full import/export with merge or replace modes
+- [x] **Password & biometric security** - App lock with fingerprint/Face ID support
+- [x] **Transaction charts** - Monthly trend, debt vs credit, per-account charts
 - [x] **Excel export functionality** - Export all accounts and transactions to Excel files
 - [x] **Localized number input system** - Native numeral support for Arabic and Farsi
-- [x] Complete 13-language internationalization
 - [x] 39-currency support with live exchange rates
 - [x] Custom currency editing functionality
 - [x] Dark/Light theme system
-- [x] Custom currency creation and management
-- [x] About section with developer info
-- [x] Comprehensive settings screen
-- [x] RTL language support
+- [x] RTL language support (Arabic, Persian, Hebrew)
 - [x] Language persistence across app launches
 
 ## Support
@@ -308,4 +328,4 @@ If you encounter any issues or have suggestions:
 
 *LedgerWell helps you track debts and credits with multi-currency support and complete privacy.*
 
-© 2025 Sepehr Mohammady. Open source under MIT License.
+© 2026 Sepehr Mohammady. Open source under MIT License.

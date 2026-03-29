@@ -16,6 +16,23 @@ import zh from '../locales/zh.json';
 import ja from '../locales/ja.json';
 import ko from '../locales/ko.json';
 import id from '../locales/id.json';
+import hi from '../locales/hi.json';
+import tr from '../locales/tr.json';
+import vi from '../locales/vi.json';
+import th from '../locales/th.json';
+import pl from '../locales/pl.json';
+import uk from '../locales/uk.json';
+import nl from '../locales/nl.json';
+import tl from '../locales/tl.json';
+import sw from '../locales/sw.json';
+import ro from '../locales/ro.json';
+import cs from '../locales/cs.json';
+import hu from '../locales/hu.json';
+import el from '../locales/el.json';
+import he from '../locales/he.json';
+import sv from '../locales/sv.json';
+import da from '../locales/da.json';
+import fi from '../locales/fi.json';
 
 const resources = {
   en: { translation: en },
@@ -31,10 +48,27 @@ const resources = {
   ja: { translation: ja },
   ko: { translation: ko },
   id: { translation: id },
+  hi: { translation: hi },
+  tr: { translation: tr },
+  vi: { translation: vi },
+  th: { translation: th },
+  pl: { translation: pl },
+  uk: { translation: uk },
+  nl: { translation: nl },
+  tl: { translation: tl },
+  sw: { translation: sw },
+  ro: { translation: ro },
+  cs: { translation: cs },
+  hu: { translation: hu },
+  el: { translation: el },
+  he: { translation: he },
+  sv: { translation: sv },
+  da: { translation: da },
+  fi: { translation: fi },
 };
 
 // RTL languages
-const RTL_LANGUAGES = ['ar', 'fa'];
+const RTL_LANGUAGES = ['ar', 'fa', 'he'];
 
 // Function to check if a language is RTL
 export const isRTL = (language: string): boolean => {
