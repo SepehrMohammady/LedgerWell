@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
-  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from '@react-navigation/native';
@@ -17,10 +16,12 @@ import CurrencyService from '../utils/currency';
 import AddAccountModal from '../components/AddAccountModal';
 import AccountTransactionsModal from '../components/AccountTransactionsModal';
 import { useTheme, Theme } from '../utils/theme';
+import { useAlert } from '../components/CustomAlert';
 
 const AccountsScreen = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { showAlert } = useAlert();
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [filteredAccounts, setFilteredAccounts] = useState<Account[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -66,7 +67,7 @@ const AccountsScreen = () => {
   };
 
   const handleDeleteAccount = (account: Account) => {
-    Alert.alert(
+    showAlert(
       t('confirm'),
       t('confirmDelete'),
       [
@@ -86,7 +87,7 @@ const AccountsScreen = () => {
       loadAccounts();
     } catch (error) {
       console.error('Failed to delete account:', error);
-      Alert.alert('Error', 'Failed to delete account');
+      showAlert('Error', 'Failed to delete account');
     }
   };
 

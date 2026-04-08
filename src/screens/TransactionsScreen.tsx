@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
-  Alert,
   Modal,
   ScrollView,
   Dimensions,
@@ -20,12 +19,14 @@ import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
 import AddTransactionModal from '../components/AddTransactionModal';
 import { useTheme, Theme } from '../utils/theme';
+import { useAlert } from '../components/CustomAlert';
 
 const screenWidth = Dimensions.get('window').width;
 
 const TransactionsScreen = () => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { showAlert } = useAlert();
   const navigation = useNavigation();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -167,7 +168,7 @@ const TransactionsScreen = () => {
   const handleDeleteSelected = () => {
     if (selectedTransactions.size === 0) return;
     
-    Alert.alert(
+    showAlert(
       t('confirm'),
       t('deleteSelectedConfirm', { count: selectedTransactions.size }),
       [
@@ -183,10 +184,10 @@ const TransactionsScreen = () => {
               setSelectedTransactions(new Set());
               setSelectionMode(false);
               loadTransactions();
-              Alert.alert(t('success'), t('deleteSelectedSuccess'));
+              showAlert(t('success'), t('deleteSelectedSuccess'));
             } catch (error) {
               console.error('Failed to delete transactions:', error);
-              Alert.alert(t('error'), t('deleteSelectedFailed'));
+              showAlert(t('error'), t('deleteSelectedFailed'));
             }
           },
         },
@@ -196,7 +197,7 @@ const TransactionsScreen = () => {
 
   const handleMergeSelected = () => {
     if (selectedTransactions.size < 2) {
-      Alert.alert(t('error'), t('mergeMinimum'));
+      showAlert(t('error'), t('mergeMinimum'));
       return;
     }
 
@@ -207,14 +208,14 @@ const TransactionsScreen = () => {
     // Check if all selected transactions have the same type
     const types = new Set(selectedList.map(t => t.type));
     if (types.size > 1) {
-      Alert.alert(t('error'), t('mergeSameType'));
+      showAlert(t('error'), t('mergeSameType'));
       return;
     }
 
     // Check if all selected transactions are for the same account
     const accountIds = new Set(selectedList.map(t => t.accountId));
     if (accountIds.size > 1) {
-      Alert.alert(t('error'), t('mergeSameAccount'));
+      showAlert(t('error'), t('mergeSameAccount'));
       return;
     }
 
@@ -227,7 +228,7 @@ const TransactionsScreen = () => {
       .map(t => t.description)
       .join('; ');
 
-    Alert.alert(
+    showAlert(
       t('mergeTransactions'),
       t('mergeConfirm', { 
         count: selectedTransactions.size, 
@@ -264,10 +265,10 @@ const TransactionsScreen = () => {
               setSelectedTransactions(new Set());
               setSelectionMode(false);
               loadTransactions();
-              Alert.alert(t('success'), t('mergeSuccess'));
+              showAlert(t('success'), t('mergeSuccess'));
             } catch (error) {
               console.error('Failed to merge transactions:', error);
-              Alert.alert(t('error'), t('mergeFailed'));
+              showAlert(t('error'), t('mergeFailed'));
             }
           },
         },
@@ -281,7 +282,7 @@ const TransactionsScreen = () => {
   };
 
   const handleDeleteTransaction = (transaction: Transaction) => {
-    Alert.alert(
+    showAlert(
       t('confirm'),
       t('confirmDelete'),
       [
@@ -295,7 +296,7 @@ const TransactionsScreen = () => {
               loadTransactions();
             } catch (error) {
               console.error('Failed to delete transaction:', error);
-              Alert.alert('Error', 'Failed to delete transaction');
+              showAlert('Error', 'Failed to delete transaction');
             }
           },
         },

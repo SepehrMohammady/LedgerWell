@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { Appearance } from 'react-native';
 import StorageService from './storage';
 
 export interface Theme {
@@ -77,7 +78,7 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState(Appearance.getColorScheme() === 'dark');
 
   useEffect(() => {
     loadThemePreference();

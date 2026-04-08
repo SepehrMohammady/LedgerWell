@@ -8,6 +8,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppState, AppStateStatus } from 'react-native';
 import i18n from './src/utils/i18n';
 import { ThemeProvider, useTheme } from './src/utils/theme';
+import { AlertProvider } from './src/components/CustomAlert';
 import StorageService from './src/utils/storage';
 import { setRTL } from './src/utils/i18n';
 import { isPasswordSet, isSetupCompleted } from './src/utils/auth';
@@ -173,7 +174,9 @@ export default function App() {
     <SafeAreaProvider>
       <ThemeProvider>
         <I18nextProvider i18n={i18n}>
-          <AppContent />
+          <AlertProvider>
+            <AppContent />
+          </AlertProvider>
         </I18nextProvider>
       </ThemeProvider>
     </SafeAreaProvider>

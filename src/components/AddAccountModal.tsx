@@ -7,7 +7,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,6 +15,7 @@ import { Picker } from '@react-native-picker/picker';
 import { Account, Currency } from '../types';
 import StorageService from '../utils/storage';
 import { useTheme, Theme } from '../utils/theme';
+import { useAlert } from './CustomAlert';
 
 interface AddAccountModalProps {
   visible: boolean;
@@ -27,6 +27,7 @@ interface AddAccountModalProps {
 const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onSave, editAccount }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { showAlert } = useAlert();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [selectedCurrency, setSelectedCurrency] = useState<Currency | null>(null);
@@ -70,12 +71,12 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert(t('error'), t('pleaseEnterAccountName'));
+      showAlert(t('error'), t('pleaseEnterAccountName'));
       return;
     }
 
     if (!selectedCurrency) {
-      Alert.alert(t('error'), t('pleaseSelectCurrency'));
+      showAlert(t('error'), t('pleaseSelectCurrency'));
       return;
     }
 
@@ -90,7 +91,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
           updatedAt: new Date(),
         };
         await StorageService.saveAccount(updatedAccount);
-        Alert.alert(t('success'), t('accountUpdated'));
+        showAlert(t('success'), t('accountUpdated'));
       } else {
         // Create new account
         const newAccount = {
@@ -104,7 +105,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
           updatedAt: new Date(),
         };
         await StorageService.saveAccount(newAccount);
-        Alert.alert(t('success'), t('accountCreated'));
+        showAlert(t('success'), t('accountCreated'));
       }
 
       resetForm();
@@ -112,7 +113,7 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
       onClose();
     } catch (error) {
       console.error('Failed to save account:', error);
-      Alert.alert(t('error'), t('accountActionFailed', { action: editAccount ? t('update') : t('create') }));
+      showAlert(t('error'), t('accountActionFailed', { action: editAccount ? t('update') : t('create') }));
     }
   };
 

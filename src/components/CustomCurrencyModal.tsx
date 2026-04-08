@@ -7,7 +7,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,6 +17,7 @@ import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
 import { useTheme, Theme } from '../utils/theme';
 import LocalizedNumberInput from './LocalizedNumberInput';
+import { useAlert } from './CustomAlert';
 
 interface CustomCurrencyModalProps {
   visible: boolean;
@@ -29,6 +29,7 @@ interface CustomCurrencyModalProps {
 const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onClose, onSave, editingCurrency }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { showAlert } = useAlert();
   const [code, setCode] = useState('');
   const [name, setName] = useState('');
   const [symbol, setSymbol] = useState('');
@@ -52,19 +53,19 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
   const handleSave = async () => {
     // Validate inputs
     if (!code.trim() || !name.trim() || !symbol.trim() || !rate.trim()) {
-      Alert.alert(t('error'), t('fillAllFields'));
+      showAlert(t('error'), t('fillAllFields'));
       return;
     }
 
     const upperCode = code.trim().toUpperCase();
     if (!CurrencyService.validateCurrencyCode(upperCode)) {
-      Alert.alert(t('error'), t('currencyCodeInvalid'));
+      showAlert(t('error'), t('currencyCodeInvalid'));
       return;
     }
 
     const numRate = parseFloat(rate.trim());
     if (!CurrencyService.validateExchangeRate(numRate)) {
-      Alert.alert(t('error'), t('validExchangeRate'));
+      showAlert(t('error'), t('validExchangeRate'));
       return;
     }
 
@@ -80,7 +81,7 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
           if (errorMessage.includes('{code}')) {
             errorMessage = errorMessage.replace(/{code}/g, upperCode);
           }
-          Alert.alert(t('error'), errorMessage);
+          showAlert(t('error'), errorMessage);
           return;
         }
 
@@ -107,7 +108,7 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
         if (message.includes('{code}')) {
           message = message.replace(/{code}/g, upperCode);
         }
-        Alert.alert(t('success'), message);
+        showAlert(t('success'), message);
       } else {
         // Create new currency
         const duplicate = existingCurrencies.find(c => c.code === upperCode);
@@ -117,7 +118,7 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
           if (errorMessage.includes('{code}')) {
             errorMessage = errorMessage.replace(/{code}/g, upperCode);
           }
-          Alert.alert(t('error'), errorMessage);
+          showAlert(t('error'), errorMessage);
           return;
         }
 
@@ -140,11 +141,11 @@ const CustomCurrencyModal: React.FC<CustomCurrencyModalProps> = ({ visible, onCl
         if (message.includes('{code}')) {
           message = message.replace(/{code}/g, upperCode);
         }
-        Alert.alert(t('success'), message);
+        showAlert(t('success'), message);
       }
     } catch (error) {
       console.error('Failed to save custom currency:', error);
-      Alert.alert(t('error'), t('customCurrencyFailed'));
+      showAlert(t('error'), t('customCurrencyFailed'));
     }
   };
 

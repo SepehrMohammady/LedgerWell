@@ -7,7 +7,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,6 +17,7 @@ import StorageService from '../utils/storage';
 import { useTheme, Theme } from '../utils/theme';
 import LocalizedNumberInput from './LocalizedNumberInput';
 import AddContactModal from './AddContactModal';
+import { useAlert } from './CustomAlert';
 
 interface AddTransactionModalProps {
   visible: boolean;
@@ -30,6 +30,7 @@ interface AddTransactionModalProps {
 const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onClose, onSave, onNavigateToAccounts, editTransaction }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { showAlert } = useAlert();
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [type, setType] = useState<'debt' | 'credit'>('debt');
   const [amount, setAmount] = useState('');
@@ -121,7 +122,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
 
   const handleSave = async () => {
     if (!selectedAccount) {
-      Alert.alert(t('error'), t('pleaseSelectAccount'));
+      showAlert(t('error'), t('pleaseSelectAccount'));
       return;
     }
 
@@ -129,13 +130,13 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
     const finalName = useManualName ? personName.trim() : (selectedContact?.name || '');
     
     if (!finalName) {
-      Alert.alert(t('error'), t('pleaseSelectOrEnterName'));
+      showAlert(t('error'), t('pleaseSelectOrEnterName'));
       return;
     }
 
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount) || numAmount <= 0) {
-      Alert.alert(t('error'), t('pleaseEnterValidAmount'));
+      showAlert(t('error'), t('pleaseEnterValidAmount'));
       return;
     }
 
@@ -158,7 +159,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
         resetForm();
         onSave();
         onClose();
-        Alert.alert(t('success'), t('transactionUpdated'));
+        showAlert(t('success'), t('transactionUpdated'));
       } else {
         // Create new transaction
         const newTransaction = {
@@ -179,11 +180,11 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
         resetForm();
         onSave();
         onClose();
-        Alert.alert(t('success'), t('transactionAdded'));
+        showAlert(t('success'), t('transactionAdded'));
       }
     } catch (error) {
       console.error('Failed to save transaction:', error);
-      Alert.alert(t('error'), t('transactionActionFailed', { action: editTransaction ? t('update') : 'add' }));
+      showAlert(t('error'), t('transactionActionFailed', { action: editTransaction ? t('update') : 'add' }));
     }
   };
 

@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Alert,
   ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
@@ -14,6 +13,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../utils/theme';
+import { useAlert } from '../components/CustomAlert';
 import {
   setPassword,
   isBiometricAvailable,
@@ -30,6 +30,7 @@ export const SetupPasswordScreen: React.FC<SetupPasswordScreenProps> = ({
 }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { showAlert } = useAlert();
   const [password, setPasswordValue] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -52,17 +53,17 @@ export const SetupPasswordScreen: React.FC<SetupPasswordScreenProps> = ({
 
   const validatePassword = (): boolean => {
     if (!password.trim()) {
-      Alert.alert(t('error'), t('pleaseEnterPassword'));
+      showAlert(t('error'), t('pleaseEnterPassword'));
       return false;
     }
 
     if (password.length < 4) {
-      Alert.alert(t('error'), t('passwordTooShort'));
+      showAlert(t('error'), t('passwordTooShort'));
       return false;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert(t('error'), t('passwordsDoNotMatch'));
+      showAlert(t('error'), t('passwordsDoNotMatch'));
       return false;
     }
 
@@ -86,13 +87,13 @@ export const SetupPasswordScreen: React.FC<SetupPasswordScreenProps> = ({
       // Mark setup as completed
       await setSetupCompleted(true);
 
-      Alert.alert(
+      showAlert(
         t('success'),
         t('passwordSetSuccessfully'),
         [{ text: t('ok'), onPress: onComplete }]
       );
     } catch (error) {
-      Alert.alert(t('error'), t('failedToSetPassword'));
+      showAlert(t('error'), t('failedToSetPassword'));
     } finally {
       setLoading(false);
     }

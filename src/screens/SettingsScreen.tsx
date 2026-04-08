@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
-  Alert,
   Linking,
   TextInput,
   Modal,
@@ -20,6 +19,7 @@ import CurrencyService, { DEFAULT_CURRENCIES } from '../utils/currency';
 import CustomCurrencyModal from '../components/CustomCurrencyModal';
 import { ContactsListModal } from '../components/AddContactModal';
 import { useTheme, Theme } from '../utils/theme';
+import { useAlert } from '../components/CustomAlert';
 import { setRTL } from '../utils/i18n';
 import { getAppVersion } from '../utils/version';
 import CSVBackupService, { BackupData } from '../utils/csvBackup';
@@ -88,6 +88,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ title }) => {
 const SettingsScreen = () => {
   const { t, i18n } = useTranslation();
   const { theme, isDark, toggleTheme } = useTheme();
+  const { showAlert } = useAlert();
   const [settings, setSettings] = useState<AppSettings | null>(null);
   const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [customCurrencyModalVisible, setCustomCurrencyModalVisible] = useState(false);
@@ -150,7 +151,7 @@ const SettingsScreen = () => {
       setSettings(newSettings);
     } catch (error) {
       console.error('Failed to save settings:', error);
-      Alert.alert('Error', t('settingsSaveFailed'));
+      showAlert('Error', t('settingsSaveFailed'));
     }
   };
 
@@ -169,7 +170,7 @@ const SettingsScreen = () => {
       
       // Show simple success notification
       setTimeout(() => {
-        Alert.alert(
+        showAlert(
           t('languageChanged'),
           '',
           [{ text: t('confirm') }]
@@ -177,7 +178,7 @@ const SettingsScreen = () => {
       }, 100);
     } catch (error) {
       console.error('Failed to change language:', error);
-      Alert.alert('Error', t('settingsSaveFailed'));
+      showAlert('Error', t('settingsSaveFailed'));
     }
   };
 
@@ -196,18 +197,18 @@ const SettingsScreen = () => {
 
   const updateExchangeRates = async () => {
     try {
-      Alert.alert(t('updating'), t('fetchingRates'));
+      showAlert(t('updating'), t('fetchingRates'));
       const updatedCurrencies = await CurrencyService.updateCurrencyRates(currencies);
       await StorageService.saveCurrencies(updatedCurrencies);
       setCurrencies(updatedCurrencies);
-      Alert.alert('Success', t('ratesUpdated'));
+      showAlert('Success', t('ratesUpdated'));
     } catch (error) {
-      Alert.alert('Error', t('updateFailed'));
+      showAlert('Error', t('updateFailed'));
     }
   };
 
   const resetAllData = () => {
-    Alert.alert(
+    showAlert(
       t('resetAllData'),
       t('resetConfirm'),
       [
@@ -218,11 +219,11 @@ const SettingsScreen = () => {
           onPress: async () => {
             try {
               await StorageService.clearAllData();
-              Alert.alert(t('success'), t('allDataReset'));
+              showAlert(t('success'), t('allDataReset'));
               loadSettings();
               loadCurrencies();
             } catch (error) {
-              Alert.alert('Error', t('resetFailed'));
+              showAlert('Error', t('resetFailed'));
             }
           },
         },
@@ -236,7 +237,7 @@ const SettingsScreen = () => {
   };
 
   const deleteCustomCurrency = (currencyId: string) => {
-    Alert.alert(
+    showAlert(
       t('delete'),
       t('confirmDelete'),
       [
@@ -258,9 +259,9 @@ const SettingsScreen = () => {
                 }
               }
               
-              Alert.alert(t('success'), t('customCurrencyDeleted'));
+              showAlert(t('success'), t('customCurrencyDeleted'));
             } catch (error) {
-              Alert.alert('Error', t('customCurrencyFailed'));
+              showAlert('Error', t('customCurrencyFailed'));
             }
           },
         },
@@ -278,7 +279,7 @@ const SettingsScreen = () => {
 
   const exportBackup = async () => {
     try {
-      Alert.alert(t('exportData'), t('preparingExport'));
+      showAlert(t('exportData'), t('preparingExport'));
       
       // Load all data including settings and custom currencies
       const [accounts, transactions, customCurrencies] = await Promise.all([
@@ -288,7 +289,7 @@ const SettingsScreen = () => {
       ]);
 
       if (accounts.length === 0) {
-        Alert.alert(t('noData'), t('noDataToExport'));
+        showAlert(t('noData'), t('noDataToExport'));
         return;
       }
 
@@ -306,7 +307,7 @@ const SettingsScreen = () => {
       const stats = CSVBackupService.getBackupStats(backupData);
       
       // Show export confirmation with statistics
-      Alert.alert(
+      showAlert(
         t('exportData'),
         `${t('accounts')}: ${stats.totalAccounts}\n${t('transactions')}: ${stats.totalTransactions}\n${t('customCurrencies')}: ${stats.totalCustomCurrencies}${stats.dateRange ? `\n${t('dateRange')}: ${stats.dateRange.from} - ${stats.dateRange.to}` : ''}`,
         [
@@ -321,11 +322,11 @@ const SettingsScreen = () => {
                   settings!,
                   customCurrencies
                 );
-                Alert.alert(t('success'), t('exportSuccess'));
+                showAlert(t('success'), t('exportSuccess'));
               } catch (error) {
                 console.error('Export failed:', error);
                 const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-                Alert.alert(t('error'), `${t('exportFailed')}\n\n${errorMessage}`);
+                showAlert(t('error'), `${t('exportFailed')}\n\n${errorMessage}`);
               }
             }
           }
@@ -333,13 +334,13 @@ const SettingsScreen = () => {
       );
     } catch (error) {
       console.error('Failed to prepare export:', error);
-      Alert.alert(t('error'), t('exportPreparationFailed'));
+      showAlert(t('error'), t('exportPreparationFailed'));
     }
   };
 
   const importBackup = async () => {
     try {
-      Alert.alert(t('importData'), t('selectBackupFile'));
+      showAlert(t('importData'), t('selectBackupFile'));
       
       // Import backup from CSV file
       const backupData = await CSVBackupService.importBackup();
@@ -353,7 +354,7 @@ const SettingsScreen = () => {
       const validation = CSVBackupService.validateBackup(backupData);
       
       if (!validation.isValid) {
-        Alert.alert(
+        showAlert(
           t('importValidationFailed'), 
           validation.errors.join('\n')
         );
@@ -378,7 +379,7 @@ const SettingsScreen = () => {
         t('importWarning')
       ].filter(Boolean).join('\n');
 
-      Alert.alert(
+      showAlert(
         t('importData'),
         confirmationMessage,
         [
@@ -397,7 +398,7 @@ const SettingsScreen = () => {
     } catch (error) {
       console.error('Import failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      Alert.alert(t('error'), t('importFailed', { error: errorMessage }));
+      showAlert(t('error'), t('importFailed', { error: errorMessage }));
     }
   };
 
@@ -406,12 +407,12 @@ const SettingsScreen = () => {
     try {
       await setBiometricEnabled(value);
       setBiometricEnabledState(value);
-      Alert.alert(
+      showAlert(
         t('success'),
         value ? t('biometricEnabled') : t('biometricDisabled')
       );
     } catch (error) {
-      Alert.alert(t('error'), t('failedToUpdateBiometric'));
+      showAlert(t('error'), t('failedToUpdateBiometric'));
     }
   };
 
@@ -419,65 +420,65 @@ const SettingsScreen = () => {
     // If no password is set, allow setting one without old password
     if (!hasPassword) {
       if (!newPassword || !confirmNewPassword) {
-        Alert.alert(t('error'), t('pleaseEnterPassword'));
+        showAlert(t('error'), t('pleaseEnterPassword'));
         return;
       }
 
       if (newPassword.length < 4) {
-        Alert.alert(t('error'), t('passwordTooShort'));
+        showAlert(t('error'), t('passwordTooShort'));
         return;
       }
 
       if (newPassword !== confirmNewPassword) {
-        Alert.alert(t('error'), t('passwordsDoNotMatch'));
+        showAlert(t('error'), t('passwordsDoNotMatch'));
         return;
       }
 
       try {
         await setPassword(newPassword);
         await loadSecuritySettings();
-        Alert.alert(t('success'), t('passwordSetSuccessfully'));
+        showAlert(t('success'), t('passwordSetSuccessfully'));
         setChangePasswordModalVisible(false);
         setOldPassword('');
         setNewPassword('');
         setConfirmNewPassword('');
       } catch (error) {
-        Alert.alert(t('error'), t('failedToSetPassword'));
+        showAlert(t('error'), t('failedToSetPassword'));
       }
       return;
     }
 
     // If password exists, require old password to change
     if (!oldPassword || !newPassword || !confirmNewPassword) {
-      Alert.alert(t('error'), t('pleaseEnterPassword'));
+      showAlert(t('error'), t('pleaseEnterPassword'));
       return;
     }
 
     if (newPassword.length < 4) {
-      Alert.alert(t('error'), t('passwordTooShort'));
+      showAlert(t('error'), t('passwordTooShort'));
       return;
     }
 
     if (newPassword !== confirmNewPassword) {
-      Alert.alert(t('error'), t('passwordsDoNotMatch'));
+      showAlert(t('error'), t('passwordsDoNotMatch'));
       return;
     }
 
     const result = await changePassword(oldPassword, newPassword);
     
     if (result.success) {
-      Alert.alert(t('success'), t('passwordChangedSuccessfully'));
+      showAlert(t('success'), t('passwordChangedSuccessfully'));
       setChangePasswordModalVisible(false);
       setOldPassword('');
       setNewPassword('');
       setConfirmNewPassword('');
     } else {
-      Alert.alert(t('error'), result.error || t('failedToChangePassword'));
+      showAlert(t('error'), result.error || t('failedToChangePassword'));
     }
   };
 
   const handleRemovePassword = () => {
-    Alert.alert(
+    showAlert(
       t('removePassword'),
       t('removePasswordWarning'),
       [
@@ -489,9 +490,9 @@ const SettingsScreen = () => {
             try {
               await resetPassword();
               await loadSecuritySettings();
-              Alert.alert(t('success'), t('passwordRemovedSuccessfully'));
+              showAlert(t('success'), t('passwordRemovedSuccessfully'));
             } catch (error) {
-              Alert.alert(t('error'), t('failedToRemovePassword'));
+              showAlert(t('error'), t('failedToRemovePassword'));
             }
           },
         },
@@ -501,7 +502,7 @@ const SettingsScreen = () => {
 
   const executeBackupRestore = async (backupData: BackupData, replaceExisting: boolean) => {
     try {
-      Alert.alert(t('importData'), t('processingImport'));
+      showAlert(t('importData'), t('processingImport'));
       
       if (replaceExisting) {
         // Clear existing data
@@ -531,7 +532,7 @@ const SettingsScreen = () => {
         }
         
         // Show success message
-        Alert.alert(
+        showAlert(
           t('importSuccess'),
           `${t('restored')}:\n${t('accounts')}: ${backupData.accounts.length}\n${t('transactions')}: ${backupData.transactions.length}\n${t('customCurrencies')}: ${backupData.customCurrencies.length}`
         );
@@ -615,7 +616,7 @@ const SettingsScreen = () => {
         }
         
         // Update success message for merge mode
-        Alert.alert(
+        showAlert(
           t('importSuccess'),
           `${t('added')}:\n${t('accounts')}: ${addedAccounts}\n${t('transactions')}: ${addedTransactions}\n${t('customCurrencies')}: ${addedCurrencies}`
         );
@@ -627,7 +628,7 @@ const SettingsScreen = () => {
       await loadCurrencies();
     } catch (error) {
       console.error('Backup restore failed:', error);
-      Alert.alert(t('error'), t('restoreFailed'));
+      showAlert(t('error'), t('restoreFailed'));
     }
   };
 

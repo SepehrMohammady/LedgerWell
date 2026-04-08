@@ -7,7 +7,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
   FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Contact } from '../types';
 import StorageService from '../utils/storage';
 import { useTheme, Theme } from '../utils/theme';
+import { useAlert } from './CustomAlert';
 
 interface AddContactModalProps {
   visible: boolean;
@@ -32,6 +32,7 @@ const AddContactModal: React.FC<AddContactModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { showAlert } = useAlert();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
 
@@ -53,7 +54,7 @@ const AddContactModal: React.FC<AddContactModalProps> = ({
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert(t('error'), t('pleaseEnterContactName'));
+      showAlert(t('error'), t('pleaseEnterContactName'));
       return;
     }
 
@@ -68,7 +69,7 @@ const AddContactModal: React.FC<AddContactModalProps> = ({
         };
 
         await StorageService.saveContact(updatedContact);
-        Alert.alert(t('success'), t('contactUpdated'));
+        showAlert(t('success'), t('contactUpdated'));
       } else {
         // Create new contact
         const newContact: Contact = {
@@ -80,7 +81,7 @@ const AddContactModal: React.FC<AddContactModalProps> = ({
         };
 
         await StorageService.saveContact(newContact);
-        Alert.alert(t('success'), t('contactCreated'));
+        showAlert(t('success'), t('contactCreated'));
       }
       
       resetForm();
@@ -88,7 +89,7 @@ const AddContactModal: React.FC<AddContactModalProps> = ({
       onClose();
     } catch (error) {
       console.error('Failed to save contact:', error);
-      Alert.alert(t('error'), t('contactActionFailed'));
+      showAlert(t('error'), t('contactActionFailed'));
     }
   };
 
@@ -160,6 +161,7 @@ export const ContactsListModal: React.FC<ContactsListModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { showAlert } = useAlert();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [addModalVisible, setAddModalVisible] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
@@ -180,7 +182,7 @@ export const ContactsListModal: React.FC<ContactsListModalProps> = ({
   };
 
   const handleDeleteContact = (contact: Contact) => {
-    Alert.alert(
+    showAlert(
       t('confirm'),
       t('deleteContactConfirm', { name: contact.name }),
       [
@@ -193,10 +195,10 @@ export const ContactsListModal: React.FC<ContactsListModalProps> = ({
               await StorageService.deleteContact(contact.id);
               loadContacts();
               onContactsChanged?.();
-              Alert.alert(t('success'), t('contactDeleted'));
+              showAlert(t('success'), t('contactDeleted'));
             } catch (error) {
               console.error('Failed to delete contact:', error);
-              Alert.alert(t('error'), t('contactDeleteFailed'));
+              showAlert(t('error'), t('contactDeleteFailed'));
             }
           },
         },

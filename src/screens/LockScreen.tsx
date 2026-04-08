@@ -5,12 +5,12 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../utils/theme';
+import { useAlert } from '../components/CustomAlert';
 import {
   verifyPassword,
   isBiometricEnabled,
@@ -26,6 +26,7 @@ interface LockScreenProps {
 export const LockScreen: React.FC<LockScreenProps> = ({ onUnlock }) => {
   const { t } = useTranslation();
   const { theme } = useTheme();
+  const { showAlert } = useAlert();
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [biometricAvailable, setBiometricAvailable] = useState(false);
@@ -54,7 +55,7 @@ export const LockScreen: React.FC<LockScreenProps> = ({ onUnlock }) => {
 
   const handlePasswordSubmit = async () => {
     if (!password.trim()) {
-      Alert.alert(t('error'), t('pleaseEnterPassword'));
+      showAlert(t('error'), t('pleaseEnterPassword'));
       return;
     }
 
@@ -66,7 +67,7 @@ export const LockScreen: React.FC<LockScreenProps> = ({ onUnlock }) => {
       setPassword('');
       onUnlock();
     } else {
-      Alert.alert(t('error'), t('incorrectPassword'));
+      showAlert(t('error'), t('incorrectPassword'));
       setPassword('');
     }
   };
@@ -79,7 +80,7 @@ export const LockScreen: React.FC<LockScreenProps> = ({ onUnlock }) => {
     if (result.success) {
       onUnlock();
     } else if (result.error) {
-      Alert.alert(t('error'), t('biometricAuthFailed'));
+      showAlert(t('error'), t('biometricAuthFailed'));
     }
   };
 

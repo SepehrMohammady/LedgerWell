@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Appearance } from 'react-native';
 import { Account, Transaction, Currency, AppSettings, Contact } from '../types';
 import { DEFAULT_CURRENCIES } from './currency';
 
@@ -236,7 +237,7 @@ export class StorageService {
       const defaultSettings: AppSettings = {
         defaultCurrency: DEFAULT_CURRENCIES[0], // USD
         language: 'en',
-        theme: 'light',
+        theme: Appearance.getColorScheme() === 'dark' ? 'dark' : 'light',
         autoUpdateRates: true,
       };
       
@@ -246,7 +247,7 @@ export class StorageService {
       return {
         defaultCurrency: DEFAULT_CURRENCIES[0],
         language: 'en',
-        theme: 'light',
+        theme: Appearance.getColorScheme() === 'dark' ? 'dark' : 'light',
         autoUpdateRates: true,
       };
     }

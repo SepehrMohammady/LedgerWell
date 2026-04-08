@@ -50,7 +50,7 @@ export class CSVBackupService {
 
       // Generate filename
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-      const fileName = `LedgerWell_Backup_${timestamp}.csv`;
+      const fileName = `LedgerWell_Backup_${timestamp}.ledgerwell`;
       
       console.log('[CSV Backup] Creating file:', fileName);
       
@@ -82,9 +82,9 @@ export class CSVBackupService {
         
         if (isAvailable) {
           await Sharing.shareAsync(file.uri, {
-            mimeType: 'text/csv',
+            mimeType: 'application/octet-stream',
             dialogTitle: 'Export Backup',
-            UTI: 'public.comma-separated-values-text'
+            UTI: 'public.data'
           });
           console.log('[CSV Backup] File shared successfully');
         } else {
@@ -116,7 +116,7 @@ export class CSVBackupService {
     try {
       // Let user pick CSV file
       const result = await DocumentPicker.getDocumentAsync({
-        type: ['text/csv', 'text/comma-separated-values', 'application/csv'],
+        type: ['application/octet-stream', '*/*'],
         copyToCacheDirectory: true,
         multiple: false
       });
