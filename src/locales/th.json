@@ -70,7 +70,7 @@
   "exampleTitle": "ตัวอย่าง:",
   "exampleText": "รหัส: BTC\nชื่อ: Bitcoin\nสัญลักษณ์: ₿\nอัตรา: 0.000025 (ถ้า 1 USD = 0.000025 BTC)",
   "languageChanged": "เปลี่ยนภาษาแล้ว",
-  "restartRequired": "กรุณารีสตาร์ทแอปเพื่อใช้การเปลี่ยนแปลงเค้าโครงสำหรับภาษาใหม่",
+  "restartRequired": "แอปจะรีสตาร์ทตอนนี้เพื่อใช้เลย์เอาต์ภาษาใหม่",
   "error": "ข้อผิดพลาด",
   "pleaseEnterAccountName": "กรุณากรอกชื่อบัญชี",
   "pleaseSelectCurrency": "กรุณาเลือกสกุลเงิน",

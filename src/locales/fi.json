@@ -70,7 +70,7 @@
   "exampleTitle": "Esimerkki:",
   "exampleText": "Koodi: BTC\nNimi: Bitcoin\nSymboli: ₿\nKurssi: 0.000025 (jos 1 USD = 0.000025 BTC)",
   "languageChanged": "Kieli vaihdettu",
-  "restartRequired": "Käynnistä sovellus uudelleen ottaaksesi uuden kielen asettelumuutokset käyttöön.",
+  "restartRequired": "Sovellus käynnistyy nyt uudelleen uuden kieliasettelun käyttöönottamiseksi.",
   "error": "Virhe",
   "pleaseEnterAccountName": "Syötä tilin nimi",
   "pleaseSelectCurrency": "Valitse valuutta",

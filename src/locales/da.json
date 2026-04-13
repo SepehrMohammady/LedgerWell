@@ -70,7 +70,7 @@
   "exampleTitle": "Eksempel:",
   "exampleText": "Kode: BTC\nNavn: Bitcoin\nSymbol: ₿\nKurs: 0.000025 (hvis 1 USD = 0.000025 BTC)",
   "languageChanged": "Sprog ændret",
-  "restartRequired": "Genstart appen for at anvende layoutændringer for det nye sprog.",
+  "restartRequired": "Appen genstarter nu for at anvende det nye sproglayout.",
   "error": "Fejl",
   "pleaseEnterAccountName": "Indtast venligst kontonavn",
   "pleaseSelectCurrency": "Vælg venligst valuta",

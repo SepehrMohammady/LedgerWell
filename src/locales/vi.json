@@ -70,7 +70,7 @@
   "exampleTitle": "Ví dụ:",
   "exampleText": "Mã: BTC\nTên: Bitcoin\nKý hiệu: ₿\nTỷ giá: 0.000025 (nếu 1 USD = 0.000025 BTC)",
   "languageChanged": "Ngôn Ngữ Đã Thay Đổi",
-  "restartRequired": "Vui lòng khởi động lại ứng dụng để áp dụng thay đổi bố cục cho ngôn ngữ mới.",
+  "restartRequired": "Ứng dụng sẽ khởi động lại ngay để áp dụng bố cục ngôn ngữ mới.",
   "error": "Lỗi",
   "pleaseEnterAccountName": "Vui lòng nhập tên tài khoản",
   "pleaseSelectCurrency": "Vui lòng chọn tiền tệ",

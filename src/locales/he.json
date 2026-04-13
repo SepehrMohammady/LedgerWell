@@ -70,7 +70,7 @@
   "exampleTitle": "דוגמה:",
   "exampleText": "קוד: BTC\nשם: Bitcoin\nסמל: ₿\nשער: 0.000025 (אם 1 USD = 0.000025 BTC)",
   "languageChanged": "השפה שונתה",
-  "restartRequired": "נא להפעיל מחדש את האפליקציה כדי להחיל את שינויי הפריסה עבור השפה החדשה.",
+  "restartRequired": "האפליקציה תופעל מחדש כעת כדי להחיל את פריסת השפה החדשה.",
   "error": "שגיאה",
   "pleaseEnterAccountName": "נא להזין שם חשבון",
   "pleaseSelectCurrency": "נא לבחור מטבע",

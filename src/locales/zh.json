@@ -70,7 +70,7 @@
   "exampleTitle": "示例：",
   "exampleText": "代码: BTC\n名称: 比特币\n符号: ₿\n汇率: 0.000025 (如果1美元=0.000025 BTC)",
   "languageChanged": "语言已更改",
-  "restartRequired": "请重新启动应用以应用新语言的布局更改。",
+  "restartRequired": "应用程序现在将重新启动以应用新的语言布局。",
   "error": "错误",
   "pleaseEnterAccountName": "请输入账户名称",
   "pleaseSelectCurrency": "请选择货币",

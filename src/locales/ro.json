@@ -70,7 +70,7 @@
   "exampleTitle": "Exemplu:",
   "exampleText": "Cod: BTC\nNume: Bitcoin\nSimbol: ₿\nCurs: 0.000025 (dacă 1 USD = 0.000025 BTC)",
   "languageChanged": "Limba a fost Schimbată",
-  "restartRequired": "Reporniți aplicația pentru a aplica modificările de aspect pentru noua limbă.",
+  "restartRequired": "Aplicația se va reporni acum pentru a aplica noul aspect al limbii.",
   "error": "Eroare",
   "pleaseEnterAccountName": "Vă rugăm introduceți numele contului",
   "pleaseSelectCurrency": "Vă rugăm selectați o monedă",

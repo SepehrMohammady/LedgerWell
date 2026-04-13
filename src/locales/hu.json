@@ -70,7 +70,7 @@
   "exampleTitle": "Példa:",
   "exampleText": "Kód: BTC\nNév: Bitcoin\nSzimbólum: ₿\nÁrfolyam: 0.000025 (ha 1 USD = 0.000025 BTC)",
   "languageChanged": "Nyelv megváltoztatva",
-  "restartRequired": "Indítsa újra az alkalmazást az új nyelv elrendezés módosításainak alkalmazásához.",
+  "restartRequired": "Az alkalmazás most újraindul az új nyelvi elrendezés alkalmazásához.",
   "error": "Hiba",
   "pleaseEnterAccountName": "Kérjük, adja meg a számla nevét",
   "pleaseSelectCurrency": "Kérjük, válasszon pénznemet",

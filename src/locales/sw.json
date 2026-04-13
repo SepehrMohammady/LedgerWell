@@ -70,7 +70,7 @@
   "exampleTitle": "Mfano:",
   "exampleText": "Msimbo: BTC\nJina: Bitcoin\nIshara: ₿\nKiwango: 0.000025 (ikiwa USD 1 = BTC 0.000025)",
   "languageChanged": "Lugha Imebadilishwa",
-  "restartRequired": "Tafadhali anzisha upya programu ili kutumia mabadiliko ya mpangilio wa lugha mpya.",
+  "restartRequired": "Programu itaanza upya sasa kutumia mpangilio mpya wa lugha.",
   "error": "Hitilafu",
   "pleaseEnterAccountName": "Tafadhali ingiza jina la akaunti",
   "pleaseSelectCurrency": "Tafadhali chagua sarafu",

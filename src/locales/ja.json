@@ -70,7 +70,7 @@
   "exampleTitle": "例:",
   "exampleText": "コード: BTC\n名前: ビットコイン\n記号: ₿\nレート: 0.000025 (1 USD = 0.000025 BTCの場合)",
   "languageChanged": "言語が変更されました",
-  "restartRequired": "新しい言語のレイアウト変更を適用するにはアプリを再起動してください。",
+  "restartRequired": "新しい言語レイアウトを適用するためにアプリを再起動します。",
   "error": "エラー",
   "pleaseEnterAccountName": "アカウント名を入力してください",
   "pleaseSelectCurrency": "通貨を選択してください",

@@ -70,7 +70,7 @@
   "exampleTitle": "Contoh:",
   "exampleText": "Kode: BTC\nNama: Bitcoin\nSimbol: ₿\nNilai tukar: 0.000025 (jika 1 USD = 0.000025 BTC)",
   "languageChanged": "Bahasa diubah",
-  "restartRequired": "Silakan mulai ulang aplikasi untuk menerapkan perubahan bahasa.",
+  "restartRequired": "Aplikasi akan dimulai ulang sekarang untuk menerapkan tata letak bahasa baru.",
   "error": "Kesalahan",
   "pleaseEnterAccountName": "Silakan masukkan nama akun",
   "pleaseSelectCurrency": "Silakan pilih mata uang",

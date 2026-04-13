@@ -70,7 +70,7 @@
   "exampleTitle": "Ejemplo:",
   "exampleText": "Código: BTC\nNombre: Bitcoin\nSímbolo: ₿\nTasa: 0.000025 (si 1 USD = 0.000025 BTC)",
   "languageChanged": "Idioma cambiado",
-  "restartRequired": "Por favor, reinicie la aplicación para aplicar los cambios de idioma.",
+  "restartRequired": "La aplicación se reiniciará ahora para aplicar el nuevo diseño de idioma.",
   "error": "Error",
   "pleaseEnterAccountName": "Por favor, ingrese un nombre de cuenta",
   "pleaseSelectCurrency": "Por favor, seleccione una moneda",

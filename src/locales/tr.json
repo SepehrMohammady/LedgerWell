@@ -70,7 +70,7 @@
   "exampleTitle": "Örnek:",
   "exampleText": "Kod: BTC\nAd: Bitcoin\nSembol: ₿\nKur: 0.000025 (1 USD = 0.000025 BTC ise)",
   "languageChanged": "Dil Değiştirildi",
-  "restartRequired": "Yeni dil için düzen değişikliklerini uygulamak üzere lütfen uygulamayı yeniden başlatın.",
+  "restartRequired": "Uygulama şimdi yeni dil düzenini uygulamak için yeniden başlatılacak.",
   "error": "Hata",
   "pleaseEnterAccountName": "Lütfen bir hesap adı girin",
   "pleaseSelectCurrency": "Lütfen bir para birimi seçin",

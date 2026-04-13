@@ -70,7 +70,7 @@
   "exampleTitle": "Halimbawa:",
   "exampleText": "Code: BTC\nPangalan: Bitcoin\nSimbolo: ₿\nRate: 0.000025 (kung 1 USD = 0.000025 BTC)",
   "languageChanged": "Nabago na ang Wika",
-  "restartRequired": "Pakirestart ang app para ma-apply ang layout changes para sa bagong wika.",
+  "restartRequired": "Ang app ay magre-restart ngayon upang ilapat ang bagong layout ng wika.",
   "error": "Error",
   "pleaseEnterAccountName": "Pakiusap maglagay ng pangalan ng account",
   "pleaseSelectCurrency": "Pakiusap pumili ng pera",

@@ -70,7 +70,7 @@
   "exampleTitle": "उदाहरण:",
   "exampleText": "कोड: BTC\nनाम: बिटकॉइन\nप्रतीक: ₿\nदर: 0.000025 (यदि 1 USD = 0.000025 BTC)",
   "languageChanged": "भाषा बदली गई",
-  "restartRequired": "कृपया नई भाषा के लिए लेआउट परिवर्तन लागू करने के लिए ऐप को पुनः आरंभ करें।",
+  "restartRequired": "नई भाषा लेआउट लागू करने के लिए ऐप अब पुनः आरंभ होगा।",
   "error": "त्रुटि",
   "pleaseEnterAccountName": "कृपया खाते का नाम दर्ज करें",
   "pleaseSelectCurrency": "कृपया एक मुद्रा चुनें",

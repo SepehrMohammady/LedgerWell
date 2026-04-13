@@ -66,7 +66,7 @@
   "success": "موفق",
   "reset": "بازنشانی",
   "languageChanged": "زبان تغییر کرد",
-  "restartRequired": "لطفاً برنامه را مجدداً راه‌اندازی کنید تا تغییرات طرح‌بندی برای زبان جدید اعمال شود.",
+  "restartRequired": "برنامه اکنون برای اعمال چیدمان زبان جدید مجدداً راه‌اندازی می‌شود.",
   "manageCustomCurrencies": "مدیریت ارزهای سفارشی",
   "createCustomCurrencyButton": "ایجاد ارز سفارشی",
   "customCurrencyDeleted": "ارز سفارشی با موفقیت حذف شد",

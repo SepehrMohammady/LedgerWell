@@ -70,7 +70,7 @@
   "exampleTitle": "Beispiel:",
   "exampleText": "Code: BTC\nName: Bitcoin\nSymbol: ₿\nKurs: 0.000025 (wenn 1 USD = 0.000025 BTC)",
   "languageChanged": "Sprache geändert",
-  "restartRequired": "Bitte starten Sie die App neu, um die Layoutänderungen für die neue Sprache zu übernehmen.",
+  "restartRequired": "Die App wird jetzt neu gestartet, um das neue Sprachlayout anzuwenden.",
   "error": "Fehler",
   "pleaseEnterAccountName": "Bitte geben Sie einen Kontonamen ein",
   "pleaseSelectCurrency": "Bitte wählen Sie eine Währung aus",

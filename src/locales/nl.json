@@ -70,7 +70,7 @@
   "exampleTitle": "Voorbeeld:",
   "exampleText": "Code: BTC\nNaam: Bitcoin\nSymbool: ₿\nKoers: 0.000025 (als 1 USD = 0.000025 BTC)",
   "languageChanged": "Taal gewijzigd",
-  "restartRequired": "Herstart de app om de lay-outwijzigingen voor de nieuwe taal toe te passen.",
+  "restartRequired": "De app wordt nu opnieuw gestart om de nieuwe taalindeling toe te passen.",
   "error": "Fout",
   "pleaseEnterAccountName": "Voer een rekeningnaam in",
   "pleaseSelectCurrency": "Selecteer een valuta",

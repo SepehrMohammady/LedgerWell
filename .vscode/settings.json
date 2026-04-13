@@ -1,4 +1,8 @@
 {
     "java.jdt.ls.java.home": "C:\\Program Files\\Microsoft\\jdk-17.0.16.8-hotspot",
-    "java.home": "C:\\Program Files\\Microsoft\\jdk-17.0.16.8-hotspot"
+    "java.home": "C:\\Program Files\\Microsoft\\jdk-17.0.16.8-hotspot",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "files.exclude": {
+        "**/node_modules/**/tsconfig.json": true
+    }
 }
