@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
@@ -41,6 +42,11 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [addContactModalVisible, setAddContactModalVisible] = useState(false);
   const [useManualName, setUseManualName] = useState(false);
+  const [transactionDate, setTransactionDate] = useState<Date>(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [tempDateYear, setTempDateYear] = useState('');
+  const [tempDateMonth, setTempDateMonth] = useState('');
+  const [tempDateDay, setTempDateDay] = useState('');
 
   useEffect(() => {
     if (visible) {
@@ -87,6 +93,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
     setPersonName('');
     setDescription('');
     setUseManualName(false);
+    setTransactionDate(new Date());
   };
 
   const populateFormForEdit = async () => {
@@ -97,6 +104,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
       setAmount(editTransaction.amount.toString());
       setPersonName(editTransaction.name);
       setDescription(editTransaction.description || '');
+      setTransactionDate(new Date(editTransaction.date));
       
       // Try to find matching contact
       if (editTransaction.contactId) {
@@ -152,6 +160,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
           currency: selectedAccount.currency,
           name: finalName,
           description: description.trim() || undefined,
+          date: transactionDate,
           updatedAt: new Date(),
         };
 
@@ -171,7 +180,7 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
           currency: selectedAccount.currency,
           name: finalName,
           description: description.trim() || undefined,
-          date: new Date(),
+          date: transactionDate,
           createdAt: new Date(),
           updatedAt: new Date(),
         };
@@ -389,6 +398,24 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
               maxLength={150}
             />
           </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>{t('transactionDate')}</Text>
+            <TouchableOpacity
+              style={styles.dateButton}
+              onPress={() => {
+                setTempDateYear(transactionDate.getFullYear().toString());
+                setTempDateMonth((transactionDate.getMonth() + 1).toString().padStart(2, '0'));
+                setTempDateDay(transactionDate.getDate().toString().padStart(2, '0'));
+                setShowDatePicker(true);
+              }}
+            >
+              <Ionicons name="calendar-outline" size={20} color={theme.colors.primary} />
+              <Text style={styles.dateButtonText}>
+                {transactionDate.toLocaleDateString()}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
 
         <AddContactModal
@@ -398,6 +425,75 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
             loadContacts();
           }}
         />
+
+        {/* Date Picker Modal */}
+        <Modal visible={showDatePicker} transparent animationType="fade">
+          <View style={styles.datePickerOverlay}>
+            <View style={styles.datePickerContent}>
+              <Text style={styles.datePickerTitle}>{t('selectDate')}</Text>
+              <View style={styles.datePickerRow}>
+                <View style={styles.datePickerField}>
+                  <Text style={styles.datePickerLabel}>{t('year')}</Text>
+                  <TextInput
+                    style={styles.datePickerInput}
+                    value={tempDateYear}
+                    onChangeText={setTempDateYear}
+                    keyboardType="number-pad"
+                    maxLength={4}
+                    placeholderTextColor={theme.colors.textSecondary}
+                  />
+                </View>
+                <View style={styles.datePickerField}>
+                  <Text style={styles.datePickerLabel}>{t('month')}</Text>
+                  <TextInput
+                    style={styles.datePickerInput}
+                    value={tempDateMonth}
+                    onChangeText={setTempDateMonth}
+                    keyboardType="number-pad"
+                    maxLength={2}
+                    placeholderTextColor={theme.colors.textSecondary}
+                  />
+                </View>
+                <View style={styles.datePickerField}>
+                  <Text style={styles.datePickerLabel}>{t('day')}</Text>
+                  <TextInput
+                    style={styles.datePickerInput}
+                    value={tempDateDay}
+                    onChangeText={setTempDateDay}
+                    keyboardType="number-pad"
+                    maxLength={2}
+                    placeholderTextColor={theme.colors.textSecondary}
+                  />
+                </View>
+              </View>
+              <View style={styles.datePickerButtons}>
+                <TouchableOpacity
+                  style={styles.datePickerCancel}
+                  onPress={() => setShowDatePicker(false)}
+                >
+                  <Text style={styles.datePickerCancelText}>{t('cancel')}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.datePickerConfirm}
+                  onPress={() => {
+                    const y = parseInt(tempDateYear);
+                    const m = parseInt(tempDateMonth);
+                    const d = parseInt(tempDateDay);
+                    if (y > 0 && m >= 1 && m <= 12 && d >= 1 && d <= 31) {
+                      const newDate = new Date(y, m - 1, d);
+                      if (!isNaN(newDate.getTime())) {
+                        setTransactionDate(newDate);
+                      }
+                    }
+                    setShowDatePicker(false);
+                  }}
+                >
+                  <Text style={styles.datePickerConfirmText}>{t('confirm')}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </SafeAreaView>
     </Modal>
   );
@@ -552,6 +648,93 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     fontSize: 14,
     color: theme.colors.primary,
     marginLeft: 4,
+  },
+  dateButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 8,
+    padding: 12,
+    backgroundColor: theme.colors.surface,
+    gap: 10,
+  },
+  dateButtonText: {
+    fontSize: 16,
+    color: theme.colors.text,
+  },
+  datePickerOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  datePickerContent: {
+    backgroundColor: theme.colors.surface,
+    borderRadius: 16,
+    padding: 24,
+    width: '100%',
+    maxWidth: 360,
+  },
+  datePickerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: theme.colors.text,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  datePickerRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  datePickerField: {
+    flex: 1,
+  },
+  datePickerLabel: {
+    fontSize: 13,
+    color: theme.colors.textSecondary,
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  datePickerInput: {
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 18,
+    textAlign: 'center',
+    color: theme.colors.text,
+    backgroundColor: theme.colors.background,
+  },
+  datePickerButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 20,
+  },
+  datePickerCancel: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+  },
+  datePickerCancelText: {
+    fontSize: 16,
+    color: theme.colors.text,
+  },
+  datePickerConfirm: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    backgroundColor: theme.colors.primary,
+  },
+  datePickerConfirmText: {
+    fontSize: 16,
+    color: 'white',
+    fontWeight: '600',
   },
 });
 

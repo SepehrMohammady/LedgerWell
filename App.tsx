@@ -6,6 +6,8 @@ import { I18nextProvider, useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppState, AppStateStatus } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import i18n from './src/utils/i18n';
 import { ThemeProvider, useTheme } from './src/utils/theme';
 import { AlertProvider } from './src/components/CustomAlert';
@@ -20,6 +22,7 @@ import TransactionsScreen from './src/screens/TransactionsScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import { LockScreen } from './src/screens/LockScreen';
 import { SetupPasswordScreen } from './src/screens/SetupPasswordScreen';
+import { OnboardingScreen } from './src/screens/OnboardingScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -30,6 +33,7 @@ const AppContent = () => {
   const [isPasswordConfigured, setIsPasswordConfigured] = useState(false);
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const [showSetupScreen, setShowSetupScreen] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     // Initialize language and authentication on app startup
@@ -45,10 +49,18 @@ const AppContent = () => {
         // Check if user has completed setup
         const setupCompleted = await isSetupCompleted();
         
+        // Check if user has seen onboarding
+        const hasSeenOnboarding = await AsyncStorage.getItem('hasSeenOnboarding');
+        
         // Check if password is configured
         const passwordConfigured = await isPasswordSet();
         setIsPasswordConfigured(passwordConfigured);
         setIsLocked(passwordConfigured);
+        
+        // Show onboarding for first-time users
+        if (!hasSeenOnboarding) {
+          setShowOnboarding(true);
+        }
         
         // Show setup screen only if not completed and no password set
         setShowSetupScreen(!setupCompleted && !passwordConfigured);
@@ -94,6 +106,18 @@ const AppContent = () => {
   // Show loading state while checking authentication
   if (isCheckingAuth) {
     return null; // Or a loading screen
+  }
+
+  // Show onboarding for first-time users
+  if (showOnboarding) {
+    return (
+      <OnboardingScreen
+        onComplete={async () => {
+          await AsyncStorage.setItem('hasSeenOnboarding', 'true');
+          setShowOnboarding(false);
+        }}
+      />
+    );
   }
 
   // Show setup screen only on first launch (if user hasn't completed setup)
@@ -171,6 +195,7 @@ const AppContent = () => {
 
 export default function App() {
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <SafeAreaProvider>
       <ThemeProvider>
         <I18nextProvider i18n={i18n}>
@@ -180,6 +205,7 @@ export default function App() {
         </I18nextProvider>
       </ThemeProvider>
     </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 

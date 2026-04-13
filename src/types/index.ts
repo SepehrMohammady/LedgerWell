@@ -48,11 +48,19 @@ export interface ConversionRate {
   isManual: boolean;
 }
 
+export interface HomeSectionConfig {
+  id: 'summary' | 'recentAccounts' | 'quickActions' | 'debtVsCredit' | 'accountBalances';
+  visible: boolean;
+  order: number;
+}
+
 export interface AppSettings {
   defaultCurrency: Currency;
   language: string;
   theme: 'light' | 'dark';
   autoUpdateRates: boolean;
+  homeSections?: HomeSectionConfig[];
+  accountOrder?: string[]; // Array of account IDs in user-defined order
 }
 
 export type RootTabParamList = {

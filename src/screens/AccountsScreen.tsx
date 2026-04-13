@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
+import DraggableFlatList, { RenderItemParams, ScaleDecorator } from 'react-native-draggable-flatlist';
 import { Account } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService from '../utils/currency';
@@ -42,10 +43,38 @@ const AccountsScreen = () => {
 
   const loadAccounts = async () => {
     try {
-      const accountsData = await StorageService.getAccounts();
+      const [accountsData, settings] = await Promise.all([
+        StorageService.getAccounts(),
+        StorageService.getSettings(),
+      ]);
+      
+      if (settings.accountOrder && settings.accountOrder.length > 0) {
+        const orderMap = new Map(settings.accountOrder.map((id, idx) => [id, idx]));
+        accountsData.sort((a, b) => {
+          const orderA = orderMap.has(a.id) ? orderMap.get(a.id)! : 9999;
+          const orderB = orderMap.has(b.id) ? orderMap.get(b.id)! : 9999;
+          if (orderA !== orderB) return orderA - orderB;
+          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+        });
+      } else {
+        accountsData.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+      }
       setAccounts(accountsData);
     } catch (error) {
       console.error('Failed to load accounts:', error);
+    }
+  };
+
+  const saveAccountOrder = async (orderedAccounts: Account[]) => {
+    setAccounts(orderedAccounts);
+    try {
+      const settings = await StorageService.getSettings();
+      await StorageService.saveSettings({
+        ...settings,
+        accountOrder: orderedAccounts.map(a => a.id),
+      });
+    } catch (error) {
+      console.error('Failed to save account order:', error);
     }
   };
 
@@ -102,14 +131,17 @@ const AccountsScreen = () => {
     return theme.colors.text;
   };
 
-  const renderAccountItem = ({ item }: { item: Account }) => {
+  const renderAccountItem = useCallback(({ item, drag, isActive }: RenderItemParams<Account>) => {
     const netBalance = item.totalOwedToMe - item.totalOwed;
     
     return (
+      <ScaleDecorator>
       <TouchableOpacity 
-        style={styles.accountCard}
+        style={[styles.accountCard, isActive && styles.accountCardDragging]}
         onPress={() => handleViewTransactions(item)}
+        onLongPress={drag}
         activeOpacity={0.7}
+        disabled={isActive}
       >
         <View style={styles.accountHeader}>
           <View style={styles.accountInfo}>
@@ -163,8 +195,9 @@ const AccountsScreen = () => {
           </View>
         </View>
       </TouchableOpacity>
+      </ScaleDecorator>
     );
-  };
+  }, [theme, t]);
 
   const styles = createStyles(theme);
 
@@ -180,23 +213,38 @@ const AccountsScreen = () => {
         />
       </View>
 
-      <FlatList
-        data={filteredAccounts}
-        keyExtractor={(item) => item.id}
-        renderItem={renderAccountItem}
-        contentContainerStyle={styles.listContainer}
-        ListEmptyComponent={
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>{t('noAccounts')}</Text>
-            <TouchableOpacity 
-              style={styles.addButton}
-              onPress={() => setAddAccountModalVisible(true)}
-            >
-              <Text style={styles.addButtonText}>{t('addAccount')}</Text>
-            </TouchableOpacity>
-          </View>
-        }
-      />
+      {searchQuery.trim() !== '' ? (
+        <FlatList
+          data={filteredAccounts}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => renderAccountItem({ item, drag: () => {}, isActive: false } as any)}
+          contentContainerStyle={styles.listContainer}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>{t('noAccounts')}</Text>
+            </View>
+          }
+        />
+      ) : (
+        <DraggableFlatList
+          data={accounts}
+          keyExtractor={(item) => item.id}
+          renderItem={renderAccountItem}
+          onDragEnd={({ data }) => saveAccountOrder(data)}
+          contentContainerStyle={styles.listContainer}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>{t('noAccounts')}</Text>
+              <TouchableOpacity 
+                style={styles.addButton}
+                onPress={() => setAddAccountModalVisible(true)}
+              >
+                <Text style={styles.addButtonText}>{t('addAccount')}</Text>
+              </TouchableOpacity>
+            </View>
+          }
+        />
+      )}
 
       <TouchableOpacity 
         style={styles.fab}
@@ -262,6 +310,12 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
+  },
+  accountCardDragging: {
+    elevation: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    opacity: 0.9,
   },
   accountHeader: {
     flexDirection: 'row',

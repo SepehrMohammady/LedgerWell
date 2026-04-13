@@ -20,9 +20,11 @@ import CustomCurrencyModal from '../components/CustomCurrencyModal';
 import { ContactsListModal } from '../components/AddContactModal';
 import { useTheme, Theme } from '../utils/theme';
 import { useAlert } from '../components/CustomAlert';
-import { setRTL } from '../utils/i18n';
+import { setRTL, isRTL as isRTLLanguage } from '../utils/i18n';
 import { getAppVersion } from '../utils/version';
 import CSVBackupService, { BackupData } from '../utils/csvBackup';
+import { TutorialModal } from './OnboardingScreen';
+import * as Updates from 'expo-updates';
 import {
   isPasswordSet,
   isBiometricAvailable,
@@ -94,6 +96,7 @@ const SettingsScreen = () => {
   const [customCurrencyModalVisible, setCustomCurrencyModalVisible] = useState(false);
   const [editingCurrency, setEditingCurrency] = useState<Currency | null>(null);
   const [contactsModalVisible, setContactsModalVisible] = useState(false);
+  const [tutorialModalVisible, setTutorialModalVisible] = useState(false);
   
   // Security states
   const [hasPassword, setHasPassword] = useState(false);
@@ -157,6 +160,11 @@ const SettingsScreen = () => {
 
   const changeLanguage = async (language: string) => {
     try {
+      const currentLang = i18n.language;
+      const wasRTL = isRTLLanguage(currentLang);
+      const willBeRTL = isRTLLanguage(language);
+      const directionChanged = wasRTL !== willBeRTL;
+
       // Update settings state immediately to reflect in UI
       if (settings) {
         const newSettings = { ...settings, language };
@@ -168,14 +176,32 @@ const SettingsScreen = () => {
       await i18n.changeLanguage(language);
       setRTL(language);
       
-      // Show simple success notification
-      setTimeout(() => {
-        showAlert(
-          t('languageChanged'),
-          '',
-          [{ text: t('confirm') }]
-        );
-      }, 100);
+      if (directionChanged) {
+        // RTL/LTR direction changed - app must restart
+        setTimeout(() => {
+          showAlert(
+            t('languageChanged'),
+            t('restartRequired'),
+            [] // Empty actions = no buttons, just inform
+          );
+          setTimeout(async () => {
+            try {
+              await Updates.reloadAsync();
+            } catch {
+              // Fallback
+            }
+          }, 1500); // 1.5 seconds to read
+        }, 100);
+      } else {
+        // Same direction, just show success
+        setTimeout(() => {
+          showAlert(
+            t('languageChanged'),
+            '',
+            [{ text: t('confirm') }]
+          );
+        }, 100);
+      }
     } catch (error) {
       console.error('Failed to change language:', error);
       showAlert('Error', t('settingsSaveFailed'));
@@ -853,6 +879,18 @@ const SettingsScreen = () => {
         </TouchableOpacity>
       </View>
 
+      {/* App Tutorial */}
+      <View style={styles.section}>
+        <SectionHeader title={t('appTutorial')} />
+        <SettingItem
+          title={t('viewTutorial')}
+          description={t('viewTutorialDescription')}
+          onPress={() => setTutorialModalVisible(true)}
+          rightElement={<Ionicons name="book-outline" size={20} color={theme.colors.primary} />}
+          isLast={true}
+        />
+      </View>
+
       {/* About Section */}
       <View style={styles.section}>
         <SectionHeader title={t('about')} />
@@ -908,6 +946,12 @@ const SettingsScreen = () => {
       <ContactsListModal
         visible={contactsModalVisible}
         onClose={() => setContactsModalVisible(false)}
+      />
+
+      {/* Tutorial Modal */}
+      <TutorialModal
+        visible={tutorialModalVisible}
+        onClose={() => setTutorialModalVisible(false)}
       />
 
       {/* Change Password Modal */}

@@ -9,6 +9,7 @@ import {
   Modal,
   ScrollView,
   Dimensions,
+  Share,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -304,11 +305,36 @@ const TransactionsScreen = () => {
     );
   };
 
+  const handleShareTransaction = async (transaction: Transaction) => {
+    const amountText = CurrencyService.formatAmount(transaction.amount, transaction.currency);
+    const dateText = new Date(transaction.date).toLocaleDateString();
+    const typeLabel = transaction.type === 'debt'
+      ? `${transaction.name} - ${t('debtShort')}`
+      : `${transaction.name} - ${t('creditShort')}`;
+
+    let message = `📋 ${t('transactionDetails')}\n\n`;
+    message += `👤 ${typeLabel}\n`;
+    message += `💰 ${amountText}\n`;
+    message += `📅 ${dateText}\n`;
+    if (transaction.description) {
+      message += `📝 ${transaction.description}\n`;
+    }
+    message += `\n📱 LedgerWell`;
+
+    try {
+      await Share.share({ message });
+    } catch (error) {
+      console.error('Share failed:', error);
+    }
+  };
+
   // Chart data preparation
   const getChartData = (accountId: string | null = null) => {
     const filteredData = accountId 
       ? transactions.filter(t => t.accountId === accountId)
       : transactions;
+
+    const defaultCurrency = getDefaultCurrency();
 
     // Group by month
     const monthlyData: { [key: string]: { debt: number; credit: number } } = {};
@@ -321,7 +347,10 @@ const TransactionsScreen = () => {
         monthlyData[monthKey] = { debt: 0, credit: 0 };
       }
       
-      const amountInDefault = CurrencyService.convertToDefault(t.amount, t.currency);
+      // Use account's current currency for conversion (has up-to-date rate)
+      const account = accounts.find(a => a.id === t.accountId);
+      const currency = account?.currency || t.currency;
+      const amountInDefault = CurrencyService.convertAmount(t.amount, currency, defaultCurrency);
       if (t.type === 'debt') {
         monthlyData[monthKey].debt += amountInDefault;
       } else {
@@ -358,11 +387,14 @@ const TransactionsScreen = () => {
       ? transactions.filter(t => t.accountId === accountId)
       : transactions;
 
+    const defaultCurrency = getDefaultCurrency();
     let totalDebt = 0;
     let totalCredit = 0;
 
     filteredData.forEach(t => {
-      const amountInDefault = CurrencyService.convertToDefault(t.amount, t.currency);
+      const account = accounts.find(a => a.id === t.accountId);
+      const currency = account?.currency || t.currency;
+      const amountInDefault = CurrencyService.convertAmount(t.amount, currency, defaultCurrency);
       if (t.type === 'debt') {
         totalDebt += amountInDefault;
       } else {
@@ -370,22 +402,26 @@ const TransactionsScreen = () => {
       }
     });
 
-    return [
-      {
+    const result = [];
+    if (totalCredit > 0) {
+      result.push({
         name: t('creditShort'),
-        amount: Math.round(totalCredit * 100) / 100,
+        amount: parseFloat(totalCredit.toFixed(6)),
         color: theme.colors.success,
         legendFontColor: theme.colors.text,
         legendFontSize: 12,
-      },
-      {
+      });
+    }
+    if (totalDebt > 0) {
+      result.push({
         name: t('debtShort'),
-        amount: Math.round(totalDebt * 100) / 100,
+        amount: parseFloat(totalDebt.toFixed(6)),
         color: theme.colors.error,
         legendFontColor: theme.colors.text,
         legendFontSize: 12,
-      },
-    ];
+      });
+    }
+    return result;
   };
 
   const renderTransactionItem = ({ item }: { item: Transaction }) => {
@@ -437,6 +473,12 @@ const TransactionsScreen = () => {
             </View>
             {!selectionMode && (
               <View style={styles.actionButtons}>
+                <TouchableOpacity
+                  style={[styles.actionButton, styles.shareButton]}
+                  onPress={() => handleShareTransaction(item)}
+                >
+                  <Ionicons name="share-outline" size={16} color="white" />
+                </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.actionButton, styles.editButton]}
                   onPress={() => handleEditTransaction(item)}
@@ -559,7 +601,12 @@ const TransactionsScreen = () => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.chartTypeButton, chartType === 'account' && styles.chartTypeButtonActive]}
-                onPress={() => setChartType('account')}
+                onPress={() => {
+                  setChartType('account');
+                  if (!selectedAccountId && accounts.length > 0) {
+                    setSelectedAccountId(accounts[0].id);
+                  }
+                }}
               >
                 <Text style={[styles.chartTypeText, chartType === 'account' && styles.chartTypeTextActive]}>
                   {t('byAccount')}
@@ -865,6 +912,9 @@ const createStyles = (theme: Theme) => StyleSheet.create({
   },
   editButton: {
     backgroundColor: theme.colors.primary,
+  },
+  shareButton: {
+    backgroundColor: theme.colors.success,
   },
   deleteButton: {
     backgroundColor: theme.colors.error,

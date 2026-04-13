@@ -135,8 +135,10 @@ export class CurrencyService {
   }
 
   static convertToDefault(amount: number, currency: Currency): number {
-    // Convert to USD (default currency with rate = 1)
     if (currency.code === 'USD') {
+      return amount;
+    }
+    if (!currency.rate || currency.rate === 0) {
       return amount;
     }
     return amount / currency.rate;
