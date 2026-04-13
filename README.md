@@ -2,7 +2,7 @@
 
 A comprehensive React Native Expo app for tracking personal debts and credits with extensive multi-currency support and full internationalization.
 
-[![Version](https://img.shields.io/badge/version-0.9.5-blue.svg)](https://github.com/SepehrMohammady/LedgerWell)
+[![Version](https://img.shields.io/badge/version-0.10.9-blue.svg)](https://github.com/SepehrMohammady/LedgerWell)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![React Native](https://img.shields.io/badge/React%20Native-Expo-blue.svg)](https://expo.dev)
 
@@ -13,7 +13,9 @@ A comprehensive React Native Expo app for tracking personal debts and credits wi
 - Track money you owe to others (debts)
 - Track money others owe to you (credits)
 - View net balance for each account
+- Drag-to-reorder accounts for custom sorting
 - Comprehensive transaction history per account
+- Contact management linked to accounts
 
 ### 💰 Multi-Currency Support
 - Support for **39 international currencies** including major and regional currencies
@@ -32,39 +34,55 @@ A comprehensive React Native Expo app for tracking personal debts and credits wi
 - Localized number input and display throughout the app
 - Localized currency formatting with proper numeral systems
 
+### � Dashboard & Charts
+- Customizable dashboard with drag-to-reorder sections
+- Pie chart with color-coded legend for account breakdown
+- Monthly trend charts and debt vs credit comparison
+- Per-account transaction charts
+
 ### 📱 Modern UI/UX
 - Clean, intuitive Material Design interface
+- Onboarding tutorial with swipeable slides
 - Bottom tab navigation with smooth transitions
 - Search and filter functionality across all screens
 - Dark/Light theme support with system preference detection
 - Responsive design optimized for all screen sizes
 - Consistent iconography using Ionicons
+- Share transaction details with formatted text
 
 ### 💾 Data Management & Privacy
 - **100% local data storage** using AsyncStorage - no cloud dependencies
 - Complete privacy - your data never leaves your device
-- **Excel export functionality** - Export all accounts and transactions to Excel files
+- **CSV backup & restore** with merge or replace modes
 - Robust data persistence and recovery
 - Reset all data functionality with confirmation
 - No tracking, no analytics, no data collection
+
+### 🔒 Security
+- Password protection with biometric (fingerprint/Face ID) support
+- Lock screen with secure authentication
 
 ### ⚙️ Settings & Customization
 - Comprehensive settings screen with organized sections
 - Auto-update exchange rates toggle
 - Custom currency creation and management
+- Transaction date editing
 - About section with app info and developer links
-- Language persistence across app restarts
+- Language persistence with automatic app restart on RTL/LTR switch
 
 ## Tech Stack
 
-- **Framework**: React Native with Expo Development Build
+- **Framework**: React Native with Expo (bare workflow)
 - **Language**: TypeScript with strict type checking
-- **Navigation**: React Navigation v6 with TypeScript support
+- **Navigation**: React Navigation v6 (bottom tabs)
 - **Internationalization**: react-i18next with namespace support
 - **Storage**: AsyncStorage for persistence
 - **Currency API**: ExchangeRate-API for live rates
 - **State Management**: React Hooks with custom storage utilities
-- **Build System**: EAS Build for production builds
+- **Animations**: react-native-reanimated + react-native-gesture-handler
+- **Lists**: react-native-draggable-flatlist for reorderable lists
+- **Updates**: expo-updates for runtime app reload
+- **Build System**: Gradle native Android builds
 - **Icons**: Expo Vector Icons (Ionicons)
 
 ## Installation
@@ -96,60 +114,40 @@ npm start
 LedgerWell/
 ├── src/
 │   ├── components/          # Reusable UI components
+│   │   ├── AccountTransactionsModal.tsx
 │   │   ├── AddAccountModal.tsx
+│   │   ├── AddContactModal.tsx
 │   │   ├── AddTransactionModal.tsx
 │   │   ├── CustomCurrencyModal.tsx
-│   │   └── LocalizedNumberInput.tsx # Localized number input for Arabic/Farsi
+│   │   └── LocalizedNumberInput.tsx
 │   ├── screens/            # Main app screens
-│   │   ├── HomeScreen.tsx     # Dashboard with summary
-│   │   ├── AccountsScreen.tsx # Account management
-│   │   ├── TransactionsScreen.tsx # Transaction history
-│   │   └── SettingsScreen.tsx # App settings & about
+│   │   ├── HomeScreen.tsx     # Dashboard with charts & summary
+│   │   ├── AccountsScreen.tsx # Account management with drag-to-reorder
+│   │   ├── TransactionsScreen.tsx # Transaction history with charts
+│   │   ├── SettingsScreen.tsx # App settings & about
+│   │   ├── OnboardingScreen.tsx # Tutorial slides & modal
+│   │   ├── LockScreen.tsx     # Password/biometric lock
+│   │   └── SetupPasswordScreen.tsx # Initial password setup
 │   ├── types/              # TypeScript type definitions
-│   │   └── index.ts          # Core app types
+│   │   └── index.ts
 │   ├── utils/              # Utility functions
+│   │   ├── auth.ts           # Password & biometric authentication
+│   │   ├── csvBackup.ts      # CSV backup & restore
 │   │   ├── currency.ts       # Currency conversion & 39 currency definitions
+│   │   ├── i18n.ts           # Internationalization & RTL setup
+│   │   ├── numberLocalization.ts # Native numeral support (Arabic/Farsi)
 │   │   ├── storage.ts        # Data persistence layer
 │   │   ├── theme.ts          # Theme management
-│   │   ├── version.ts        # Dynamic app version utilities
-│   │   ├── numberLocalization.ts # Number localization for Arabic/Farsi
-│   │   └── i18n.ts          # Internationalization setup
-│   └── locales/            # Translation files (270+ keys each, 30 languages)
-│       ├── en.json           # English
-│       ├── es.json           # Spanish
-│       ├── fr.json           # French
-│       ├── de.json           # German
-│       ├── ar.json           # Arabic (RTL)
-│       ├── fa.json           # Persian (RTL)
-│       ├── he.json           # Hebrew (RTL)
-│       ├── it.json           # Italian
-│       ├── pt.json           # Portuguese
-│       ├── ru.json           # Russian
-│       ├── zh.json           # Chinese
-│       ├── ja.json           # Japanese
-│       ├── ko.json           # Korean
-│       ├── id.json           # Indonesian
-│       ├── hi.json           # Hindi
-│       ├── tr.json           # Turkish
-│       ├── vi.json           # Vietnamese
-│       ├── th.json           # Thai
-│       ├── pl.json           # Polish
-│       ├── uk.json           # Ukrainian
-│       ├── nl.json           # Dutch
-│       ├── tl.json           # Filipino (Tagalog)
-│       ├── sw.json           # Swahili
-│       ├── ro.json           # Romanian
-│       ├── cs.json           # Czech
-│       ├── hu.json           # Hungarian
-│       ├── el.json           # Greek
-│       ├── sv.json           # Swedish
-│       ├── da.json           # Danish
-│       └── fi.json           # Finnish
-├── assets/                 # App assets
+│   │   └── version.ts        # Dynamic app version utilities
+│   └── locales/            # Translation files (30 languages)
+│       ├── en.json, es.json, fr.json, de.json ...
+│       ├── ar.json, fa.json, he.json  # RTL languages
+│       └── ... (30 total)
+├── assets/                 # App assets (logo, icons)
 ├── android/               # Android native code
-├── scripts/               # Build and utility scripts
+├── scripts/
 │   └── update-version.js    # Centralized version management
-└── .github/               # GitHub configuration
+└── .github/
     └── copilot-instructions.md
 ```
 
@@ -279,29 +277,30 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Roadmap
 
 ### Planned Features
-- [ ] Data import functionality (JSON/CSV)
 - [ ] Cloud backup options (Google Drive/iCloud)
 - [ ] Expense categories and tags system
-- [ ] Advanced reporting and analytics dashboard
 - [ ] Push notifications for payment reminders
 - [ ] Multiple user profiles support
 - [ ] Photo attachments for transactions
 - [ ] Web dashboard companion app
 
 ### Completed Recently
-- [x] **30-language internationalization** - Expanded from 13 to 30 languages covering top global internet users
-- [x] **Hebrew RTL support** - Right-to-left layout for Hebrew added alongside Arabic and Persian
-- [x] **Contact management system** - Add and manage contacts/entities linked to transactions
+- [x] **Onboarding tutorial** - 6-slide swipeable intro shown on first launch
+- [x] **Drag-to-reorder accounts** - Custom sorting with drag handle
+- [x] **Share transactions** - Formatted text sharing with emojis
+- [x] **Transaction date editing** - Edit dates on existing transactions
+- [x] **Auto-restart on language direction change** - Seamless RTL/LTR switch via expo-updates
+- [x] **Dashboard customization** - Drag-to-reorder dashboard sections
+- [x] **Pie & bar charts** - Account breakdown and monthly trend visualization
+- [x] **30-language internationalization** - Top 30 languages by global internet users
+- [x] **Contact management system** - Add and manage contacts linked to accounts
 - [x] **CSV backup & restore** - Full import/export with merge or replace modes
 - [x] **Password & biometric security** - App lock with fingerprint/Face ID support
-- [x] **Transaction charts** - Monthly trend, debt vs credit, per-account charts
-- [x] **Excel export functionality** - Export all accounts and transactions to Excel files
-- [x] **Localized number input system** - Native numeral support for Arabic and Farsi
+- [x] **Localized number input** - Native Arabic-Indic and Persian numerals
 - [x] 39-currency support with live exchange rates
-- [x] Custom currency editing functionality
+- [x] Custom currency creation and editing
 - [x] Dark/Light theme system
 - [x] RTL language support (Arabic, Persian, Hebrew)
-- [x] Language persistence across app launches
 
 ## Support
 
