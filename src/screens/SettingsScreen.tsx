@@ -182,15 +182,17 @@ const SettingsScreen = () => {
           showAlert(
             t('languageChanged'),
             t('restartRequired'),
-            [] // Empty actions = no buttons, just inform
+            [{
+              text: t('confirm'),
+              onPress: async () => {
+                try {
+                  await Updates.reloadAsync();
+                } catch {
+                  // Fallback
+                }
+              }
+            }]
           );
-          setTimeout(async () => {
-            try {
-              await Updates.reloadAsync();
-            } catch {
-              // Fallback
-            }
-          }, 1500); // 1.5 seconds to read
         }, 100);
       } else {
         // Same direction, just show success
