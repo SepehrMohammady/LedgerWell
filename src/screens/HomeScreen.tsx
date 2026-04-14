@@ -392,7 +392,7 @@ const HomeScreen = () => {
         <Image source={require('../../assets/logo.png')} style={styles.headerLogo} />
         <Text style={styles.welcomeText}>{t('welcome')}</Text>
         <TouchableOpacity style={styles.customizeButton} onPress={() => setCustomizeModalVisible(true)}>
-          <Ionicons name="settings-outline" size={22} color="white" />
+          <Ionicons name="grid-outline" size={22} color="white" />
         </TouchableOpacity>
       </View>
 
