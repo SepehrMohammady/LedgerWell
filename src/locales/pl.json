@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Obsługa wielu walut",
   "tutorialSlide5Desc": "Śledź transakcje w dowolnej walucie.",
   "tutorialSlide6Title": "Bezpieczne i prywatne",
-  "tutorialSlide6Desc": "Twoje dane pozostają na Twoim urządzeniu."
+  "tutorialSlide6Desc": "Twoje dane pozostają na Twoim urządzeniu.",
+  "noTransactionsToShare": "Brak transakcji do udostępnienia dla tego kontaktu"
 }

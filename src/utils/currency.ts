@@ -87,10 +87,43 @@ export class CurrencyService {
     if (fromCurrency.code === toCurrency.code) {
       return amount;
     }
-    
+
     // Convert to USD first, then to target currency
     const usdAmount = amount / fromCurrency.rate;
     return usdAmount * toCurrency.rate;
+  }
+
+  /**
+   * Resolve a currency to its up-to-date version from the live currency list.
+   * Accounts and transactions store a snapshot of the currency (including its
+   * exchange rate) at creation time. When a rate is later edited (especially
+   * for custom currencies), that snapshot becomes stale. Matching by code
+   * against the saved currency list returns the current rate so totals convert
+   * correctly. Falls back to the original snapshot if no match is found.
+   */
+  static resolveCurrency(currency: Currency, liveCurrencies?: Currency[] | null): Currency {
+    if (!liveCurrencies || liveCurrencies.length === 0) {
+      return currency;
+    }
+    const match = liveCurrencies.find(c => c.code === currency.code);
+    return match || currency;
+  }
+
+  /**
+   * Convert an amount using the current exchange rates from the live currency
+   * list rather than the (possibly stale) snapshots embedded in records.
+   */
+  static convertAmountLive(
+    amount: number,
+    fromCurrency: Currency,
+    toCurrency: Currency,
+    liveCurrencies?: Currency[] | null
+  ): number {
+    return this.convertAmount(
+      amount,
+      this.resolveCurrency(fromCurrency, liveCurrencies),
+      this.resolveCurrency(toCurrency, liveCurrencies)
+    );
   }
 
   static formatAmount(amount: number, currency: Currency): string {

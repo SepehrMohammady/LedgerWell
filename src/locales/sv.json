@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Stöd för flera valutor",
   "tutorialSlide5Desc": "Spåra transaktioner i valfri valuta.",
   "tutorialSlide6Title": "Säkert och privat",
-  "tutorialSlide6Desc": "Dina data stannar på din enhet."
+  "tutorialSlide6Desc": "Dina data stannar på din enhet.",
+  "noTransactionsToShare": "Inga transaktioner att dela för den här kontakten"
 }

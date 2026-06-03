@@ -37,6 +37,7 @@ const HomeScreen = () => {
   const { theme } = useTheme();
   const navigation = useNavigation();
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [defaultCurrency, setDefaultCurrency] = useState<Currency | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [addAccountModalVisible, setAddAccountModalVisible] = useState(false);
@@ -57,14 +58,16 @@ const HomeScreen = () => {
 
   const loadData = async () => {
     try {
-      const [accountsData, settings] = await Promise.all([
+      const [accountsData, settings, currenciesData] = await Promise.all([
         StorageService.getAccounts(),
         StorageService.getSettings(),
+        StorageService.getCurrencies(),
       ]);
-      
+
       setAccounts(accountsData);
+      setCurrencies(currenciesData);
       setDefaultCurrency(settings.defaultCurrency);
-      calculateSummary(accountsData, settings.defaultCurrency);
+      calculateSummary(accountsData, settings.defaultCurrency, currenciesData);
       
       // Merge saved sections with defaults (handles new sections added in updates)
       const saved = settings.homeSections || [];
@@ -81,20 +84,22 @@ const HomeScreen = () => {
     }
   };
 
-  const calculateSummary = (accountsData: Account[], currency: Currency) => {
+  const calculateSummary = (accountsData: Account[], currency: Currency, liveCurrencies: Currency[]) => {
     let totalOwed = 0;
     let totalOwedToMe = 0;
 
     accountsData.forEach(account => {
-      const owedInDefaultCurrency = CurrencyService.convertAmount(
+      const owedInDefaultCurrency = CurrencyService.convertAmountLive(
         account.totalOwed,
         account.currency,
-        currency
+        currency,
+        liveCurrencies
       );
-      const owedToMeInDefaultCurrency = CurrencyService.convertAmount(
+      const owedToMeInDefaultCurrency = CurrencyService.convertAmountLive(
         account.totalOwedToMe,
         account.currency,
-        currency
+        currency,
+        liveCurrencies
       );
 
       totalOwed += owedInDefaultCurrency;
@@ -303,10 +308,11 @@ const HomeScreen = () => {
     if (!defaultCurrency || accounts.length === 0) return null;
     const balances = accounts.map(a => ({
       name: a.name,
-      net: CurrencyService.convertAmount(
+      net: CurrencyService.convertAmountLive(
         a.totalOwedToMe - a.totalOwed,
         a.currency,
-        defaultCurrency
+        defaultCurrency,
+        currencies
       ),
     }));
     return (

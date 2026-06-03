@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Multi-Currency Support",
   "tutorialSlide5Desc": "Track transactions in any currency. Create custom currencies and get automatic exchange rate updates.",
   "tutorialSlide6Title": "Secure & Private",
-  "tutorialSlide6Desc": "Your data stays on your device. Protect the app with a password or biometric authentication."
+  "tutorialSlide6Desc": "Your data stays on your device. Protect the app with a password or biometric authentication.",
+  "noTransactionsToShare": "No transactions to share for this contact"
 }

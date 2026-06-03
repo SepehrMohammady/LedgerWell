@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Multi-Währungsunterstützung",
   "tutorialSlide5Desc": "Verfolgen Sie Transaktionen in jeder Währung. Erstellen Sie benutzerdefinierte Währungen.",
   "tutorialSlide6Title": "Sicher & Privat",
-  "tutorialSlide6Desc": "Ihre Daten bleiben auf Ihrem Gerät. Schützen Sie die App mit Passwort oder Biometrie."
+  "tutorialSlide6Desc": "Ihre Daten bleiben auf Ihrem Gerät. Schützen Sie die App mit Passwort oder Biometrie.",
+  "noTransactionsToShare": "Keine Transaktionen zum Teilen für diesen Kontakt"
 }

@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "マルチ通貨対応",
   "tutorialSlide5Desc": "任意の通貨で取引を追跡できます。",
   "tutorialSlide6Title": "安全でプライベート",
-  "tutorialSlide6Desc": "データはデバイスに保存されます。パスワードや生体認証でアプリを保護できます。"
+  "tutorialSlide6Desc": "データはデバイスに保存されます。パスワードや生体認証でアプリを保護できます。",
+  "noTransactionsToShare": "この連絡先に共有できる取引はありません"
 }

@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
+  Share,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Contact } from '../types';
+import { Contact, Currency } from '../types';
 import StorageService from '../utils/storage';
+import CurrencyService from '../utils/currency';
 import { useTheme, Theme } from '../utils/theme';
 import { useAlert } from './CustomAlert';
 
@@ -211,6 +213,74 @@ export const ContactsListModal: React.FC<ContactsListModalProps> = ({
     setAddModalVisible(true);
   };
 
+  const handleShareContact = async (contact: Contact) => {
+    try {
+      const [allTransactions, currencies] = await Promise.all([
+        StorageService.getTransactions(),
+        StorageService.getCurrencies(),
+      ]);
+
+      // Match transactions linked to this contact, either by stored contactId
+      // or (for older records) by matching the saved name.
+      const contactTransactions = allTransactions
+        .filter(tx => tx.contactId === contact.id || tx.name === contact.name)
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+      if (contactTransactions.length === 0) {
+        showAlert(t('noData'), t('noTransactionsToShare'));
+        return;
+      }
+
+      // Per-currency totals (debt vs credit) so mixed-currency contacts stay accurate.
+      const totalsByCurrency: { [code: string]: { currency: Currency; debt: number; credit: number } } = {};
+
+      let message = `📋 ${contact.name} — ${t('transactions')}\n`;
+      if (contact.description) {
+        message += `${contact.description}\n`;
+      }
+      message += '\n';
+
+      contactTransactions.forEach((tx, index) => {
+        const liveCurrency = CurrencyService.resolveCurrency(tx.currency, currencies);
+        const amountText = CurrencyService.formatAmount(tx.amount, liveCurrency);
+        const typeLabel = tx.type === 'debt' ? t('debtShort') : t('creditShort');
+        const sign = tx.type === 'debt' ? '-' : '+';
+
+        message += `${index + 1}. ${tx.name} (${typeLabel})\n`;
+        message += `   💰 ${sign}${amountText}\n`;
+        message += `   📅 ${new Date(tx.date).toLocaleDateString()}\n`;
+        if (tx.description) {
+          message += `   📝 ${tx.description}\n`;
+        }
+        message += '\n';
+
+        const code = liveCurrency.code;
+        if (!totalsByCurrency[code]) {
+          totalsByCurrency[code] = { currency: liveCurrency, debt: 0, credit: 0 };
+        }
+        if (tx.type === 'debt') {
+          totalsByCurrency[code].debt += tx.amount;
+        } else {
+          totalsByCurrency[code].credit += tx.amount;
+        }
+      });
+
+      message += '────────────\n';
+      Object.values(totalsByCurrency).forEach(({ currency, debt, credit }) => {
+        message += `${currency.code}\n`;
+        message += `  ${t('totalOwedToMe')}: +${CurrencyService.formatAmount(credit, currency)}\n`;
+        message += `  ${t('totalOwed')}: -${CurrencyService.formatAmount(debt, currency)}\n`;
+        message += `  ${t('net')}: ${CurrencyService.formatAmount(credit - debt, currency)}\n`;
+      });
+      message += '\n📱 LedgerWell';
+
+      await Share.share({ message });
+    } catch (error) {
+      console.error('Failed to share contact transactions:', error);
+      showAlert(t('error'), t('contactActionFailed'));
+    }
+  };
+
   const styles = createStyles(theme);
 
   const renderContactItem = ({ item }: { item: Contact }) => (
@@ -222,6 +292,12 @@ export const ContactsListModal: React.FC<ContactsListModalProps> = ({
         )}
       </View>
       <View style={styles.contactActions}>
+        <TouchableOpacity
+          style={styles.actionButton}
+          onPress={() => handleShareContact(item)}
+        >
+          <Ionicons name="share-outline" size={20} color={theme.colors.success} />
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.actionButton}
           onPress={() => handleEditContact(item)}

@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Çoklu Para Birimi Desteği",
   "tutorialSlide5Desc": "İşlemleri herhangi bir para biriminde takip edin.",
   "tutorialSlide6Title": "Güvenli ve Özel",
-  "tutorialSlide6Desc": "Verileriniz cihazınızda kalır."
+  "tutorialSlide6Desc": "Verileriniz cihazınızda kalır.",
+  "noTransactionsToShare": "Bu kişi için paylaşılacak işlem yok"
 }

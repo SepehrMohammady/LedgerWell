@@ -168,3 +168,5 @@ IMPORT_TESTING.md
 # One-time scripts (already executed)
 cleanup-translations.js
 scripts/add-*-translations.js
+# Claude Code local settings
+.claude/

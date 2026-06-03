@@ -31,6 +31,7 @@ const TransactionsScreen = () => {
   const navigation = useNavigation();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [accounts, setAccounts] = useState<Account[]>([]);
+  const [currencies, setCurrencies] = useState<Currency[]>([]);
   const [filteredTransactions, setFilteredTransactions] = useState<Transaction[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [addTransactionModalVisible, setAddTransactionModalVisible] = useState(false);
@@ -51,6 +52,7 @@ const TransactionsScreen = () => {
       loadTransactions();
       loadAccounts();
       loadSettings();
+      loadCurrencies();
     }, [])
   );
 
@@ -85,6 +87,15 @@ const TransactionsScreen = () => {
       setSettings(settingsData);
     } catch (error) {
       console.error('Failed to load settings:', error);
+    }
+  };
+
+  const loadCurrencies = async () => {
+    try {
+      const currenciesData = await StorageService.getCurrencies();
+      setCurrencies(currenciesData);
+    } catch (error) {
+      console.error('Failed to load currencies:', error);
     }
   };
 
@@ -149,11 +160,15 @@ const TransactionsScreen = () => {
     selectedTransactions.forEach(id => {
       const transaction = transactions.find(t => t.id === id);
       if (transaction) {
-        // Convert to the user's default currency for summing
-        const amountInDefaultCurrency = CurrencyService.convertAmount(
+        // Convert to the user's default currency for summing, using current
+        // exchange rates (handles edited custom-currency rates correctly).
+        const account = accounts.find(a => a.id === transaction.accountId);
+        const currency = account?.currency || transaction.currency;
+        const amountInDefaultCurrency = CurrencyService.convertAmountLive(
           transaction.amount,
-          transaction.currency,
-          defaultCurrency
+          currency,
+          defaultCurrency,
+          currencies
         );
         if (transaction.type === 'debt') {
           debtSum += amountInDefaultCurrency;
@@ -350,7 +365,7 @@ const TransactionsScreen = () => {
       // Use account's current currency for conversion (has up-to-date rate)
       const account = accounts.find(a => a.id === t.accountId);
       const currency = account?.currency || t.currency;
-      const amountInDefault = CurrencyService.convertAmount(t.amount, currency, defaultCurrency);
+      const amountInDefault = CurrencyService.convertAmountLive(t.amount, currency, defaultCurrency, currencies);
       if (t.type === 'debt') {
         monthlyData[monthKey].debt += amountInDefault;
       } else {
@@ -394,7 +409,7 @@ const TransactionsScreen = () => {
     filteredData.forEach(t => {
       const account = accounts.find(a => a.id === t.accountId);
       const currency = account?.currency || t.currency;
-      const amountInDefault = CurrencyService.convertAmount(t.amount, currency, defaultCurrency);
+      const amountInDefault = CurrencyService.convertAmountLive(t.amount, currency, defaultCurrency, currencies);
       if (t.type === 'debt') {
         totalDebt += amountInDefault;
       } else {

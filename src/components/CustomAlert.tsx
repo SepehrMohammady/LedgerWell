@@ -128,6 +128,7 @@ const CustomAlertModal: React.FC<CustomAlertModalProps> = ({
                 key={index}
                 style={[
                   styles.button,
+                  buttons.length > 2 && styles.buttonColumnItem,
                   buttons.length <= 2 && index > 0 && { borderLeftWidth: 1, borderLeftColor: theme.colors.border },
                   buttons.length > 2 && index > 0 && { borderTopWidth: 1, borderTopColor: theme.colors.border },
                 ]}
@@ -200,6 +201,13 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  // When stacked vertically (3+ buttons), flex:1 collapses each button to
+  // zero height because the row has no fixed height. Use full width with
+  // natural (content) height instead.
+  buttonColumnItem: {
+    flex: 0,
+    width: '100%',
   },
   buttonText: {
     fontSize: 16,

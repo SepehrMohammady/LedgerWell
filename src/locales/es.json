@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Soporte multimoneda",
   "tutorialSlide5Desc": "Rastrea transacciones en cualquier moneda. Crea monedas personalizadas.",
   "tutorialSlide6Title": "Seguro y privado",
-  "tutorialSlide6Desc": "Tus datos permanecen en tu dispositivo. Protege la app con contraseña o autenticación biométrica."
+  "tutorialSlide6Desc": "Tus datos permanecen en tu dispositivo. Protege la app con contraseña o autenticación biométrica.",
+  "noTransactionsToShare": "No hay transacciones para compartir de este contacto"
 }

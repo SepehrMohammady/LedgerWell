@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Multi-valuta ondersteuning",
   "tutorialSlide5Desc": "Volg transacties in elke valuta.",
   "tutorialSlide6Title": "Veilig en privé",
-  "tutorialSlide6Desc": "Uw gegevens blijven op uw apparaat."
+  "tutorialSlide6Desc": "Uw gegevens blijven op uw apparaat.",
+  "noTransactionsToShare": "Geen transacties om te delen voor dit contact"
 }

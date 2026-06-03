@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Többvalutás támogatás",
   "tutorialSlide5Desc": "Kövesse nyomon a tranzakciókat bármilyen pénznemben.",
   "tutorialSlide6Title": "Biztonságos és privát",
-  "tutorialSlide6Desc": "Adatai az eszközén maradnak."
+  "tutorialSlide6Desc": "Adatai az eszközén maradnak.",
+  "noTransactionsToShare": "Nincs megosztható tranzakció ehhez a kapcsolathoz"
 }

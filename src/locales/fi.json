@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Monivaluuttatuki",
   "tutorialSlide5Desc": "Seuraa tapahtumia missä tahansa valuutassa.",
   "tutorialSlide6Title": "Turvallinen ja yksityinen",
-  "tutorialSlide6Desc": "Tietosi pysyvät laitteellasi. Suojaa sovellus salasanalla tai biometrisellä tunnistautumisella."
+  "tutorialSlide6Desc": "Tietosi pysyvät laitteellasi. Suojaa sovellus salasanalla tai biometrisellä tunnistautumisella.",
+  "noTransactionsToShare": "Ei jaettavia tapahtumia tälle yhteyshenkilölle"
 }

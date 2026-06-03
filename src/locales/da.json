@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Multi-valuta support",
   "tutorialSlide5Desc": "Spor transaktioner i enhver valuta. Opret brugerdefinerede valutaer og få automatiske kursopdateringer.",
   "tutorialSlide6Title": "Sikker og privat",
-  "tutorialSlide6Desc": "Dine data forbliver på din enhed. Beskyt appen med en adgangskode eller biometrisk godkendelse."
+  "tutorialSlide6Desc": "Dine data forbliver på din enhed. Beskyt appen med en adgangskode eller biometrisk godkendelse.",
+  "noTransactionsToShare": "Ingen transaktioner at dele for denne kontakt"
 }

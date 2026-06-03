@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Podpora více měn",
   "tutorialSlide5Desc": "Sledujte transakce v jakékoli měně. Vytvářejte vlastní měny a získávejte aktuální kurzy.",
   "tutorialSlide6Title": "Bezpečné a soukromé",
-  "tutorialSlide6Desc": "Vaše data zůstávají na vašem zařízení. Chraňte aplikaci heslem nebo biometrickým ověřením."
+  "tutorialSlide6Desc": "Vaše data zůstávají na vašem zařízení. Chraňte aplikaci heslem nebo biometrickým ověřením.",
+  "noTransactionsToShare": "Žádné transakce ke sdílení pro tento kontakt"
 }

@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Support multidevise",
   "tutorialSlide5Desc": "Suivez les transactions dans n'importe quelle devise. Créez des devises personnalisées.",
   "tutorialSlide6Title": "Sécurisé et privé",
-  "tutorialSlide6Desc": "Vos données restent sur votre appareil. Protégez l'app avec un mot de passe ou la biométrie."
+  "tutorialSlide6Desc": "Vos données restent sur votre appareil. Protégez l'app avec un mot de passe ou la biométrie.",
+  "noTransactionsToShare": "Aucune transaction à partager pour ce contact"
 }

@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "다중 통화 지원",
   "tutorialSlide5Desc": "모든 통화로 거래를 추적하세요.",
   "tutorialSlide6Title": "안전하고 개인적",
-  "tutorialSlide6Desc": "데이터는 기기에 저장됩니다."
+  "tutorialSlide6Desc": "데이터는 기기에 저장됩니다.",
+  "noTransactionsToShare": "이 연락처에 공유할 거래가 없습니다"
 }

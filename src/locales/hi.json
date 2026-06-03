@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "बहु-मुद्रा समर्थन",
   "tutorialSlide5Desc": "किसी भी मुद्रा में लेनदेन ट्रैक करें।",
   "tutorialSlide6Title": "सुरक्षित और निजी",
-  "tutorialSlide6Desc": "आपका डेटा आपके डिवाइस पर रहता है।"
+  "tutorialSlide6Desc": "आपका डेटा आपके डिवाइस पर रहता है।",
+  "noTransactionsToShare": "इस संपर्क के लिए साझा करने हेतु कोई लेन-देन नहीं है"
 }

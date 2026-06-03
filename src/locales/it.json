@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Supporto multivaluta",
   "tutorialSlide5Desc": "Traccia transazioni in qualsiasi valuta.",
   "tutorialSlide6Title": "Sicuro e privato",
-  "tutorialSlide6Desc": "I tuoi dati restano sul tuo dispositivo."
+  "tutorialSlide6Desc": "I tuoi dati restano sul tuo dispositivo.",
+  "noTransactionsToShare": "Nessuna transazione da condividere per questo contatto"
 }

@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Suporte multimoeda",
   "tutorialSlide5Desc": "Rastreie transações em qualquer moeda.",
   "tutorialSlide6Title": "Seguro e privado",
-  "tutorialSlide6Desc": "Seus dados ficam no seu dispositivo."
+  "tutorialSlide6Desc": "Seus dados ficam no seu dispositivo.",
+  "noTransactionsToShare": "Nenhuma transação para compartilhar deste contato"
 }

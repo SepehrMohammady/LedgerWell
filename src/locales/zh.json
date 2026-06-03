@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "多币种支持",
   "tutorialSlide5Desc": "以任何货币追踪交易。",
   "tutorialSlide6Title": "安全和隐私",
-  "tutorialSlide6Desc": "您的数据保留在您的设备上。"
+  "tutorialSlide6Desc": "您的数据保留在您的设备上。",
+  "noTransactionsToShare": "该联系人没有可分享的交易"
 }

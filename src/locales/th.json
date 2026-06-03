@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "รองรับหลายสกุลเงิน",
   "tutorialSlide5Desc": "ติดตามรายการในสกุลเงินใดก็ได้",
   "tutorialSlide6Title": "ปลอดภัยและเป็นส่วนตัว",
-  "tutorialSlide6Desc": "ข้อมูลของคุณอยู่ในอุปกรณ์ของคุณ"
+  "tutorialSlide6Desc": "ข้อมูลของคุณอยู่ในอุปกรณ์ของคุณ",
+  "noTransactionsToShare": "ไม่มีรายการธุรกรรมที่จะแชร์สำหรับผู้ติดต่อนี้"
 }

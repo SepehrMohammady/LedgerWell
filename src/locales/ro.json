@@ -297,5 +297,6 @@
   "tutorialSlide5Title": "Suport multi-monedă",
   "tutorialSlide5Desc": "Urmărește tranzacții în orice monedă.",
   "tutorialSlide6Title": "Sigur și privat",
-  "tutorialSlide6Desc": "Datele tale rămân pe dispozitivul tău."
+  "tutorialSlide6Desc": "Datele tale rămân pe dispozitivul tău.",
+  "noTransactionsToShare": "Nu există tranzacții de partajat pentru acest contact"
 }
