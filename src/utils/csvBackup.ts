@@ -1,7 +1,7 @@
 import { Paths, File } from 'expo-file-system';
 import * as DocumentPicker from 'expo-document-picker';
 import * as Sharing from 'expo-sharing';
-import { Account, Transaction, Currency, AppSettings } from '../types';
+import { Account, Transaction, Currency, AppSettings, Contact } from '../types';
 import { getAppVersion } from './version';
 
 export interface BackupData {
@@ -11,12 +11,14 @@ export interface BackupData {
   transactions: Transaction[];
   settings: AppSettings;
   customCurrencies: Currency[];
+  contacts: Contact[];
 }
 
 export interface BackupStats {
   totalAccounts: number;
   totalTransactions: number;
   totalCustomCurrencies: number;
+  totalContacts: number;
   dateRange: { from: string; to: string } | null;
 }
 
@@ -33,7 +35,8 @@ export class CSVBackupService {
     accounts: Account[],
     transactions: Transaction[],
     settings: AppSettings,
-    customCurrencies: Currency[]
+    customCurrencies: Currency[],
+    contacts: Contact[] = []
   ): Promise<string | null> {
     try {
       const backupData: BackupData = {
@@ -42,7 +45,8 @@ export class CSVBackupService {
         accounts,
         transactions,
         settings,
-        customCurrencies
+        customCurrencies,
+        contacts
       };
 
       // Create CSV content with multiple sections
@@ -194,6 +198,20 @@ export class CSVBackupService {
     }
     lines.push('');
 
+    // Contacts section
+    lines.push('[CONTACTS]');
+    lines.push('id,name,description,createdAt,updatedAt');
+    for (const contact of data.contacts) {
+      lines.push([
+        this.escapeCSV(contact.id),
+        this.escapeCSV(contact.name),
+        this.escapeCSV(contact.description || ''),
+        this.toISOString(contact.createdAt),
+        this.toISOString(contact.updatedAt)
+      ].join(','));
+    }
+    lines.push('');
+
     // Accounts section
     lines.push('[ACCOUNTS]');
     lines.push('id,name,description,totalOwed,totalOwedToMe,currency_id,currency_code,currency_name,currency_symbol,currency_rate,currency_isCustom,createdAt,updatedAt');
@@ -218,11 +236,12 @@ export class CSVBackupService {
 
     // Transactions section
     lines.push('[TRANSACTIONS]');
-    lines.push('id,accountId,type,amount,currency_id,currency_code,currency_name,currency_symbol,currency_rate,currency_isCustom,name,description,date,createdAt,updatedAt');
+    lines.push('id,accountId,contactId,type,amount,currency_id,currency_code,currency_name,currency_symbol,currency_rate,currency_isCustom,name,description,date,createdAt,updatedAt');
     for (const transaction of data.transactions) {
       lines.push([
         this.escapeCSV(transaction.id),
         this.escapeCSV(transaction.accountId),
+        this.escapeCSV(transaction.contactId || ''),
         this.escapeCSV(transaction.type),
         transaction.amount,
         this.escapeCSV(transaction.currency.id),
@@ -246,23 +265,36 @@ export class CSVBackupService {
    * Parse CSV content and extract backup data
    */
   private static parseCSVContent(content: string): BackupData {
-    const lines = content.split('\n').map(line => line.trim()).filter(line => line);
-    
+    // Normalize line endings so \r\n imports parse the same as \n.
+    const rawLines = content.replace(/\r\n/g, '\n').split('\n');
+
     let currentSection = '';
     const sections: { [key: string]: string[] } = {
       METADATA: [],
       SETTINGS: [],
       CUSTOM_CURRENCIES: [],
+      CONTACTS: [],
       ACCOUNTS: [],
       TRANSACTIONS: []
     };
 
-    // Separate content into sections
-    for (const line of lines) {
-      if (line.startsWith('[') && line.endsWith(']')) {
-        currentSection = line.slice(1, -1);
+    // Separate content into sections. A line is only treated as a [SECTION]
+    // header when we are NOT inside a quoted CSV field — otherwise a bracketed
+    // line inside a multi-line name/description would be mistaken for a header
+    // and corrupt the following sections. Raw lines are preserved (not trimmed)
+    // so multi-line quoted fields survive intact; parseCSVRows skips blanks.
+    let inQuotes = false;
+    for (const rawLine of rawLines) {
+      if (!inQuotes && /^\[[A-Z_]+\]$/.test(rawLine.trim())) {
+        currentSection = rawLine.trim().slice(1, -1);
       } else if (currentSection && sections[currentSection]) {
-        sections[currentSection].push(line);
+        sections[currentSection].push(rawLine);
+      }
+      // Toggle quote state on an odd number of quotes on this line. Escaped
+      // quotes ("") count as two and correctly leave the state unchanged.
+      const quoteCount = (rawLine.match(/"/g) || []).length;
+      if (quoteCount % 2 === 1) {
+        inQuotes = !inQuotes;
       }
     }
 
@@ -297,6 +329,18 @@ export class CSVBackupService {
         symbol: row.symbol,
         rate: parseFloat(row.rate),
         isCustom: row.isCustom === 'true'
+      })
+    );
+
+    // Parse contacts (optional section — older backups won't have it)
+    const contacts = this.parseTableSection<Contact>(
+      sections.CONTACTS,
+      (row) => ({
+        id: row.id,
+        name: row.name,
+        description: row.description || undefined,
+        createdAt: new Date(row.createdAt),
+        updatedAt: new Date(row.updatedAt)
       })
     );
 
@@ -342,6 +386,7 @@ export class CSVBackupService {
         return {
           id: row.id,
           accountId: row.accountId,
+          contactId: row.contactId || undefined,
           type: (type === 'debt' || type === 'credit' ? type : 'debt') as 'debt' | 'credit',
           amount,
           currency: {
@@ -367,7 +412,8 @@ export class CSVBackupService {
       accounts,
       transactions,
       settings,
-      customCurrencies
+      customCurrencies,
+      contacts
     };
   }
 
@@ -589,6 +635,7 @@ export class CSVBackupService {
       totalAccounts: data.accounts.length,
       totalTransactions: data.transactions.length,
       totalCustomCurrencies: data.customCurrencies.length,
+      totalContacts: data.contacts?.length ?? 0,
       dateRange
     };
   }

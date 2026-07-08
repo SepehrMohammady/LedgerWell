@@ -309,11 +309,12 @@ const SettingsScreen = () => {
     try {
       showAlert(t('exportData'), t('preparingExport'));
       
-      // Load all data including settings and custom currencies
-      const [accounts, transactions, customCurrencies] = await Promise.all([
+      // Load all data including settings, custom currencies and contacts
+      const [accounts, transactions, customCurrencies, contacts] = await Promise.all([
         StorageService.getAccounts(),
         StorageService.getTransactions(),
-        StorageService.getCurrencies().then(currencies => currencies.filter(c => c.isCustom))
+        StorageService.getCurrencies().then(currencies => currencies.filter(c => c.isCustom)),
+        StorageService.getContacts()
       ]);
 
       if (accounts.length === 0) {
@@ -328,16 +329,17 @@ const SettingsScreen = () => {
         accounts,
         transactions,
         settings: settings!,
-        customCurrencies
+        customCurrencies,
+        contacts
       };
 
       // Get backup statistics
       const stats = CSVBackupService.getBackupStats(backupData);
-      
+
       // Show export confirmation with statistics
       showAlert(
         t('exportData'),
-        `${t('accounts')}: ${stats.totalAccounts}\n${t('transactions')}: ${stats.totalTransactions}\n${t('customCurrencies')}: ${stats.totalCustomCurrencies}${stats.dateRange ? `\n${t('dateRange')}: ${stats.dateRange.from} - ${stats.dateRange.to}` : ''}`,
+        `${t('accounts')}: ${stats.totalAccounts}\n${t('transactions')}: ${stats.totalTransactions}\n${t('customCurrencies')}: ${stats.totalCustomCurrencies}\n${t('contacts')}: ${stats.totalContacts}${stats.dateRange ? `\n${t('dateRange')}: ${stats.dateRange.from} - ${stats.dateRange.to}` : ''}`,
         [
           { text: t('cancel'), style: 'cancel' },
           {
@@ -348,7 +350,8 @@ const SettingsScreen = () => {
                   accounts,
                   transactions,
                   settings!,
-                  customCurrencies
+                  customCurrencies,
+                  contacts
                 );
                 showAlert(t('success'), t('exportSuccess'));
               } catch (error) {
@@ -402,6 +405,7 @@ const SettingsScreen = () => {
         `${t('accounts')}: ${stats.totalAccounts}`,
         `${t('transactions')}: ${stats.totalTransactions}`,
         `${t('customCurrencies')}: ${stats.totalCustomCurrencies}`,
+        `${t('contacts')}: ${stats.totalContacts}`,
         stats.dateRange ? `${t('dateRange')}: ${stats.dateRange.from} - ${stats.dateRange.to}` : '',
         '',
         t('importWarning')
@@ -548,31 +552,58 @@ const SettingsScreen = () => {
         
         // Restore settings
         await StorageService.saveSettings(backupData.settings);
-        
+
+        // Restore contacts
+        for (const contact of backupData.contacts || []) {
+          await StorageService.saveContact(contact);
+        }
+
         // Restore all accounts
         for (const account of backupData.accounts) {
           await StorageService.saveAccount(account);
         }
-        
+
         // Restore all transactions
         for (const transaction of backupData.transactions) {
           await StorageService.saveTransaction(transaction);
         }
-        
+
         // Show success message
         showAlert(
           t('importSuccess'),
-          `${t('restored')}:\n${t('accounts')}: ${backupData.accounts.length}\n${t('transactions')}: ${backupData.transactions.length}\n${t('customCurrencies')}: ${backupData.customCurrencies.length}`
+          `${t('restored')}:\n${t('accounts')}: ${backupData.accounts.length}\n${t('transactions')}: ${backupData.transactions.length}\n${t('customCurrencies')}: ${backupData.customCurrencies.length}\n${t('contacts')}: ${(backupData.contacts || []).length}`
         );
       } else {
         // Merge mode - handle duplicates
         const existingAccounts = await StorageService.getAccounts();
         const existingTransactions = await StorageService.getTransactions();
-        
+        const existingContacts = await StorageService.getContacts();
+
         let addedAccounts = 0;
         let addedTransactions = 0;
         let addedCurrencies = 0;
-        
+        let addedContacts = 0;
+
+        // Merge contacts (by name) and map old contact IDs to the final IDs so
+        // transactions keep pointing at the right contact. contactByName tracks
+        // both pre-existing and freshly-added names so duplicates within the
+        // same backup collapse onto a single contact.
+        const contactIdMap = new Map<string, string>();
+        const contactByName = new Map<string, string>();
+        existingContacts.forEach(c => contactByName.set(c.name.toLowerCase().trim(), c.id));
+        for (const contact of backupData.contacts || []) {
+          const nameKey = contact.name.toLowerCase().trim();
+          const existingId = contactByName.get(nameKey);
+          if (existingId) {
+            contactIdMap.set(contact.id, existingId);
+          } else {
+            await StorageService.saveContact(contact);
+            contactIdMap.set(contact.id, contact.id);
+            contactByName.set(nameKey, contact.id);
+            addedContacts++;
+          }
+        }
+
         // Merge custom currencies
         if (backupData.customCurrencies.length > 0) {
           const existingCurrencies = await StorageService.getCurrencies();
@@ -622,7 +653,15 @@ const SettingsScreen = () => {
           if (newAccountId) {
             transaction.accountId = newAccountId;
           }
-          
+
+          // Update transaction's contact ID to match the imported/existing contact
+          if (transaction.contactId) {
+            const newContactId = contactIdMap.get(transaction.contactId);
+            if (newContactId) {
+              transaction.contactId = newContactId;
+            }
+          }
+
           const isDuplicate = existingTransactions.some(existing => {
             const existingDate = new Date(existing.date);
             const transactionDate = new Date(transaction.date);
@@ -646,7 +685,7 @@ const SettingsScreen = () => {
         // Update success message for merge mode
         showAlert(
           t('importSuccess'),
-          `${t('added')}:\n${t('accounts')}: ${addedAccounts}\n${t('transactions')}: ${addedTransactions}\n${t('customCurrencies')}: ${addedCurrencies}`
+          `${t('added')}:\n${t('accounts')}: ${addedAccounts}\n${t('transactions')}: ${addedTransactions}\n${t('customCurrencies')}: ${addedCurrencies}\n${t('contacts')}: ${addedContacts}`
         );
       }
 
