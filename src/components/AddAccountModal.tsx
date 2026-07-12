@@ -11,7 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Picker } from '@react-native-picker/picker';
+import ThemedPicker from './ThemedPicker';
 import { Account, Currency } from '../types';
 import StorageService from '../utils/storage';
 import { useTheme, Theme } from '../utils/theme';
@@ -165,24 +165,18 @@ const AddAccountModal: React.FC<AddAccountModalProps> = ({ visible, onClose, onS
 
           <View style={styles.inputGroup}>
             <Text style={styles.label}>{t('currency')} *</Text>
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={selectedCurrency?.id}
-                onValueChange={(value) => {
-                  const currency = currencies.find(c => c.id === value);
-                  setSelectedCurrency(currency || null);
-                }}
-                style={styles.picker}
-              >
-                {currencies.map((currency) => (
-                  <Picker.Item
-                    key={currency.id}
-                    label={`${currency.code} - ${currency.name} (${currency.symbol})`}
-                    value={currency.id}
-                  />
-                ))}
-              </Picker>
-            </View>
+            <ThemedPicker
+              title={t('currency')}
+              selectedValue={selectedCurrency?.id}
+              onValueChange={(value) => {
+                const currency = currencies.find(c => c.id === value);
+                setSelectedCurrency(currency || null);
+              }}
+              options={currencies.map((currency) => ({
+                label: `${currency.code} - ${currency.name} (${currency.symbol})`,
+                value: currency.id,
+              }))}
+            />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -234,16 +228,6 @@ const createStyles = (theme: Theme) => StyleSheet.create({
   textArea: {
     height: 80,
     textAlignVertical: 'top',
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: 8,
-    backgroundColor: theme.colors.surface,
-  },
-  picker: {
-    height: 50,
-    color: theme.colors.text,
   },
 });
 

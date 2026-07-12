@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Picker } from '@react-native-picker/picker';
+import ThemedPicker, { ThemedPickerOption } from '../components/ThemedPicker';
 import { AppSettings, Currency } from '../types';
 import StorageService from '../utils/storage';
 import CurrencyService, { DEFAULT_CURRENCIES } from '../utils/currency';
@@ -34,6 +34,40 @@ import {
   resetPassword,
   setPassword,
 } from '../utils/auth';
+
+// Supported languages shown in the language selector (native names).
+const LANGUAGE_OPTIONS: ThemedPickerOption[] = [
+  { label: 'العربية', value: 'ar' },
+  { label: 'Bahasa Indonesia', value: 'id' },
+  { label: 'Čeština', value: 'cs' },
+  { label: 'Dansk', value: 'da' },
+  { label: 'Deutsch', value: 'de' },
+  { label: 'Ελληνικά', value: 'el' },
+  { label: 'English', value: 'en' },
+  { label: 'Español', value: 'es' },
+  { label: 'فارسی', value: 'fa' },
+  { label: 'Filipino', value: 'tl' },
+  { label: 'Français', value: 'fr' },
+  { label: 'Suomi', value: 'fi' },
+  { label: 'עברית', value: 'he' },
+  { label: 'हिन्दी', value: 'hi' },
+  { label: 'Italiano', value: 'it' },
+  { label: '日本語', value: 'ja' },
+  { label: '한국어', value: 'ko' },
+  { label: 'Kiswahili', value: 'sw' },
+  { label: 'Magyar', value: 'hu' },
+  { label: 'Nederlands', value: 'nl' },
+  { label: 'Polski', value: 'pl' },
+  { label: 'Português', value: 'pt' },
+  { label: 'Română', value: 'ro' },
+  { label: 'Русский', value: 'ru' },
+  { label: 'Svenska', value: 'sv' },
+  { label: 'ไทย', value: 'th' },
+  { label: 'Türkçe', value: 'tr' },
+  { label: 'Українська', value: 'uk' },
+  { label: 'Tiếng Việt', value: 'vi' },
+  { label: '中文', value: 'zh' },
+];
 
 // SettingItem component for reusable settings list items
 interface SettingItemProps {
@@ -714,65 +748,25 @@ const SettingsScreen = () => {
     <ScrollView style={styles.container}>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('language')}</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            key={`language-picker-${settings.language}`}
-            selectedValue={settings.language}
-            onValueChange={changeLanguage}
-            style={styles.picker}
-          >
-            <Picker.Item label="العربية" value="ar" />
-            <Picker.Item label="Bahasa Indonesia" value="id" />
-            <Picker.Item label="Čeština" value="cs" />
-            <Picker.Item label="Dansk" value="da" />
-            <Picker.Item label="Deutsch" value="de" />
-            <Picker.Item label="Ελληνικά" value="el" />
-            <Picker.Item label="English" value="en" />
-            <Picker.Item label="Español" value="es" />
-            <Picker.Item label="فارسی" value="fa" />
-            <Picker.Item label="Filipino" value="tl" />
-            <Picker.Item label="Français" value="fr" />
-            <Picker.Item label="Suomi" value="fi" />
-            <Picker.Item label="עברית" value="he" />
-            <Picker.Item label="हिन्दी" value="hi" />
-            <Picker.Item label="Italiano" value="it" />
-            <Picker.Item label="日本語" value="ja" />
-            <Picker.Item label="한국어" value="ko" />
-            <Picker.Item label="Kiswahili" value="sw" />
-            <Picker.Item label="Magyar" value="hu" />
-            <Picker.Item label="Nederlands" value="nl" />
-            <Picker.Item label="Polski" value="pl" />
-            <Picker.Item label="Português" value="pt" />
-            <Picker.Item label="Română" value="ro" />
-            <Picker.Item label="Русский" value="ru" />
-            <Picker.Item label="Svenska" value="sv" />
-            <Picker.Item label="ไทย" value="th" />
-            <Picker.Item label="Türkçe" value="tr" />
-            <Picker.Item label="Українська" value="uk" />
-            <Picker.Item label="Tiếng Việt" value="vi" />
-            <Picker.Item label="中文" value="zh" />
-          </Picker>
-        </View>
+        <ThemedPicker
+          title={t('language')}
+          selectedValue={settings.language}
+          onValueChange={changeLanguage}
+          options={LANGUAGE_OPTIONS}
+        />
       </View>
 
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{t('defaultCurrency')}</Text>
-        <View style={styles.pickerContainer}>
-          <Picker
-            key={`currency-picker-${settings.defaultCurrency?.id || 'none'}`}
-            selectedValue={settings.defaultCurrency?.id}
-            onValueChange={changeDefaultCurrency}
-            style={styles.picker}
-          >
-            {currencies.map((currency) => (
-              <Picker.Item
-                key={currency.id}
-                label={`${currency.code} - ${currency.name}`}
-                value={currency.id}
-              />
-            ))}
-          </Picker>
-        </View>
+        <ThemedPicker
+          title={t('defaultCurrency')}
+          selectedValue={settings.defaultCurrency?.id}
+          onValueChange={changeDefaultCurrency}
+          options={currencies.map((currency) => ({
+            label: `${currency.code} - ${currency.name}`,
+            value: currency.id,
+          }))}
+        />
       </View>
 
       <View style={styles.section}>
@@ -1097,20 +1091,6 @@ const createStyles = (theme: Theme) => StyleSheet.create({
     fontWeight: 'bold',
     color: theme.colors.text,
     marginBottom: 12,
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: 8,
-    backgroundColor: theme.colors.background,
-    overflow: 'hidden',
-    paddingHorizontal: 4,
-  },
-  picker: {
-    height: 56,
-    color: theme.colors.text,
-    backgroundColor: 'transparent',
-    width: '100%',
   },
   settingRow: {
     flexDirection: 'row',

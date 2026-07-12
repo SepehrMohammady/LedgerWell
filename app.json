@@ -3,7 +3,7 @@
     "name": "LedgerWell",
     "slug": "ledgerwell",
     "owner": "sepehrmohammady",
-    "version": "0.10.12",
+    "version": "0.10.13",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -26,7 +26,7 @@
       "supportsTablet": true
     },
     "android": {
-      "versionCode": 3,
+      "versionCode": 4,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff",

@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { Picker } from '@react-native-picker/picker';
+import ThemedPicker from './ThemedPicker';
 import { Account, Currency, Transaction, Contact } from '../types';
 import StorageService from '../utils/storage';
 import { useTheme, Theme } from '../utils/theme';
@@ -253,24 +253,18 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
         <ScrollView style={styles.content}>
           <View style={styles.inputGroup}>
             <Text style={styles.label}>Account *</Text>
-            <View style={styles.pickerContainer}>
-              <Picker
-                selectedValue={selectedAccount?.id}
-                onValueChange={(value) => {
-                  const account = accounts.find(a => a.id === value);
-                  setSelectedAccount(account || null);
-                }}
-                style={styles.picker}
-              >
-                {accounts.map((account) => (
-                  <Picker.Item
-                    key={account.id}
-                    label={`${account.name} (${account.currency.code})`}
-                    value={account.id}
-                  />
-                ))}
-              </Picker>
-            </View>
+            <ThemedPicker
+              title={t('account')}
+              selectedValue={selectedAccount?.id}
+              onValueChange={(value) => {
+                const account = accounts.find(a => a.id === value);
+                setSelectedAccount(account || null);
+              }}
+              options={accounts.map((account) => ({
+                label: `${account.name} (${account.currency.code})`,
+                value: account.id,
+              }))}
+            />
           </View>
 
           <View style={styles.inputGroup}>
@@ -353,24 +347,20 @@ const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ visible, onCl
                 ) : (
                   <View>
                     <View style={styles.pickerWithButton}>
-                      <View style={[styles.pickerContainer, { flex: 1 }]}>
-                        <Picker
-                          selectedValue={selectedContact?.id || ''}
+                      <View style={{ flex: 1 }}>
+                        <ThemedPicker
+                          title={t('selectContact')}
+                          placeholder={t('selectContact')}
+                          selectedValue={selectedContact?.id}
                           onValueChange={(value) => {
                             const contact = contacts.find(c => c.id === value);
                             setSelectedContact(contact || null);
                           }}
-                          style={styles.picker}
-                        >
-                          <Picker.Item label={t('selectContact')} value="" />
-                          {contacts.map((contact) => (
-                            <Picker.Item
-                              key={contact.id}
-                              label={contact.name}
-                              value={contact.id}
-                            />
-                          ))}
-                        </Picker>
+                          options={contacts.map((contact) => ({
+                            label: contact.name,
+                            value: contact.id,
+                          }))}
+                        />
                       </View>
                       <TouchableOpacity
                         style={styles.addContactButton}
@@ -543,16 +533,6 @@ const createStyles = (theme: Theme) => StyleSheet.create({
   textArea: {
     height: 80,
     textAlignVertical: 'top',
-  },
-  pickerContainer: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: 8,
-    backgroundColor: theme.colors.surface,
-  },
-  picker: {
-    height: 50,
-    color: theme.colors.text,
   },
   typeContainer: {
     flexDirection: 'row',
